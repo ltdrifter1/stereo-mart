@@ -41,17 +41,17 @@ SEAM_BAND = 128  # px cross-faded across the wrap seam
 # Hotspot glow planes — MUST mirror app/data/sections.ts
 # (u, v, glowW ?? w, glowH ?? h). Edge masks are drawn in projected space.
 PLANES = {
-    # Far back wall LISTEN tower (file ≈ x 713–823)
-    "listening-booth": (0.500, 0.420, 18.0, 22.0),
-    "crt-tv": (0.902, 0.493, 24.5, 14.0),
-    # Island bins on the moss rug (below the tower)
-    "record-bins": (0.489, 0.555, 34.0, 22.0),
+    # Far back wall LISTEN — headphones + turntable (file ≈ x 720–900)
+    "listening-booth": (0.470, 0.355, 16.0, 18.0),
+    "crt-tv": (0.918, 0.500, 22.0, 15.0),
+    # Island bins on the moss rug — overview glow, not face-plant
+    "record-bins": (0.492, 0.600, 30.0, 20.0),
     # Cream cash register body ONLY — not shelves behind
-    "cash-register": (0.223, 0.45, 9.0, 7.5),
-    "phone-booth": (0.148, 0.469, 11.0, 6.5),
+    "cash-register": (0.223, 0.450, 9.0, 7.5),
+    "phone-booth": (0.148, 0.470, 10.0, 7.0),
 }
 # CRT hit plane (sections.ts w/h) — tube-set footprint for the overlay stack.
-CRT_PLANE = (0.902, 0.493, 21.7, 16.5)
+CRT_PLANE = (0.918, 0.500, 20.0, 16.0)
 # Painted glass inside that footprint — MUST mirror CrtScreen.tsx.
 CRT_SCREEN_W_FAC = 0.44
 CRT_SCREEN_H_FAC = 0.375
@@ -66,13 +66,13 @@ CRT_FRAME_H_FAC = 0.78
 #        flood = ink-closed standalone object (plant stand);
 #        patch = soft rounded-rect crop (flat floor objects like the mat).
 TOY_SPRITES = {
-    "stool": (0.500, 0.428, 12.0, 14.0, "flood"),  # headphones on back-wall LISTEN
-    "owl": (0.4271, 0.4727, 20.0, 28.5, "flood"),  # plant on its stand
-    "cushion": (0.09, 0.617, 26.0, 7.6, "patch"),  # doormat
-    "crate": (0.655, 0.488, 18.0, 14.0, "flood"),  # wall bin run
-    "poster": (0.656, 0.317, 16.0, 16.0, "flood"),  # face-out shelf records
-    "fire": (0.609, 0.703, 18.0, 12.0, "patch"),  # moss rug pool
-    "wonder": (0.0885, 0.41, 14.0, 18.0, "patch"),  # door / street window
+    "stool": (0.499, 0.352, 10.0, 12.0, "flood"),  # headphones on back wall
+    "owl": (0.564, 0.371, 14.0, 20.0, "flood"),  # plant by LISTEN wall
+    "cushion": (0.492, 0.742, 22.0, 10.0, "patch"),  # milk-crate cluster / rug front
+    "crate": (0.830, 0.560, 14.0, 14.0, "flood"),  # plant + cabinet by CRT
+    "poster": (0.499, 0.275, 10.0, 10.0, "patch"),  # blank yellow square above headphones
+    "fire": (0.495, 0.700, 20.0, 12.0, "patch"),  # moss rug pool
+    "wonder": (0.772, 0.450, 16.0, 20.0, "patch"),  # storefront window / street
 }
 MASK_PLANE_RADIUS = 47.5  # SPHERE_RADIUS - 0.5 (Hotspot.tsx)
 CRT_PLANE_RADIUS = 47.2  # SPHERE_RADIUS - 0.8 (CrtScreen.tsx)

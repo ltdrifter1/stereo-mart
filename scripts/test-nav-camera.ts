@@ -95,7 +95,7 @@ const desktop = {
 // 2) CRT framing: mid lookto (not watch punch-in); phone widens further
 {
   const crt = SECTION_BY_ID['crt-tv'];
-  assert.equal(crt.lookFov, 48, 'CRT lookFov should frame the set, not fov 22 punch-in');
+  assert.equal(crt.lookFov, 56, 'CRT lookFov should frame the set with room context');
   assert.ok(crt.glowLatches !== false, 'CRT glow should latch while Videos is focused');
   assert.ok(crt.hideHint, 'CRT glow should have no proximity text');
   assert.ok(
@@ -115,10 +115,10 @@ const desktop = {
   assert.equal(crt.items[0]?.label, 'STEREO-MART-TV');
   assert.equal(crt.items[0]?.videoSrc, '/videos/channel_b.mp4');
   // CRT video plane must sit inside painted glass — not the old 0.7×0.58 overshoot.
-  assert.ok(crt.w === 21.7 && crt.h === 16.5, 'CRT hit plane stays v9 tube-set sized');
+  assert.ok(crt.w === 20 && crt.h === 16, 'CRT hit plane matches v13 tube-set size');
   const desk = resolveLookMfov(crt, desktop);
   const mob = resolveLookMfov(crt, phone);
-  assert.equal(desk, 48, `desktop CRT should stay authored 48, got ${desk}`);
+  assert.equal(desk, 56, `desktop CRT should stay authored 56, got ${desk}`);
   assert.ok(mob > desk, `mobile CRT mfov ${mob} should be > desktop ${desk}`);
   console.log(`✓ CRT lookto desktop=${desk.toFixed(1)} mobile=${mob.toFixed(1)}`);
 }
