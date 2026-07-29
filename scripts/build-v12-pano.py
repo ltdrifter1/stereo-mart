@@ -6,9 +6,9 @@ V15 panorama production bake — STEREO-MART late-90s analog shop redraw
 Input : art/stereo-mart-pano-v12-src.png  (prefer 4096x2048 / 2:1 equirect:
         warm VHS/cassette shop after closing — muted teal, cream, burgundy,
         olive, tobacco, warm fluorescent; seam-safe heroes; same landmarks)
-Output: public/textures/store_pano_v12.webp        4096x2048 lights-on
-        public/textures/store_pano_off_v12.webp    4096x2048 lights-off grade
-        public/textures/store_pano_lqip_v12.webp   512x256 preview
+Output: public/textures/store_pano_v15.webp        4096x2048 lights-on
+        public/textures/store_pano_off_v15.webp    4096x2048 lights-off grade
+        public/textures/store_pano_lqip_v15.webp   512x256 preview
         public/hotspots/<id>_edge.webp            silhouette rim masks
         public/hotspots/crt_frame.webp            bezel overlay (tube hole)
         public/hotspots/crt_backing_off.webp      dark tube (focused, no video)
@@ -31,10 +31,10 @@ from scipy import ndimage
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "art" / "stereo-mart-pano-v12-src.png"
-OUT_ON = ROOT / "public" / "textures" / "store_pano_v12.webp"
-OUT_OFF = ROOT / "public" / "textures" / "store_pano_off_v12.webp"
-OUT_LQIP = ROOT / "public" / "textures" / "store_pano_lqip_v12.webp"
-OUT_PNG = ROOT / "public" / "textures" / "store_pano_v12.png"
+OUT_ON = ROOT / "public" / "textures" / "store_pano_v15.webp"
+OUT_OFF = ROOT / "public" / "textures" / "store_pano_off_v15.webp"
+OUT_LQIP = ROOT / "public" / "textures" / "store_pano_lqip_v15.webp"
+OUT_PNG = ROOT / "public" / "textures" / "store_pano_v15.png"
 HOTSPOT_DIR = ROOT / "public" / "hotspots"
 
 W, H = 4096, 2048
