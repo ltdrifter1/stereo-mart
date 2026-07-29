@@ -28,6 +28,10 @@ npm run dev
 
 ## Panorama bake
 
+Equirectangular master is **2:1** (`art/stereo-mart-pano-v12-src.png`, typically 2048×1024).
+Hero props sit in the mid band away from the left/right wrap seam; zenith/nadir stay ceiling/floor.
+Separate transparent prop sprites live in **`art/props/`** and **`public/hotspots/props/`**.
+
 ```bash
 python3 scripts/patch-stereo-mart-v12-landmarks.py  # after landmark edits
 python3 scripts/build-v12-pano.py
