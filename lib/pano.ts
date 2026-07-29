@@ -13,8 +13,8 @@
  *     → followrange=10, followspeed=0.05
  *
  * Enter (site_scripts.js clickIntro + little-planet-style settle):
- *   start near ceiling → soft yaw pan → land aisle-center (middle)
- *   while fisheye 1→0.3 and fov 160→intro-settle (~124) over ~3s,
+ *   start near ceiling → soft yaw pan → land on LISTEN wall (headphones)
+ *   while fisheye 1→0.3 and fov 160→intro-settle (~128) over ~3s,
  *   then ease to portrait-aware explore for free-look.
  */
 /** Equirect source — upscaled 4K for cleaner lookto FOV~20 punch-ins. */
@@ -38,7 +38,8 @@ export const MFOV_INTRO = 160;
  * Portrait explore can land ~157° — only ~3° of zoom — so intro must
  * settle here first, then ease into resolveExploreMfov for free-look.
  */
-export const MFOV_INTRO_SETTLE = 124;
+/** Slightly wider settle so the empty shop reads as a room on enter. */
+export const MFOV_INTRO_SETTLE = 128;
 /**
  * Free-look wheel clamp (krpano fovmin/fovmax).
  * lookto may punch below this (video ~20) — wheel/keys stay in this range.
@@ -74,14 +75,14 @@ export const INTRO_DROP_V = 0.1;
 /** Soft yaw sweep (degrees) during the tilt — room reads as a place, not a still. */
 export const INTRO_PAN_DEG = 38;
 /**
- * Base view — the room's central axis (aisle vanishing point), the
- * equivalent of krpano hlookat=0 / vlookat=0. The intro lands here
- * and every reset returns to it.
+ * Base view — aisle toward the back-wall LISTEN station (headphones +
+ * turntable), bins kept in the lower third. v=0.5 aimed into the island
+ * face and felt like starting inside a record bin on the v13 pano.
  */
 /** Center of the aisle after BackSide U-flip (texture u ↔ 1−u). */
 export const START_LOOK_U = 0.5;
-/** Level base view (vlookat 0). */
-export const START_LOOK_V = 0.5;
+/** Slightly above level — framed on the LISTEN wall, not the bin tops. */
+export const START_LOOK_V = 0.38;
 
 /**
  * krpano vtourskin defaults:

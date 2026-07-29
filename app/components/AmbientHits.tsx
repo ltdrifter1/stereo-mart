@@ -63,76 +63,76 @@ export const WONDER_EVENT = 'stereo-mart-wonder';
  * after a confirm toast.
  */
 const HITS: AmbientHit[] = [
-  // Headphones on the back-wall LISTEN tower
+  // Headphones on the back-wall LISTEN station
   {
     id: 'stool',
-    u: 0.492,
-    v: 0.418,
+    u: 0.499,
+    v: 0.352,
     w: 2.4,
     h: 2.2,
     sfx: 'stool',
-    toy: { u: 0.5, v: 0.428, w: 12, h: 14 },
+    toy: { u: 0.499, v: 0.352, w: 10, h: 12 },
   },
-  // Wall bin run on the CRT side
+  // Plant + cabinet cluster on the CRT / window side
   {
     id: 'crate',
-    u: 0.655,
-    v: 0.488,
-    w: 4.5,
+    u: 0.83,
+    v: 0.56,
+    w: 3.5,
     h: 3.2,
     sfx: 'crate',
-    toy: { u: 0.655, v: 0.488, w: 18, h: 14 },
+    toy: { u: 0.83, v: 0.56, w: 14, h: 14 },
   },
-  // Face-out record row on the CRT-side wall shelf
+  // Blank yellow square above the headphones
   {
     id: 'poster',
-    u: 0.656,
-    v: 0.317,
-    w: 3.5,
-    h: 3.5,
+    u: 0.499,
+    v: 0.275,
+    w: 2.8,
+    h: 2.8,
     sfx: 'poster',
-    toy: { u: 0.656, v: 0.317, w: 16, h: 16 },
+    toy: { u: 0.499, v: 0.275, w: 10, h: 10 },
   },
-  // Doormat by the entry door — dust-off wiggle on click
+  // Milk-crate cluster on the front of the moss rug
   {
     id: 'cushion',
-    u: 0.09,
-    v: 0.617,
+    u: 0.492,
+    v: 0.742,
     w: 3.5,
-    h: 2,
+    h: 2.2,
     sfx: 'cushion',
-    toy: { u: 0.09, v: 0.617, w: 26, h: 7.6 },
+    toy: { u: 0.492, v: 0.742, w: 22, h: 10 },
   },
-  // Potted plant at the island corner — leaf rustle on click
+  // Tall plant by the LISTEN wall
   {
     id: 'owl',
-    u: 0.432,
-    v: 0.444,
+    u: 0.564,
+    v: 0.371,
     w: 2.6,
-    h: 2.4,
+    h: 2.8,
     sfx: 'owl',
-    toy: { u: 0.4271, v: 0.4727, w: 20, h: 28.5 },
+    toy: { u: 0.564, v: 0.371, w: 14, h: 20 },
   },
-  // Moss rug pool on the open floor
+  // Moss rug pool under the island
   {
     id: 'fire',
-    u: 0.609,
-    v: 0.703,
-    w: 2.8,
+    u: 0.495,
+    v: 0.7,
+    w: 3.2,
     h: 2.6,
     sfx: 'fire',
-    toy: { u: 0.609, v: 0.703, w: 18, h: 12 },
+    toy: { u: 0.495, v: 0.7, w: 20, h: 12 },
   },
-  // Globe / wonder — the door window looking onto the street
+  // Storefront window looking onto the sunny street
   {
     id: 'wonder',
-    u: 0.0885,
-    v: 0.41,
-    w: 2.4,
-    h: 2.4,
+    u: 0.772,
+    v: 0.45,
+    w: 3.2,
+    h: 3.2,
     sfx: 'wonder',
     wonder: true,
-    toy: { u: 0.0885, v: 0.41, w: 14, h: 18 },
+    toy: { u: 0.772, v: 0.45, w: 16, h: 20 },
   },
 ];
 

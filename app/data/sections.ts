@@ -88,7 +88,8 @@ export type Section = {
 
 /**
  * Discoverable hotspots around the 360° store.
- * Click-and-drag to look, then click a feature to open its room.
+ * Tuned against the v13 BT-style empty shop pano — looktos frame objects
+ * with room context; Artists stays an overview (no bin face-plant).
  * Append ?debug=1 to tint hit areas while tuning (u,v).
  */
 export const SECTIONS: Section[] = [
@@ -101,16 +102,19 @@ export const SECTIONS: Section[] = [
     kicker: 'Music',
     intro: '',
     accent: '#ffb347',
-    // v11 pano: LISTEN tower on the far back wall (file ≈ x 713–823).
-    // Mid shelf = turntable + headphones; island bins stay below at higher v.
-    u: 0.5,
-    v: 0.42,
-    lookU: 0.5,
-    lookV: 0.415,
-    w: 18,
-    h: 22,
-    lookFov: 62,
-    walkDolly: 8,
+    // v13: headphones + turntable shelf on the far back wall
+    // (file ≈ x 720–900, y 300–430). Aim above the island so Music
+    // frames the LISTEN station, not the bin tops.
+    u: 0.47,
+    v: 0.355,
+    lookU: 0.47,
+    lookV: 0.34,
+    w: 16,
+    h: 18,
+    glowW: 16,
+    glowH: 18,
+    lookFov: 72,
+    walkDolly: 6,
     sfx: 'music',
     goldEdge: true,
     hideHint: true,
@@ -125,28 +129,22 @@ export const SECTIONS: Section[] = [
     kicker: 'Videos',
     intro: '',
     accent: '#7ad7ff',
-    // v13 pano: CRT on the low cabinet by the storefront — u/v aims the set;
-    // w/h are the set footprint. CrtScreen insets the video to painted glass
-    // (~0.44×0.375 of w/h, XY-biased) — see SCREEN_* in CrtScreen.tsx.
-    u: 0.902,
-    v: 0.493,
-    // Frame the set in the room — not watch-mode punch-in (was fov 22 / too close).
-    lookU: 0.902,
-    lookV: 0.493,
-    w: 21.7,
-    h: 16.5,
-    // Glow / edge mask covers the whole painted set, not just the tube.
-    glowW: 24.5,
-    glowH: 14,
-    lookFov: 48,
-    walkDolly: 10,
+    // v13: CRT on the low cabinet by the storefront (file ≈ x 40–210).
+    // Frame the whole set with a little room context — not tube punch-in.
+    u: 0.918,
+    v: 0.5,
+    lookU: 0.918,
+    lookV: 0.495,
+    w: 20,
+    h: 16,
+    glowW: 22,
+    glowH: 15,
+    lookFov: 56,
+    walkDolly: 8,
     sfx: 'video',
-    // Keep warm gold aura latched while focused; watch overlay arms when
-    // a channel row plays (NavigationController checks items.length).
     glowLatches: true,
     goldEdge: true,
     hideHint: true,
-    // CRT channels — edit app/data/catalog.ts to add or change rows.
     items: CRT_CHANNELS,
   },
   {
@@ -158,25 +156,22 @@ export const SECTIONS: Section[] = [
     kicker: 'Artists',
     intro: '',
     accent: '#ff7a9c',
-    // v9 pano: central record-bin island on the moss rug
-    // (file x 688–882, y 462–645 of 1536×1024). Hit hugs the wood tub;
-    // glow is a touch tighter so the rim doesn’t spill onto the moss.
-    // Island on the moss rug — kept lower than the back-wall LISTEN tower.
-    u: 0.489,
-    v: 0.555,
-    // Zoomed out over the whole open room
+    // v13: island on the moss rug (file ≈ x 560–1000, y 500–760).
+    // Hit sits on the wood tub; lookto is a mid-room overview so the
+    // camera never face-plants into the bin rows.
+    u: 0.492,
+    v: 0.6,
     lookU: 0.5,
-    lookV: 0.53,
-    w: 34,
-    h: 22,
-    glowW: 34,
-    glowH: 22,
-    lookFov: 105,
-    walkDolly: 5,
+    lookV: 0.48,
+    w: 30,
+    h: 20,
+    glowW: 30,
+    glowH: 20,
+    lookFov: 112,
+    walkDolly: 2,
     sfx: 'artists',
     goldEdge: true,
     hideHint: true,
-    // Roster — edit app/data/catalog.ts to add or change artists.
     items: ARTISTS,
   },
   {
@@ -188,16 +183,15 @@ export const SECTIONS: Section[] = [
     kicker: 'New Releases',
     intro: '',
     accent: '#9dff8a',
-    // v13: cream register body ONLY (file ≈ x 1138–1249, y 422–500).
-    // Tight footprint so glow/hit do not include shelves behind the counter.
+    // v13: cream register body ONLY (file ≈ x 1138–1249, y 422–505).
     u: 0.223,
     v: 0.45,
     lookU: 0.223,
-    lookV: 0.45,
+    lookV: 0.448,
     w: 9,
     h: 7.5,
-    lookFov: 48,
-    walkDolly: 8,
+    lookFov: 44,
+    walkDolly: 7,
     sfx: 'shop',
     goldEdge: true,
     hideHint: true,
@@ -212,16 +206,16 @@ export const SECTIONS: Section[] = [
     kicker: 'Contact',
     intro: '',
     accent: '#e8c07a',
-    // v13: black rotary on the counter to the right of the register
-    // (file ≈ x 1258–1360, y 442–519).
+    // v13: black rotary to the right of the register
+    // (file ≈ x 1258–1360, y 442–525).
     u: 0.148,
-    v: 0.469,
-    lookU: 0.148,
-    lookV: 0.469,
-    w: 11,
-    h: 6.5,
-    lookFov: 50,
-    walkDolly: 8,
+    v: 0.47,
+    lookU: 0.155,
+    lookV: 0.468,
+    w: 10,
+    h: 7,
+    lookFov: 42,
+    walkDolly: 7,
     sfx: 'phone',
     goldEdge: true,
     hideHint: true,
