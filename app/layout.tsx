@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Archivo_Black, Outfit } from 'next/font/google';
-import { BRAND_NAME, SITE_URL } from '@/lib/brand';
+import { BRAND_FULL, BRAND_NAME, SITE_URL } from '@/lib/brand';
 import './globals.css';
 
 /** Bold display — brand mark only (gate / panel titles). */
@@ -19,16 +19,17 @@ const body = Outfit({
   display: 'swap',
 });
 
-const siteTitle = BRAND_NAME;
+const siteTitle = BRAND_FULL;
 const siteDescription =
-  'Step inside STEREO-MART. A full 360° illustrated record shop. Look around, explore, and discover.';
+  'Step inside Stereo-Mart Records. A full 360° illustrated record shop. Look around, explore, and discover.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: siteTitle,
   description: siteDescription,
   keywords: [
-    'STEREO-MART',
+    BRAND_FULL,
+    BRAND_NAME,
     'record store',
     'vinyl',
     'immersive',
@@ -70,7 +71,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#121816',
+  themeColor: '#1e3a34',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,

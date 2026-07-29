@@ -1,6 +1,6 @@
 'use client';
 
-import { BRAND_NAME } from '@/lib/brand';
+import { BRAND_FULL, BRAND_LINE, BRAND_NAME } from '@/lib/brand';
 
 import { useEffect, useRef, useState } from 'react';
 import { useProgress } from '@react-three/drei';
@@ -9,7 +9,7 @@ import gsap from 'gsap';
 import { GATE_FADE_DUR, LQIP_SRC } from '@/lib/pano';
 
 /**
- * Entry gate — STEREO-MART v12 palette + LQIP preview of the cartoon room.
+ * Entry gate — bright cartoon shopfront for Stereo-Mart Records.
  * Enter unlocks audio + drop pose, waits one paint, then fades so the
  * little-planet frame is visible as the gate clears (iOS Safari sync).
  * Audio unlock must run in the click gesture (not deferred to GSAP alone).
@@ -106,7 +106,7 @@ export default function LoadingGate({
   };
 
   return (
-    <div className="gate" ref={root} role="dialog" aria-label={`Enter ${BRAND_NAME}`}>
+    <div className="gate" ref={root} role="dialog" aria-label={`Enter ${BRAND_FULL}`}>
       <div className={`gate-lqip${lqipOn ? ' is-on' : ''}`} aria-hidden>
         <img src={LQIP_SRC} alt="" draggable={false} />
         <span className="gate-lqip-veil" />
@@ -117,15 +117,26 @@ export default function LoadingGate({
         <span className="gate-mist gate-mist-b" />
         <span className="gate-orb gate-orb-a" />
         <span className="gate-orb gate-orb-b" />
+        <span className="gate-sun" />
         <span className="gate-grain" />
         <span className="gate-frame gate-frame-top" />
         <span className="gate-frame gate-frame-bottom" />
       </div>
 
       <div className="gate-inner" ref={inner}>
+        <div className="gate-vinyl" aria-hidden>
+          <span className="gate-vinyl-disc" />
+          <span className="gate-vinyl-label" />
+          <span className="gate-vinyl-hole" />
+        </div>
+
+        <p className="gate-kicker">Illustrated record shop</p>
+
         <h1 className="gate-mark">
-          <span className="gate-mark-brand">STEREO-MART</span>
+          <span className="gate-mark-brand">{BRAND_NAME}</span>
+          <span className="gate-mark-shop">{BRAND_LINE}</span>
         </h1>
+
         <span className="gate-rule" aria-hidden />
         <p className="gate-sub">Best experienced with audio enabled</p>
 

@@ -565,7 +565,7 @@ html.has-custom-cursor * {
   opacity: 0.9;
 }
 
-/* ---------- loading gate (STEREO-MART v12 palette — sun-faded Y2K shop) ---------- */
+/* ---------- loading gate (Stereo-Mart Records — bright cartoon shopfront) ---------- */
 .gate {
   position: fixed;
   inset: 0;
@@ -574,11 +574,11 @@ html.has-custom-cursor * {
   align-items: center;
   justify-content: center;
   background:
-    radial-gradient(110% 72% at 50% 0%, rgba(201, 168, 90, 0.2), transparent 54%),
-    radial-gradient(78% 58% at 8% 92%, rgba(58, 108, 102, 0.45), transparent 56%),
-    radial-gradient(55% 48% at 92% 18%, rgba(143, 196, 184, 0.14), transparent 52%),
-    linear-gradient(168deg, #121816 0%, #1a2220 40%, #0e1412 100%);
-  color: #f4ebe0;
+    radial-gradient(120% 70% at 50% -8%, rgba(255, 214, 120, 0.35), transparent 55%),
+    radial-gradient(70% 55% at 0% 100%, rgba(62, 140, 128, 0.55), transparent 58%),
+    radial-gradient(60% 50% at 100% 12%, rgba(255, 176, 120, 0.18), transparent 50%),
+    linear-gradient(165deg, #1e3a34 0%, #2a4f47 42%, #16332e 100%);
+  color: #fff8e8;
   overflow: hidden;
 }
 .gate-lqip {
@@ -595,13 +595,13 @@ html.has-custom-cursor * {
 }
 .gate-lqip img {
   position: absolute;
-  inset: -5%;
-  width: 110%;
-  height: 110%;
+  inset: -6%;
+  width: 112%;
+  height: 112%;
   object-fit: cover;
-  object-position: 48% 44%;
-  filter: saturate(1.04) contrast(1.06) brightness(0.9);
-  transform: scale(1.05);
+  object-position: 50% 38%;
+  filter: saturate(1.18) contrast(1.05) brightness(1.02);
+  transform: scale(1.04);
   animation: gate-lqip-drift 28s ease-in-out infinite alternate;
 }
 .gate-lqip-veil {
@@ -610,12 +610,12 @@ html.has-custom-cursor * {
   background:
     linear-gradient(
       180deg,
-      rgba(14, 18, 16, 0.74) 0%,
-      rgba(14, 18, 16, 0.36) 38%,
-      rgba(14, 18, 16, 0.2) 52%,
-      rgba(10, 14, 12, 0.82) 100%
+      rgba(30, 58, 52, 0.72) 0%,
+      rgba(30, 58, 52, 0.28) 36%,
+      rgba(22, 48, 44, 0.18) 52%,
+      rgba(18, 40, 36, 0.78) 100%
     ),
-    radial-gradient(55% 50% at 50% 42%, transparent 0%, rgba(8, 12, 10, 0.58) 100%);
+    radial-gradient(58% 52% at 50% 44%, transparent 0%, rgba(14, 34, 30, 0.45) 100%);
 }
 .gate-atmosphere {
   position: absolute;
@@ -628,7 +628,7 @@ html.has-custom-cursor * {
   inset: auto;
   border-radius: 50%;
   filter: blur(56px);
-  opacity: 0.5;
+  opacity: 0.55;
   animation: gate-drift 16s ease-in-out infinite alternate;
 }
 .gate-mist-a {
@@ -636,14 +636,14 @@ html.has-custom-cursor * {
   height: 38vh;
   left: -10%;
   bottom: 6%;
-  background: rgba(58, 108, 102, 0.48);
+  background: rgba(90, 168, 156, 0.42);
 }
 .gate-mist-b {
   width: 50vw;
   height: 32vh;
   right: -8%;
   top: 10%;
-  background: rgba(201, 168, 90, 0.16);
+  background: rgba(255, 200, 110, 0.22);
   animation-delay: -5s;
   animation-duration: 20s;
 }
@@ -660,21 +660,34 @@ html.has-custom-cursor * {
 .gate-orb-a {
   top: 16%;
   left: 12%;
-  background: rgba(201, 168, 90, 0.22);
+  background: rgba(255, 210, 120, 0.28);
 }
 .gate-orb-b {
   right: 10%;
   bottom: 18%;
-  background: rgba(143, 196, 184, 0.2);
+  background: rgba(120, 210, 190, 0.22);
   animation-delay: -2s;
+}
+.gate-sun {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  width: min(42vw, 320px);
+  height: min(42vw, 320px);
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 236, 170, 0.55) 0%, rgba(255, 200, 90, 0.18) 42%, transparent 70%);
+  filter: blur(8px);
+  animation: gate-sun 6s ease-in-out infinite;
 }
 .gate-grain {
   position: absolute;
   inset: 0;
-  opacity: 0.12;
+  opacity: 0.14;
   background-image:
-    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.45) 0.5px, transparent 1px),
-    radial-gradient(circle at 70% 60%, rgba(255, 247, 224, 0.35) 0.55px, transparent 1px);
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.5) 0.5px, transparent 1px),
+    radial-gradient(circle at 70% 60%, rgba(255, 247, 224, 0.4) 0.55px, transparent 1px);
   background-size: 6px 6px, 10px 10px;
   mix-blend-mode: soft-light;
 }
@@ -682,147 +695,200 @@ html.has-custom-cursor * {
   position: absolute;
   left: 0;
   right: 0;
-  height: clamp(18px, 4.5vh, 42px);
-  background: #0a0e0c;
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.55);
+  height: clamp(14px, 3.6vh, 34px);
+  background: #14261c;
+  border-color: #0a1410;
+  box-shadow: inset 0 0 0 2px rgba(255, 229, 140, 0.12);
 }
 .gate-frame-top {
   top: 0;
+  border-bottom: 3px solid #1a1a16;
 }
 .gate-frame-bottom {
   bottom: 0;
+  border-top: 3px solid #1a1a16;
 }
 .gate-inner {
   position: relative;
-  width: min(560px, 88vw);
+  width: min(580px, 90vw);
   text-align: center;
   z-index: 2;
   animation: gate-inner-in 1.1s var(--motion-ease-out) both;
 }
+.gate-vinyl {
+  position: relative;
+  width: clamp(56px, 12vw, 78px);
+  height: clamp(56px, 12vw, 78px);
+  margin: 0 auto 22px;
+  animation: gate-vinyl-spin 18s linear infinite;
+}
+.gate-vinyl-disc {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(
+      circle at 50% 50%,
+      #1a1a18 0 2px,
+      #2a2a26 2px 4px
+    );
+  border: 3px solid #0e0e0c;
+  box-shadow:
+    4px 5px 0 #0e0e0c,
+    0 0 0 1px rgba(255, 232, 160, 0.25);
+}
+.gate-vinyl-label {
+  position: absolute;
+  inset: 28%;
+  border-radius: 50%;
+  background: #ffe566;
+  border: 2.5px solid #0e0e0c;
+  box-shadow: inset 0 0 0 6px #f0b429;
+}
+.gate-vinyl-hole {
+  position: absolute;
+  inset: 45%;
+  border-radius: 50%;
+  background: #1e3a34;
+  border: 2px solid #0e0e0c;
+}
+.gate-kicker {
+  margin: 0 0 14px;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(10px, 2vw, 11px);
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  text-indent: 0.34em;
+  color: rgba(255, 236, 190, 0.78);
+}
 .gate-mark {
   font-family: var(--font-display), sans-serif;
-  font-size: clamp(52px, 13vw, 120px);
-  line-height: 0.86;
-  letter-spacing: 0.08em;
+  font-size: clamp(46px, 11.5vw, 104px);
+  line-height: 0.88;
+  letter-spacing: 0.04em;
   margin: 0;
   text-transform: uppercase;
 }
 .gate-mark-brand {
   display: block;
-  color: #f8f0e4;
-  -webkit-text-stroke: 1px rgba(26, 32, 30, 0.35);
+  color: #fff8e8;
+  -webkit-text-stroke: 2.5px #14261c;
+  paint-order: stroke fill;
   text-shadow:
-    0 0 20px rgba(201, 168, 90, 0.42),
-    0 0 48px rgba(74, 124, 118, 0.28),
-    0 2px 0 rgba(18, 22, 20, 0.65);
+    4px 5px 0 #14261c,
+    0 0 28px rgba(255, 214, 110, 0.35);
   animation: gate-glow-brand 3.4s ease-in-out infinite;
 }
 .gate-mark-shop {
   display: block;
-  margin-top: 0.12em;
-  font-size: 0.28em;
-  letter-spacing: 0.42em;
-  color: var(--cel-butter);
-  text-indent: 0.42em;
+  margin-top: 0.18em;
+  font-size: 0.3em;
+  letter-spacing: 0.46em;
+  text-indent: 0.46em;
+  color: #ffe566;
+  -webkit-text-stroke: 1.5px #14261c;
+  paint-order: stroke fill;
   text-shadow:
-    0 0 14px rgba(255, 229, 102, 0.55),
-    0 0 32px rgba(233, 178, 29, 0.28);
+    2px 3px 0 #14261c,
+    0 0 18px rgba(255, 229, 102, 0.45);
   animation: gate-glow-shop 3s ease-in-out infinite;
 }
 .gate-rule {
   display: block;
-  width: min(180px, 42vw);
-  height: 1px;
-  margin: 28px auto 0;
+  width: min(200px, 46vw);
+  height: 3px;
+  margin: 26px auto 0;
+  border-radius: 2px;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(201, 168, 90, 0.12) 18%,
-    rgba(143, 196, 184, 0.85) 50%,
-    rgba(201, 168, 90, 0.12) 82%,
+    #f0b429 18%,
+    #ffe566 50%,
+    #7ec8b8 82%,
     transparent 100%
   );
-  box-shadow: 0 0 14px rgba(74, 124, 118, 0.35);
+  box-shadow: 0 2px 0 #14261c;
 }
 .gate-sub {
   font-family: var(--font-body), system-ui, sans-serif;
   font-weight: 600;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   font-size: clamp(10px, 2vw, 11px);
-  color: rgba(244, 235, 224, 0.58);
-  margin: 22px 0 36px;
+  color: rgba(255, 246, 220, 0.66);
+  margin: 20px 0 32px;
 }
 .gate-bar {
-  height: 1px;
+  height: 6px;
   width: 100%;
-  max-width: 320px;
+  max-width: 300px;
   margin: 0 auto;
-  background: rgba(244, 235, 224, 0.16);
-  border: 0;
-  border-radius: 0;
+  background: rgba(20, 38, 28, 0.55);
+  border: 2.5px solid #14261c;
+  border-radius: 999px;
   position: relative;
   overflow: hidden;
+  box-shadow: 2px 3px 0 rgba(14, 22, 18, 0.35);
 }
 .gate-bar > i {
   position: absolute;
   inset: 0;
   transform-origin: left center;
   transform: scaleX(0);
-  background: linear-gradient(90deg, #8a7040, #c9a85c, #8fc4b8);
-  box-shadow: 0 0 14px rgba(74, 124, 118, 0.45);
+  background: linear-gradient(90deg, #f0b429, #ffe566, #7ec8b8);
+  border-radius: inherit;
 }
 .gate-status {
   display: flex;
   justify-content: space-between;
-  max-width: 320px;
-  margin: 14px auto 0;
-  font-family: var(--font-body), system-ui, sans-serif;
-  font-weight: 600;
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(244, 235, 224, 0.45);
-}
-.gate-enter {
-  margin-top: 44px;
-  appearance: none;
-  border: 1px solid rgba(143, 196, 184, 0.55);
-  background: transparent;
-  color: #f8f0e4;
+  max-width: 300px;
+  margin: 12px auto 0;
   font-family: var(--font-body), system-ui, sans-serif;
   font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.28em;
+  font-size: 10px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  padding: 18px 36px;
-  border-radius: 0;
+  color: rgba(255, 246, 220, 0.55);
+}
+.gate-enter {
+  margin-top: 40px;
+  appearance: none;
+  border: 3px solid #14261c;
+  background: #ffe566;
+  color: #14261c;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  padding: 16px 34px;
+  border-radius: 999px;
   cursor: pointer;
   opacity: 0;
   transform: translateY(12px);
-  box-shadow: 0 0 0 0 rgba(74, 124, 118, 0);
+  box-shadow: 4px 5px 0 #14261c;
   transition:
-    transform 0.25s var(--motion-ease),
-    background 0.25s ease,
-    color 0.25s ease,
-    border-color 0.25s ease,
-    box-shadow 0.3s ease;
+    transform 0.22s var(--motion-ease),
+    background 0.22s ease,
+    color 0.22s ease,
+    box-shadow 0.22s ease;
 }
 .gate-enter:enabled:hover {
-  background: #c9a85c;
-  border-color: #c9a85c;
-  color: #121816;
-  transform: translateY(-1px);
-  box-shadow: 0 0 32px rgba(74, 124, 118, 0.42);
+  background: #fff8e8;
+  transform: translateY(-2px);
+  box-shadow: 5px 7px 0 #14261c;
 }
 .gate-enter:enabled:active {
-  transform: translateY(1px);
-  box-shadow: 0 0 18px rgba(74, 124, 118, 0.32);
+  transform: translateY(2px);
+  box-shadow: 2px 2px 0 #14261c;
 }
 .gate-enter:disabled {
   cursor: default;
-  border-color: rgba(255, 247, 224, 0.18);
-  color: rgba(255, 247, 224, 0.4);
+  background: rgba(255, 248, 232, 0.22);
+  color: rgba(255, 248, 232, 0.45);
+  border-color: rgba(20, 38, 28, 0.45);
+  box-shadow: 3px 4px 0 rgba(14, 22, 18, 0.25);
 }
 
 @keyframes gate-drift {
@@ -830,12 +896,20 @@ html.has-custom-cursor * {
   to { transform: translate3d(3%, -2.5%, 0) scale(1.05); }
 }
 @keyframes gate-lqip-drift {
-  from { transform: scale(1.05) translate3d(0, 0, 0); }
-  to { transform: scale(1.08) translate3d(-1.2%, 0.6%, 0); }
+  from { transform: scale(1.04) translate3d(0, 0, 0); }
+  to { transform: scale(1.07) translate3d(-1.2%, 0.6%, 0); }
 }
 @keyframes gate-pulse {
-  0%, 100% { opacity: 0.28; transform: scale(1); }
-  50% { opacity: 0.58; transform: scale(1.1); }
+  0%, 100% { opacity: 0.32; transform: scale(1); }
+  50% { opacity: 0.62; transform: scale(1.1); }
+}
+@keyframes gate-sun {
+  0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.06); }
+}
+@keyframes gate-vinyl-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 @keyframes gate-inner-in {
   from {
@@ -850,27 +924,25 @@ html.has-custom-cursor * {
 @keyframes gate-glow-brand {
   0%, 100% {
     text-shadow:
-      0 0 18px rgba(201, 168, 90, 0.38),
-      0 0 42px rgba(74, 124, 118, 0.2),
-      0 2px 0 rgba(18, 22, 20, 0.6);
+      4px 5px 0 #14261c,
+      0 0 22px rgba(255, 214, 110, 0.28);
   }
   50% {
     text-shadow:
-      0 0 26px rgba(201, 168, 90, 0.55),
-      0 0 58px rgba(143, 196, 184, 0.32),
-      0 2px 0 rgba(18, 22, 20, 0.65);
+      4px 5px 0 #14261c,
+      0 0 34px rgba(255, 214, 110, 0.48);
   }
 }
 @keyframes gate-glow-shop {
   0%, 100% {
     text-shadow:
-      0 0 12px rgba(255, 229, 102, 0.45),
-      0 0 28px rgba(233, 178, 29, 0.22);
+      2px 3px 0 #14261c,
+      0 0 14px rgba(255, 229, 102, 0.4);
   }
   50% {
     text-shadow:
-      0 0 18px rgba(255, 229, 102, 0.7),
-      0 0 40px rgba(233, 178, 29, 0.35);
+      2px 3px 0 #14261c,
+      0 0 24px rgba(255, 229, 102, 0.65);
   }
 }
 
@@ -2483,6 +2555,8 @@ html.has-custom-cursor * {
   .gate-grain,
   .gate-mist,
   .gate-orb,
+  .gate-sun,
+  .gate-vinyl,
   .gate-mark-brand,
   .gate-mark-shop,
   .gate-inner,
@@ -2618,6 +2692,14 @@ html.has-custom-cursor * {
   text-shadow:
     0 0 12px rgba(201, 168, 90, 0.35),
     0 2px 0 rgba(255, 247, 224, 0.9);
+}
+.shop-bridge-mark-line {
+  display: block;
+  margin-top: 0.16em;
+  font-size: 0.3em;
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;
+  color: #8a6a18;
 }
 .shop-bridge-lede {
   font-family: var(--font-body), system-ui, sans-serif;
