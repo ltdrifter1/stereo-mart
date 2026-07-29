@@ -125,14 +125,14 @@ export const SECTIONS: Section[] = [
     kicker: 'Videos',
     intro: '',
     accent: '#7ad7ff',
-    // v9 pano: CRT on the low cabinet — u/v aims the set; w/h are the set
-    // footprint. CrtScreen insets the video to painted glass (~0.44×0.375 of
-    // w/h, XY-biased) — see SCREEN_* in CrtScreen.tsx / build-v9-pano.py.
-    u: 0.8691,
-    v: 0.4736,
+    // v13 pano: CRT on the low cabinet by the storefront — u/v aims the set;
+    // w/h are the set footprint. CrtScreen insets the video to painted glass
+    // (~0.44×0.375 of w/h, XY-biased) — see SCREEN_* in CrtScreen.tsx.
+    u: 0.902,
+    v: 0.493,
     // Frame the set in the room — not watch-mode punch-in (was fov 22 / too close).
-    lookU: 0.8691,
-    lookV: 0.4736,
+    lookU: 0.902,
+    lookV: 0.493,
     w: 21.7,
     h: 16.5,
     // Glow / edge mask covers the whole painted set, not just the tube.
@@ -188,12 +188,12 @@ export const SECTIONS: Section[] = [
     kicker: 'New Releases',
     intro: '',
     accent: '#9dff8a',
-    // v11: cream register body ONLY (file ≈ x 1000–1060, y 420–490).
+    // v13: cream register body ONLY (file ≈ x 1138–1249, y 422–500).
     // Tight footprint so glow/hit do not include shelves behind the counter.
-    u: 0.329,
-    v: 0.455,
-    lookU: 0.329,
-    lookV: 0.455,
+    u: 0.223,
+    v: 0.45,
+    lookU: 0.223,
+    lookV: 0.45,
     w: 9,
     h: 7.5,
     lookFov: 48,
@@ -212,11 +212,12 @@ export const SECTIONS: Section[] = [
     kicker: 'Contact',
     intro: '',
     accent: '#e8c07a',
-    // v11: black rotary on the counter (file ≈ x 1160–1210).
-    u: 0.229,
-    v: 0.499,
-    lookU: 0.229,
-    lookV: 0.495,
+    // v13: black rotary on the counter to the right of the register
+    // (file ≈ x 1258–1360, y 442–519).
+    u: 0.148,
+    v: 0.469,
+    lookU: 0.148,
+    lookV: 0.469,
     w: 11,
     h: 6.5,
     lookFov: 50,

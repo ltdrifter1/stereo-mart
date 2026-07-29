@@ -43,15 +43,15 @@ SEAM_BAND = 128  # px cross-faded across the wrap seam
 PLANES = {
     # Far back wall LISTEN tower (file ≈ x 713–823)
     "listening-booth": (0.500, 0.420, 18.0, 22.0),
-    "crt-tv": (0.8691, 0.4736, 24.5, 14.0),
+    "crt-tv": (0.902, 0.493, 24.5, 14.0),
     # Island bins on the moss rug (below the tower)
     "record-bins": (0.489, 0.555, 34.0, 22.0),
     # Cream cash register body ONLY — not shelves behind
-    "cash-register": (0.329, 0.455, 9.0, 7.5),
-    "phone-booth": (0.229, 0.499, 11.0, 6.5),
+    "cash-register": (0.223, 0.45, 9.0, 7.5),
+    "phone-booth": (0.148, 0.469, 11.0, 6.5),
 }
 # CRT hit plane (sections.ts w/h) — tube-set footprint for the overlay stack.
-CRT_PLANE = (0.8691, 0.4736, 21.7, 16.5)
+CRT_PLANE = (0.902, 0.493, 21.7, 16.5)
 # Painted glass inside that footprint — MUST mirror CrtScreen.tsx.
 CRT_SCREEN_W_FAC = 0.44
 CRT_SCREEN_H_FAC = 0.375
