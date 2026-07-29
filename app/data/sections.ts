@@ -101,7 +101,7 @@ export const SECTIONS: Section[] = [
     title: '',
     kicker: 'Music',
     intro: '',
-    accent: '#ffb347',
+    accent: '#c4953a',
     // v13: headphones + turntable shelf on the far back wall
     // (file ≈ x 720–900, y 300–430). Aim above the island so Music
     // frames the LISTEN station, not the bin tops.
@@ -128,7 +128,7 @@ export const SECTIONS: Section[] = [
     title: '',
     kicker: 'Videos',
     intro: '',
-    accent: '#7ad7ff',
+    accent: '#7a9bb0',
     // v13 Y2K redraw: silver CRT on the low cabinet by the night storefront
     // (file ≈ x 50–230, y 430–640). Aim on the chassis; glass is inset.
     u: 0.909,
@@ -155,7 +155,7 @@ export const SECTIONS: Section[] = [
     title: '',
     kicker: 'Artists',
     intro: '',
-    accent: '#ff7a9c',
+    accent: '#a65d6a',
     // v13: island on the moss rug (file ≈ x 560–1000, y 500–760).
     // Hit sits on the wood tub; lookto is a mid-room overview so the
     // camera never face-plants into the bin rows.
@@ -182,7 +182,7 @@ export const SECTIONS: Section[] = [
     title: '',
     kicker: 'New Releases',
     intro: '',
-    accent: '#9dff8a',
+    accent: '#8fa37a',
     // v13: cream register body ONLY (file ≈ x 1138–1249, y 422–505).
     u: 0.223,
     v: 0.45,
@@ -205,7 +205,7 @@ export const SECTIONS: Section[] = [
     title: '',
     kicker: 'Contact',
     intro: '',
-    accent: '#e8c07a',
+    accent: '#c4a574',
     // v13: black rotary to the right of the register
     // (file ≈ x 1258–1360, y 442–525).
     u: 0.148,

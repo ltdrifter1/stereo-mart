@@ -1,21 +1,21 @@
 :root {
   /*
-   * PNW modern + 90s cel cartoon:
-   * hemlock/mist field on the gate, illustrated room inside, airy HUD chrome.
+   * Late-90s analog shop: warm fluorescent cream field on the gate,
+   * muted teal/burgundy room inside, quiet HUD chrome.
    */
   --bg: #0a0a0a;
   --ink: #14261c;
   --ink-dim: rgba(255, 255, 255, 0.72);
-  --amber: #e9b21d;
+  --amber: #c4953a;
   --amber-deep: #c99210;
   --gold: #e9b21d;
   --pnw-deep: #0b1f18;
   --pnw-mid: #16382c;
   --pnw-mist: #8fb5a8;
   --pnw-fog: #c5d9d0;
-  --cel-mint: #7dffb3;
-  --cel-butter: #ffe566;
-  --cel-cream: #fff8e8;
+  --cel-mint: #9bb8a8;
+  --cel-butter: #e6c96a;
+  --cel-cream: #f3ead6;
   --paper: #fff7d6;
   --line: #14261c;
   --gap: clamp(16px, 4vw, 48px);

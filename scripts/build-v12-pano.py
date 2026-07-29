@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-V12/V13 panorama production bake — STEREO-MART underground Y2K cartoon redraw
+V15 panorama production bake — STEREO-MART late-90s analog shop redraw
 (same hotspot anchors as v11/v12).
 
-Input : art/stereo-mart-pano-v12-src.png  (prefer 2048x1024 / 2:1 equirect cel
-        painting: after-midnight independent label HQ — acid green / electric
-        blue / hot pink / chrome / deep purple; seam-safe heroes; same landmarks)
+Input : art/stereo-mart-pano-v12-src.png  (prefer 4096x2048 / 2:1 equirect:
+        warm VHS/cassette shop after closing — muted teal, cream, burgundy,
+        olive, tobacco, warm fluorescent; seam-safe heroes; same landmarks)
 Output: public/textures/store_pano_v12.webp        4096x2048 lights-on
         public/textures/store_pano_off_v12.webp    4096x2048 lights-off grade
         public/textures/store_pano_lqip_v12.webp   512x256 preview
@@ -65,7 +65,7 @@ CRT_FRAME_W_FAC = 0.95
 CRT_FRAME_H_FAC = 0.92
 # File-space chassis crop on the equirect source (bezel + stickers + tapes).
 # Coordinates are normalised against the master width/height inside crt_overlays.
-CRT_FILE_BOX_NORM = (0.03, 0.39, 0.16, 0.66)  # 2:1 master fractions
+CRT_FILE_BOX_NORM = (0.03, 0.39, 0.17, 0.65)  # analog CRT chassis on 2:1 master
 
 # Ambient toy sprites — alpha-cut object billboards that wiggle on click.
 # MUST mirror the `toy` planes in app/components/AmbientHits.tsx.
@@ -117,14 +117,14 @@ BG_POINTS_NORM = (
     (0.91, 0.24),
 )
 
-# Lamp / neon pools for the lights-off grade (file-space u/v of the Y2K redraw).
+# Lamp / fluorescent pools for lights-off grade (file-space u/v, warm yellow).
 LAMP_POOLS = (
-    (0.22, 0.16, 0.14, 0.55),  # electric-blue ceiling tube
-    (0.62, 0.16, 0.14, 0.55),  # hot-pink ceiling tube
-    (0.50, 0.28, 0.12, 0.4),  # listen-wall cluster
-    (0.08, 0.52, 0.14, 0.55),  # CRT glow spill
-    (0.78, 0.42, 0.1, 0.4),  # lava / counter neon
-    (0.30, 0.45, 0.16, 0.35),  # storefront neon bleed
+    (0.28, 0.14, 0.16, 0.5),  # warm fluorescent left
+    (0.55, 0.14, 0.16, 0.5),  # warm fluorescent center
+    (0.78, 0.15, 0.14, 0.45),  # warm fluorescent right
+    (0.50, 0.30, 0.12, 0.35),  # listen wall
+    (0.09, 0.52, 0.12, 0.4),  # CRT idle glow
+    (0.30, 0.45, 0.14, 0.3),  # storefront spill
 )
 
 
@@ -168,7 +168,7 @@ def lights_off(pano: Image.Image) -> Image.Image:
             (yy - cy) / (radius * pano.width)
         ) ** 2
         glow = np.exp(-d2)[..., None] * gain
-        warm += glow * np.array([0.85, 0.55, 1.0])[None, None, :]
+        warm += glow * np.array([1.0, 0.82, 0.48])[None, None, :]
 
     out = np.clip(dark + warm * a * 0.9, 0, 1)
     return Image.fromarray((out * 255).astype(np.uint8))
