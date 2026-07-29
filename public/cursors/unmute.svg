@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
+  <!-- Classic speaker cone -->
+  <path
+    d="M5.5 10.5h3.2L14.8 6.2a1.1 1.1 0 0 1 1.75.9v13.8a1.1 1.1 0 0 1-1.75.9L8.7 17.5H5.5A1.5 1.5 0 0 1 4 16v-4a1.5 1.5 0 0 1 1.5-1.5Z"
+    fill="#fff"
+  />
+  <!-- Sound waves -->
+  <path d="M18.2 11.2a3.6 3.6 0 0 1 0 5.6" stroke="#7dffb3" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M20.8 8.6a7 7 0 0 1 0 10.8" stroke="#7dffb3" stroke-width="2.2" stroke-linecap="round"/>
+</svg>

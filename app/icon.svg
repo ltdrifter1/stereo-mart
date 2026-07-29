@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- 90s cartoon vinyl sticker: bold ink, cel shading, punchy accents -->
+  <rect width="64" height="64" rx="13" fill="#2a1548"/>
+  <circle cx="34" cy="32" r="19" fill="#ff4d9d" opacity="0.85"/>
+  <circle cx="31" cy="29" r="19" fill="#17130f" stroke="#fff8e8" stroke-width="3"/>
+  <path d="M18.5 21.5 A15.5 15.5 0 0 1 26 15.6" stroke="#fff8e8" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.85"/>
+  <path d="M43.5 37.5 A15.5 15.5 0 0 1 37 43.2" stroke="#fff8e8" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.5"/>
+  <circle cx="31" cy="29" r="7.5" fill="#ffb347" stroke="#17130f" stroke-width="2"/>
+  <circle cx="31" cy="29" r="1.8" fill="#17130f"/>
+</svg>
