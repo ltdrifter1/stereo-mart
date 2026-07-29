@@ -28,8 +28,10 @@ npm run dev
 
 ## Panorama bake
 
-Equirectangular master is **2:1** (`art/stereo-mart-pano-v12-src.png`, typically 2048×1024).
-Hero props sit in the mid band away from the left/right wrap seam; zenith/nadir stay ceiling/floor.
+Equirectangular master is **2:1** late-90s analog shop art
+(`art/stereo-mart-pano-v12-src.png` / `art/stereo-mart-equirect-analog-v15-2x1.png`, 4096×2048 web).
+Recommended print/master size is **8192×4096** (generate locally from the 4k plate).
+Hero props sit in the mid band away from the wrap seam; zenith/nadir stay ceiling/floor.
 Separate transparent prop sprites live in **`art/props/`** and **`public/hotspots/props/`**.
 
 ```bash
