@@ -26,14 +26,14 @@ export const CRT_DEFAULT_SRC = '/videos/channel_b.mp4';
  * (CRT sits off-center on the cabinet). Keep in lockstep with
  * `crt_overlays()` in scripts/build-v9-pano.py.
  */
-/** Glass size as a fraction of sections.ts crt-tv w/h. */
-const SCREEN_W_FAC = 0.44;
-const SCREEN_H_FAC = 0.375;
+/** Glass size as a fraction of sections.ts crt-tv w/h (Y2K silver CRT). */
+const SCREEN_W_FAC = 0.7;
+const SCREEN_H_FAC = 0.68;
 /** Local plane offset from hotspot center → painted glass center. */
-const SCREEN_OX = -1.27;
-const SCREEN_OY = 0.71;
-const FRAME_W_FAC = 0.88;
-const FRAME_H_FAC = 0.78;
+const SCREEN_OX = 0.35;
+const SCREEN_OY = -0.55;
+const FRAME_W_FAC = 0.95;
+const FRAME_H_FAC = 0.92;
 export default function CrtScreen({
   activeId,
   armed = false,

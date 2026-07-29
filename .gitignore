@@ -31,3 +31,6 @@ yarn-error.log*
 .vscode/
 .idea/
 /.shots/
+
+__pycache__/
+*.pyc

@@ -129,16 +129,16 @@ export const SECTIONS: Section[] = [
     kicker: 'Videos',
     intro: '',
     accent: '#7ad7ff',
-    // v13: CRT on the low cabinet by the storefront (file ≈ x 40–210).
-    // Frame the whole set with a little room context — not tube punch-in.
-    u: 0.918,
-    v: 0.5,
-    lookU: 0.918,
-    lookV: 0.495,
+    // v13 Y2K redraw: silver CRT on the low cabinet by the night storefront
+    // (file ≈ x 50–230, y 430–640). Aim on the chassis; glass is inset.
+    u: 0.909,
+    v: 0.523,
+    lookU: 0.909,
+    lookV: 0.52,
     w: 20,
-    h: 16,
-    glowW: 22,
-    glowH: 15,
+    h: 18,
+    glowW: 24,
+    glowH: 20,
     lookFov: 56,
     walkDolly: 8,
     sfx: 'video',

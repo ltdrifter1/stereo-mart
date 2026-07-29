@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """
-V12 panorama production bake — STEREO MART Y2K cartoon redraw (same hotspot anchors as v11).
+V12/V13 panorama production bake — STEREO-MART underground Y2K cartoon redraw
+(same hotspot anchors as v11/v12).
 
-Input : art/stereo-mart-pano-v12-src.png  (1536x1024 cel painting: hand-drawn
-        STEREO MART interior, street visible through storefront, same landmark layout)
+Input : art/stereo-mart-pano-v12-src.png  (prefer 2048x1024 / 2:1 equirect cel
+        painting: after-midnight independent label HQ — acid green / electric
+        blue / hot pink / chrome / deep purple; seam-safe heroes; same landmarks)
 Output: public/textures/store_pano_v12.webp        4096x2048 lights-on
         public/textures/store_pano_off_v12.webp    4096x2048 lights-off grade
         public/textures/store_pano_lqip_v12.webp   512x256 preview
@@ -37,28 +39,33 @@ HOTSPOT_DIR = ROOT / "public" / "hotspots"
 
 W, H = 4096, 2048
 SEAM_BAND = 128  # px cross-faded across the wrap seam
+# Accepted illustration masters (prefer true 2:1 equirect).
+SRC_SIZES = {(2048, 1024), (1536, 1024), (4096, 2048)}
 
 # Hotspot glow planes — MUST mirror app/data/sections.ts
 # (u, v, glowW ?? w, glowH ?? h). Edge masks are drawn in projected space.
 PLANES = {
     # Far back wall LISTEN — headphones + turntable (file ≈ x 720–900)
     "listening-booth": (0.470, 0.355, 16.0, 18.0),
-    "crt-tv": (0.918, 0.500, 22.0, 15.0),
+    "crt-tv": (0.909, 0.523, 24.0, 20.0),
     # Island bins on the moss rug — overview glow, not face-plant
     "record-bins": (0.492, 0.600, 30.0, 20.0),
     # Cream cash register body ONLY — not shelves behind
     "cash-register": (0.223, 0.450, 9.0, 7.5),
     "phone-booth": (0.148, 0.470, 10.0, 7.0),
 }
-# CRT hit plane (sections.ts w/h) — tube-set footprint for the overlay stack.
-CRT_PLANE = (0.918, 0.500, 20.0, 16.0)
+# CRT hit plane (sections.ts w/h) — chassis footprint for the overlay stack.
+CRT_PLANE = (0.909, 0.523, 20.0, 18.0)
 # Painted glass inside that footprint — MUST mirror CrtScreen.tsx.
-CRT_SCREEN_W_FAC = 0.44
-CRT_SCREEN_H_FAC = 0.375
-CRT_SCREEN_OX = -1.27
-CRT_SCREEN_OY = 0.71
-CRT_FRAME_W_FAC = 0.88
-CRT_FRAME_H_FAC = 0.78
+CRT_SCREEN_W_FAC = 0.7
+CRT_SCREEN_H_FAC = 0.68
+CRT_SCREEN_OX = 0.35
+CRT_SCREEN_OY = -0.55
+CRT_FRAME_W_FAC = 0.95
+CRT_FRAME_H_FAC = 0.92
+# File-space chassis crop on the equirect source (bezel + stickers + tapes).
+# Coordinates are normalised against the master width/height inside crt_overlays.
+CRT_FILE_BOX_NORM = (0.03, 0.39, 0.16, 0.66)  # 2:1 master fractions
 
 # Ambient toy sprites — alpha-cut object billboards that wiggle on click.
 # MUST mirror the `toy` planes in app/components/AmbientHits.tsx.
@@ -87,43 +94,47 @@ CRT_PLANE_RADIUS = 47.2  # SPHERE_RADIUS - 0.8 (CrtScreen.tsx)
 # Register refine is OFF in v9: its cream body matches the cream wall again.
 SEG = {
     "listening-booth": (90, 4, False),
-    "crt-tv": (90, 4, False),
+    # Dark purple room + silver CRT: lower ink thr so bezel outlines register
+    # without swallowing the glowing tube (thr≥65 collapses the silhouette).
+    "crt-tv": (55, 4, False),
     "record-bins": (120, 8, True),
     "cash-register": (120, 6, False),
     "phone-booth": (70, 3, False),
 }
 
-# Background samples for color refine (cream walls, teal wainscot, floor, rug, wood).
-BG_POINTS = (
-    (1250, 360),
-    (60, 350),
-    (940, 470),
-    (1100, 560),
-    (400, 800),
-    (650, 640),
-    (200, 570),
-    (768, 280),
-    (500, 900),
+# Background samples for color refine — normalised later against source size.
+BG_POINTS_NORM = (
+    (0.81, 0.35),
+    (0.04, 0.34),
+    (0.61, 0.46),
+    (0.72, 0.55),
+    (0.26, 0.78),
+    (0.42, 0.62),
+    (0.13, 0.56),
+    (0.50, 0.27),
+    (0.33, 0.88),
+    (0.20, 0.20),
+    (0.91, 0.24),
 )
 
-# Lamp pools for the lights-off grade (file-space u/v of the V9 source).
+# Lamp / neon pools for the lights-off grade (file-space u/v of the Y2K redraw).
 LAMP_POOLS = (
-    (0.366, 0.213, 0.13, 0.5),
-    (0.594, 0.213, 0.13, 0.5),
-    (0.459, 0.285, 0.11, 0.45),
-    (0.527, 0.285, 0.11, 0.45),
-    (0.496, 0.174, 0.15, 0.35),  # fan cluster
-    (0.9115, 0.41, 0.16, 0.4),  # door window daylight spill
+    (0.22, 0.16, 0.14, 0.55),  # electric-blue ceiling tube
+    (0.62, 0.16, 0.14, 0.55),  # hot-pink ceiling tube
+    (0.50, 0.28, 0.12, 0.4),  # listen-wall cluster
+    (0.08, 0.52, 0.14, 0.55),  # CRT glow spill
+    (0.78, 0.42, 0.1, 0.4),  # lava / counter neon
+    (0.30, 0.45, 0.16, 0.35),  # storefront neon bleed
 )
 
 
 def bake_pano() -> Image.Image:
     src = Image.open(SRC).convert("RGB")
-    if src.size != (1536, 1024):
-        raise SystemExit(f"unexpected source size {src.size}")
+    if src.size not in SRC_SIZES:
+        raise SystemExit(f"unexpected source size {src.size}; expected one of {sorted(SRC_SIZES)}")
 
     pano = src.resize((W, H), Image.Resampling.LANCZOS)
-    # Two-pass unsharp keeps the clean ink lines crisp after the 2.67x upscale.
+    # Two-pass unsharp keeps the clean ink lines crisp after upscale.
     pano = pano.filter(ImageFilter.UnsharpMask(radius=1.8, percent=85, threshold=2))
     pano = pano.filter(ImageFilter.UnsharpMask(radius=3.6, percent=32, threshold=3))
 
@@ -157,7 +168,7 @@ def lights_off(pano: Image.Image) -> Image.Image:
             (yy - cy) / (radius * pano.width)
         ) ** 2
         glow = np.exp(-d2)[..., None] * gain
-        warm += glow * np.array([1.0, 0.72, 0.38])[None, None, :]
+        warm += glow * np.array([0.85, 0.55, 1.0])[None, None, :]
 
     out = np.clip(dark + warm * a * 0.9, 0, 1)
     return Image.fromarray((out * 255).astype(np.uint8))
@@ -241,11 +252,12 @@ def edge_mask(pano_arr: np.ndarray, sid: str) -> Image.Image:
 
     if color_refine:
         # Drop wall/wood interiors the flood roped in through connected ink.
-        sx = pano_arr.shape[1] / 1536.0
-        sy = pano_arr.shape[0] / 1024.0
         dist = np.full(crop.shape[:2], 1e9, dtype=np.float32)
-        for px_, py_ in BG_POINTS:
-            cx_, cy_ = int(px_ * sx), int(py_ * sy)
+        ph, pw = pano_arr.shape[0], pano_arr.shape[1]
+        for nu, nv in BG_POINTS_NORM:
+            cx_, cy_ = int(nu * pw), int(nv * ph)
+            cy_ = min(max(cy_, 6), ph - 7)
+            cx_ = min(max(cx_, 6), pw - 7)
             ref = np.median(
                 pano_arr[cy_ - 6 : cy_ + 6, cx_ - 6 : cx_ + 6].reshape(-1, 3),
                 axis=0,
@@ -371,20 +383,49 @@ def toy_sprite(
 
 
 def crt_overlays(pano_arr: np.ndarray) -> None:
-    """Bezel frame (tube hole) + tube backings, in CrtScreen plane space."""
+    """Bezel frame (tube hole) + tube backings, in CrtScreen plane space.
+
+    Frame is sampled from the file-space chassis crop so the silver bezel /
+    stickers survive even when the gnomonic billboard is tube-dominant.
+    """
     u, v, w, h = CRT_PLANE
     frame_w, frame_h = w * CRT_FRAME_W_FAC, h * CRT_FRAME_H_FAC
     screen_w, screen_h = w * CRT_SCREEN_W_FAC, h * CRT_SCREEN_H_FAC
     tw = 1024
     th = max(2, round(tw * frame_h / frame_w))
 
-    rgb = project_pano_to_plane(
-        pano_arr, u, v, frame_w, frame_h, CRT_PLANE_RADIUS, tw, th
-    )
-    # Glass hole is inset + XY-biased to match CrtScreen screen mesh.
+    # Chassis from the illustration source (keeps bezel readable).
+    src = Image.open(SRC).convert("RGB")
+    sw, sh = src.size
+    nu0, nv0, nu1, nv1 = CRT_FILE_BOX_NORM
+    box = (int(nu0 * sw), int(nv0 * sh), int(nu1 * sw), int(nv1 * sh))
+    chassis = src.crop(box).resize((tw, th), Image.Resampling.LANCZOS)
+    rgb = np.asarray(chassis).astype(np.float32)
+    lum = rgb.mean(axis=2)
+
+    # Dark empty tube punched as the video hole (feathered).
+    dark = lum < 72
+    yy, xx = np.mgrid[0:th, 0:tw].astype(np.float32)
+    # Prefer the central glass pocket — ignore dark floor/wall in the crop.
+    cx0, cy0 = tw * 0.52, th * 0.58
+    rad = np.sqrt(((xx - cx0) / (tw * 0.36)) ** 2 + ((yy - cy0) / (th * 0.40)) ** 2)
+    dark &= rad < 1.0
+    dark = ndimage.binary_opening(dark, iterations=2)
+    dark = ndimage.binary_closing(dark, iterations=5)
+    dark = ndimage.binary_fill_holes(dark)
+    labels, n = ndimage.label(dark)
+    if n:
+        sizes = [(labels == i).sum() for i in range(1, n + 1)]
+        hole = labels == (int(np.argmax(sizes)) + 1)
+    else:
+        hole = np.zeros((th, tw), dtype=bool)
+    hole_f = np.clip(ndimage.gaussian_filter(hole.astype(np.float32), 1.6), 0, 1)
+
+    # Soft-round the authored screen rect as a fallback / union so CrtScreen
+    # video always has a clean aperture even if flood detection shrinks.
     hole_cx = (0.5 + CRT_SCREEN_OX / frame_w) * tw
     hole_cy = (0.5 - CRT_SCREEN_OY / frame_h) * th
-    hole = rounded_rect_alpha(
+    authored = rounded_rect_alpha(
         tw,
         th,
         screen_w / frame_w,
@@ -393,7 +434,9 @@ def crt_overlays(pano_arr: np.ndarray) -> None:
         feather=3.0,
         center=(hole_cx, hole_cy),
     )
-    frame = np.dstack([rgb, ((1 - hole) * 255).astype(np.uint8)])
+    hole_f = np.maximum(hole_f, authored)
+
+    frame = np.dstack([rgb.astype(np.uint8), ((1 - hole_f) * 255).astype(np.uint8)])
     Image.fromarray(frame).save(HOTSPOT_DIR / "crt_frame.webp", "WEBP", quality=92)
     print(f"wrote crt_frame.webp {tw}x{th} hole@({hole_cx:.0f},{hole_cy:.0f})")
 
@@ -402,7 +445,7 @@ def crt_overlays(pano_arr: np.ndarray) -> None:
     bw = 1024
     bh = max(2, round(bw * screen_h / screen_w))
     for name, base, edge_gain in (
-        ("crt_backing_off", (32, 36, 42), 0.55),
+        ("crt_backing_off", (18, 28, 36), 0.55),
         ("crt_backing_playing", (5, 5, 6), 0.9),
     ):
         glass = rounded_rect_alpha(bw, bh, 1 / 1.04, 1 / 1.04, 0.14, feather=3.0)
