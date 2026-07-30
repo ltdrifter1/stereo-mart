@@ -59,8 +59,8 @@ export const FISHEYE_INTRO = 1.0;
  * INTRO_DELAY aligned so the FOV/planet beat starts as the gate clears (~0.4s).
  */
 export const GATE_FADE_DUR = 0.4;
-export const INTRO_DELAY = 0.45;
-export const INTRO_DUR = 3.0;
+export const INTRO_DELAY = 0.5;
+export const INTRO_DUR = 3.4;
 /** Post-settle ease from cinematic FOV → portrait-aware explore. */
 export const INTRO_EXPLORE_EASE_DUR = 0.85;
 /** Short path when prefers-reduced-motion (tilt only, still readable). */
@@ -200,11 +200,14 @@ export function uvToLocal(u: number, v: number): [number, number, number] {
   return uvToSpherical(u, v, SPHERE_RADIUS - 0.35);
 }
 
-/** v17 — Stereo-Mart cartoon shop (BT palette, bold ink equirect). */
-export const TEXTURE_SRC = '/textures/store_pano_v17.webp';
+/** v18 — Stereo-Mart PNW warehouse editorial (cool charcoal equirect). */
+export const TEXTURE_SRC = '/textures/store_pano_v18.webp';
 /** Darkened twin of the store — lights_off scene. */
-export const TEXTURE_OFF_SRC = '/textures/store_pano_off_v17.webp';
-export const LQIP_SRC = '/textures/store_pano_lqip_v17.webp';
+export const TEXTURE_OFF_SRC = '/textures/store_pano_off_v18.webp';
+export const LQIP_SRC = '/textures/store_pano_lqip_v18.webp';
+/** Transparent foreground / midground parallax layers. */
+export const TEXTURE_FG_SRC = '/textures/store_pano_fg_v18.webp';
+export const TEXTURE_MG_SRC = '/textures/store_pano_mg_v18.webp';
 export const CRT_VIDEO_SRC = '/videos/channel_b.mp4';
 
 /** Max eye offset from sphere center (walk approach). */

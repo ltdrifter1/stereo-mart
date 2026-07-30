@@ -1,18 +1,24 @@
 /**
- * Audio bus — BGM loop + object SFX + balmingtiger-style volume tweens.
- * HTMLAudioElement only (no AudioContext). Unlocks on CLICK TO ENTER.
+ * Audio bus — BGM loop + optional warehouse ambience + object SFX +
+ * balmingtiger-style volume tweens. HTMLAudioElement only (no AudioContext).
+ * Unlocks on CLICK TO ENTER.
  *
  * Levels:
  *   bed     → light elevator BGM under the room
+ *   ambient → rain / hum / trains / birds / vinyl crackle (soft under bed)
  *   panel   → soft duck while a glass HUD is open
  *   preview → near-silence under booth / CRT playback
  */
 import gsap from 'gsap';
 
 let bgm: HTMLAudioElement | null = null;
+/** Optional layered warehouse atmosphere (rain, hum, trains, birds, crackle). */
+const ambientPool = new Map<string, HTMLAudioElement>();
+let ambientReady = false;
 /** Start muted until CLICK TO ENTER (browser gesture), then live like BT. */
 let muted = true;
 let volTween: gsap.core.Tween | null = null;
+let ambientTween: gsap.core.Tween | null = null;
 let lifecycleBound = false;
 /** Why the bed is currently ducked (stack: preview wins over panel). */
 let panelDuck = false;
@@ -20,12 +26,22 @@ let previewDuck = false;
 
 const volume = {
   /** Comfortable elevator bed — present, never loud. */
-  bgm: 0.34,
+  bgm: 0.3,
+  /** Soft environmental bed under the music. */
+  ambient: 0.14,
   sfx: 0.55,
   panel: 0.12,
   preview: 0.02,
-  target: 0.34,
+  target: 0.3,
 };
+
+const AMBIENT_LAYERS: { key: string; src: string; gain: number }[] = [
+  { key: 'rain', src: '/audio/ambient/rain.mp3', gain: 0.55 },
+  { key: 'hum', src: '/audio/ambient/hum.mp3', gain: 0.7 },
+  { key: 'train', src: '/audio/ambient/train.mp3', gain: 0.35 },
+  { key: 'birds', src: '/audio/ambient/birds.mp3', gain: 0.22 },
+  { key: 'crackle', src: '/audio/ambient/crackle.mp3', gain: 0.28 },
+];
 const listeners = new Set<(muted: boolean) => void>();
 /** One reusable element per SFX key — avoids stacking / leaks. */
 const sfxPool = new Map<string, HTMLAudioElement>();
@@ -77,6 +93,87 @@ function ensureBgm() {
   bgm.volume = muted ? 0 : volume.bgm;
   bindAudioLifecycle();
   return bgm;
+}
+
+function ensureAmbient() {
+  if (ambientReady || typeof window === 'undefined') return;
+  for (const layer of AMBIENT_LAYERS) {
+    if (ambientPool.has(layer.key)) continue;
+    const a = new Audio(layer.src);
+    a.loop = true;
+    a.preload = 'auto';
+    a.volume = 0;
+    ambientPool.set(layer.key, a);
+  }
+  ambientReady = true;
+}
+
+function ambientMasterLevel() {
+  if (previewDuck) return volume.ambient * 0.15;
+  if (panelDuck) return volume.ambient * 0.45;
+  return volume.ambient;
+}
+
+function setAmbientVolumes(master: number) {
+  for (const layer of AMBIENT_LAYERS) {
+    const a = ambientPool.get(layer.key);
+    if (!a) continue;
+    a.volume = muted ? 0 : master * layer.gain;
+  }
+}
+
+function tweenAmbient(toMaster: number, duration = 1.2) {
+  ensureAmbient();
+  ambientTween?.kill();
+  if (duration <= 0 || muted) {
+    setAmbientVolumes(muted ? 0 : toMaster);
+    return;
+  }
+  const proxy = { v: ambientMasterLevel() };
+  // Read current approx from rain layer if present
+  const rain = ambientPool.get('rain');
+  if (rain) proxy.v = rain.volume / Math.max(0.001, AMBIENT_LAYERS[0].gain);
+  ambientTween = gsap.to(proxy, {
+    v: toMaster,
+    duration,
+    ease: 'power1.inOut',
+    onUpdate: () => setAmbientVolumes(proxy.v),
+  });
+}
+
+async function startAmbient() {
+  ensureAmbient();
+  setAmbientVolumes(0);
+  const plays = [...ambientPool.values()].map((a) =>
+    a.play().catch(() => {
+      /* optional layer — ignore autoplay failure */
+    }),
+  );
+  await Promise.all(plays);
+  tweenAmbient(volume.ambient, 2.2);
+}
+
+function stopAmbient(duration = 0.45) {
+  ambientTween?.kill();
+  if (duration <= 0) {
+    for (const a of ambientPool.values()) {
+      a.volume = 0;
+      a.pause();
+    }
+    return;
+  }
+  const proxy = { v: ambientMasterLevel() };
+  const rain = ambientPool.get('rain');
+  if (rain) proxy.v = rain.volume / Math.max(0.001, AMBIENT_LAYERS[0].gain);
+  ambientTween = gsap.to(proxy, {
+    v: 0,
+    duration,
+    ease: 'power1.in',
+    onUpdate: () => setAmbientVolumes(proxy.v),
+    onComplete: () => {
+      for (const a of ambientPool.values()) a.pause();
+    },
+  });
 }
 
 function notify() {
@@ -163,6 +260,7 @@ function tweenBgmVolume(to: number, duration = 0.55, ease = 'power1.inOut') {
 function applyDuckState(duration = 0.55) {
   if (muted) return;
   tweenBgmVolume(desiredBedLevel(), duration);
+  tweenAmbient(ambientMasterLevel(), duration * 1.1);
 }
 
 /** Pause when the tab hides; resume BGM when visible again if unmuted. */
@@ -176,6 +274,7 @@ function bindAudioLifecycle() {
     if (document.hidden) {
       a.pause();
       preview?.pause();
+      for (const layer of ambientPool.values()) layer.pause();
       return;
     }
     if (!muted) {
@@ -183,6 +282,9 @@ function bindAudioLifecycle() {
       void a.play().catch(() => {
         /* user can retry via mute control */
       });
+      for (const layer of ambientPool.values()) {
+        void layer.play().catch(() => {});
+      }
       if (previewSrc && preview) {
         void preview.play()
           .then(() => {
@@ -373,6 +475,7 @@ export async function playPreview(src: string) {
  */
 export async function enterWithAudio() {
   ensureBgm();
+  ensureAmbient();
   muted = false;
   notify();
   const a = bgm;
@@ -385,6 +488,7 @@ export async function enterWithAudio() {
   try {
     await a.play();
     tweenBgmVolume(volume.bgm, 1.45, 'power2.out');
+    void startAmbient();
     return true;
   } catch {
     muted = true;
@@ -427,6 +531,7 @@ export async function setMuted(next: boolean) {
     // UI flips immediately; keep writing volume until the fade completes.
     muted = true;
     notify();
+    stopAmbient(0.5);
     volTween = gsap.to(proxy, {
       v: 0,
       duration: 0.5,
@@ -451,6 +556,7 @@ export async function setMuted(next: boolean) {
   try {
     await a.play();
     tweenBgmVolume(desiredBedLevel(), 0.65, 'power2.out');
+    void startAmbient();
   } catch {
     muted = true;
     a.volume = 0;

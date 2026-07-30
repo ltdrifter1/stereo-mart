@@ -1,27 +1,27 @@
 import type { Metadata, Viewport } from 'next';
-import { Archivo_Black, Outfit } from 'next/font/google';
+import { Syne, Sora } from 'next/font/google';
 import { BRAND_FULL, BRAND_NAME, SITE_URL } from '@/lib/brand';
 import './globals.css';
 
-/** Bold display — brand mark only (gate / panel titles). */
-const display = Archivo_Black({
-  weight: '400',
+/** Expressive editorial display — brand mark (gate / panel titles). */
+const display = Syne({
   subsets: ['latin'],
+  weight: ['700', '800'],
   variable: '--font-display',
   display: 'swap',
 });
 
 /** Clean geometric sans — balmingtiger-style floating chrome. */
-const body = Outfit({
+const body = Sora({
   subsets: ['latin'],
-  weight: ['500', '600', '700', '800'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-body',
   display: 'swap',
 });
 
 const siteTitle = BRAND_FULL;
 const siteDescription =
-  'Step inside Stereo-Mart Records. A full 360° illustrated record shop. Look around, explore, and discover.';
+  'Step inside Stereo-Mart Records — an immersive 360° underground warehouse record shop. Look around, explore, and discover.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#1e3a34',
+  themeColor: '#1a1c1e',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,

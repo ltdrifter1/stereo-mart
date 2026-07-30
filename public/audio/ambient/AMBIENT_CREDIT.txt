@@ -1,0 +1,8 @@
+Ambient bed layers (procedural / synthetic, free to use):
+  rain.mp3   — filtered pink noise
+  hum.mp3    — low brown-noise warehouse tone
+  train.mp3  — distant rumble (tremolo brown noise)
+  birds.mp3  — sparse high sine chirps
+  crackle.mp3 — vinyl surface noise (highpassed white)
+
+Mixed under BGM at low gain; ducks with panel / preview like the bed.

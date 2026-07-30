@@ -36,6 +36,7 @@ import LampHotspot from './LampHotspot';
 import FisheyePass from './FisheyePass';
 import CrtScreen, { CRT_DEFAULT_SRC } from './CrtScreen';
 import AmbientHits from './AmbientHits';
+import ParallaxLayers from './ParallaxLayers';
 
 const TWO_PI = Math.PI * 2;
 const DEG = Math.PI / 180;
@@ -481,9 +482,10 @@ export default function Scene({
         )}
       </group>
 
-      {/* Soft tungsten shafts when lights are on — atmospheric, not a redesign */}
+      {/* Soft warehouse lamp shafts when lights are on */}
       {lightsOn && <LightBeams />}
-      <DustField count={reduceMotion ? 0 : 48} />
+      <DustField count={reduceMotion ? 0 : 64} />
+      {!reduceMotion && <ParallaxLayers />}
 
       <FisheyePass amountRef={fisheyeRef} reduceMotion={reduceMotion} />
     </SceneContext.Provider>

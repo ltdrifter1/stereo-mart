@@ -88,7 +88,7 @@ export type Section = {
 
 /**
  * Discoverable hotspots around the 360° store.
- * Tuned against the v17 cartoon BT-palette shop pano — looktos frame objects
+ * Tuned against the v18 warehouse editorial pano — looktos frame objects
  * with room context; Artists stays an overview (no bin face-plant).
  * Append ?debug=1 to tint hit areas while tuning (u,v).
  */
@@ -101,8 +101,8 @@ export const SECTIONS: Section[] = [
     title: '',
     kicker: 'Music',
     intro: '',
-    accent: '#c4953a',
-    // v17 cartoon: headphones + turntable on back wall LISTEN nook
+    accent: '#8a9baa',
+    // v18 warehouse: headphones + turntable on back wall LISTEN nook
     u: 0.5,
     v: 0.4,
     lookU: 0.5,
@@ -126,8 +126,8 @@ export const SECTIONS: Section[] = [
     title: '',
     kicker: 'Videos',
     intro: '',
-    accent: '#7a9bb0',
-    // v17 cartoon: cream CRT on cabinet left of night storefront
+    accent: '#6b8a9e',
+    // v18 warehouse: CRT on cabinet by night dock windows
     u: 0.91,
     v: 0.55,
     lookU: 0.91,
@@ -152,8 +152,8 @@ export const SECTIONS: Section[] = [
     title: '',
     kicker: 'Artists',
     intro: '',
-    accent: '#a65d6a',
-    // v17 cartoon: island on terracotta rug — lookto mid-room overview
+    accent: '#8a7a82',
+    // v18 warehouse: island bins on concrete floor — lookto mid-room overview
     u: 0.5,
     v: 0.64,
     lookU: 0.5,
@@ -177,11 +177,11 @@ export const SECTIONS: Section[] = [
     title: '',
     kicker: 'New Releases',
     intro: '',
-    accent: '#8fa37a',
-    // v17 cartoon: cream register on right checkout counter
-    u: 0.31,
+    accent: '#6b8f72',
+    // v18 warehouse: register on checkout counter
+    u: 0.27,
     v: 0.5,
-    lookU: 0.31,
+    lookU: 0.27,
     lookV: 0.495,
     w: 9,
     h: 7.5,
@@ -200,11 +200,11 @@ export const SECTIONS: Section[] = [
     title: '',
     kicker: 'Contact',
     intro: '',
-    accent: '#c4a574',
-    // v17 cartoon: black rotary to the right of the register
-    u: 0.23,
+    accent: '#9aabb8',
+    // v18 warehouse: black rotary beside the register
+    u: 0.22,
     v: 0.51,
-    lookU: 0.235,
+    lookU: 0.225,
     lookV: 0.505,
     w: 10,
     h: 7,

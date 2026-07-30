@@ -17,7 +17,7 @@ export function AdditiveQuad({
   v,
   w,
   h,
-  color = '#ffb347',
+  color = '#d4c4a0',
   base = 0.4,
   flickerSpeed = 1.2,
   flickerAmount = 0.18,
@@ -78,17 +78,17 @@ export function AdditiveQuad({
   );
 }
 
-/** Tungsten shafts falling from the ceiling bulbs and lamps — soft / low opacity. */
+/** Warehouse lamp shafts — muted warm-cool mix, soft / low opacity. */
 export default function LightBeams() {
   const beam = useMemo(() => makeBeamTexture(), []);
   return (
     <group>
-      {/* v13 pendant lamps over the aisle (file ≈ y 200–280) */}
-      <AdditiveQuad u={0.5} v={0.24} w={5.5} h={14} tex={beam} base={0.06} flickerSpeed={0.7} flickerAmount={0.04} color="#ffc070" />
-      <AdditiveQuad u={0.62} v={0.26} w={6} h={15} tex={beam} base={0.055} flickerSpeed={0.5} flickerAmount={0.03} color="#ffb860" />
-      <AdditiveQuad u={0.38} v={0.26} w={5} h={12} tex={beam} base={0.06} flickerSpeed={0.9} flickerAmount={0.04} color="#ffcf8a" />
-      {/* Soft spill from the sunny storefront */}
-      <AdditiveQuad u={0.78} v={0.4} w={5.5} h={13} tex={beam} base={0.05} flickerSpeed={0.6} flickerAmount={0.03} color="#ffe0a0" />
+      {/* Pendant lamps over the aisle (file ≈ y 200–280) */}
+      <AdditiveQuad u={0.5} v={0.24} w={5.5} h={14} tex={beam} base={0.06} flickerSpeed={0.7} flickerAmount={0.04} color="#d4c4a0" />
+      <AdditiveQuad u={0.62} v={0.26} w={6} h={15} tex={beam} base={0.055} flickerSpeed={0.5} flickerAmount={0.03} color="#c8b8a4" />
+      <AdditiveQuad u={0.38} v={0.26} w={5} h={12} tex={beam} base={0.06} flickerSpeed={0.9} flickerAmount={0.04} color="#d4c4a0" />
+      {/* Soft spill from the dock windows */}
+      <AdditiveQuad u={0.78} v={0.4} w={5.5} h={13} tex={beam} base={0.05} flickerSpeed={0.6} flickerAmount={0.03} color="#a8b8c4" />
     </group>
   );
 }

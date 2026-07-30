@@ -181,8 +181,8 @@ const desktop = {
     'Shop lookto aims at the register, not the shelf wall',
   );
   assert.ok(
-    Math.abs(shopSec.u - 0.31) < 0.02 && Math.abs(shopSec.v - 0.5) < 0.02,
-    'Shop centers on the cream cash register',
+    Math.abs(shopSec.u - 0.27) < 0.02 && Math.abs(shopSec.v - 0.5) < 0.02,
+    'Shop centers on the warehouse cash register',
   );
   const musicTarget = resolveLookTarget(musicSec, desktop);
   assert.ok(

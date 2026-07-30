@@ -20,7 +20,7 @@ function SpeakerIcon({ muted }: { muted: boolean }) {
       {muted ? (
         <path
           d="M7.2 7.2L21.5 21.5"
-          stroke="#ff4d9d"
+          stroke="#9aabb8"
           strokeWidth="2.6"
           strokeLinecap="round"
         />
@@ -28,13 +28,13 @@ function SpeakerIcon({ muted }: { muted: boolean }) {
         <>
           <path
             d="M18.2 11.2a3.6 3.6 0 0 1 0 5.6"
-            stroke="#7dffb3"
+            stroke="#6b8f72"
             strokeWidth="2.2"
             strokeLinecap="round"
           />
           <path
             d="M20.8 8.6a7 7 0 0 1 0 10.8"
-            stroke="#7dffb3"
+            stroke="#6b8f72"
             strokeWidth="2.2"
             strokeLinecap="round"
           />
