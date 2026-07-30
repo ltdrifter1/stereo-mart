@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
-V16 panorama production bake — STEREO-MART shop plate + BT-bright grade.
+V17 panorama production bake — Stereo-Mart cartoon BT shop.
 
-Input : art/stereo-mart-pano-v12-src.png  (prefer 4096x2048 / 2:1 equirect:
-        warm VHS/cassette shop — muted teal, cream, burgundy, olive, tobacco;
-        seam-safe heroes; same landmarks)
-Output: public/textures/store_pano_v16.webp        4096x2048 lights-on (BT lift)
-        public/textures/store_pano_off_v16.webp    4096x2048 lights-off grade
-        public/textures/store_pano_lqip_v16.webp   512x256 preview
+Input : art/stereo-mart-pano-v12-src.png  (cartoon equirect master; 1536×1024
+        or 4096×2048 — cream damask, teal wainscot, night storefront, bold ink)
+Output: public/textures/store_pano_v17.webp        4096x2048 lights-on
+        public/textures/store_pano_off_v17.webp    4096x2048 lights-off grade
+        public/textures/store_pano_lqip_v17.webp   512x256 preview
         public/hotspots/<id>_edge.webp            silhouette rim masks
         public/hotspots/crt_frame.webp            bezel overlay (tube hole)
         public/hotspots/crt_backing_off.webp      dark tube (focused, no video)
@@ -27,10 +26,10 @@ from scipy import ndimage
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "art" / "stereo-mart-pano-v12-src.png"
-OUT_ON = ROOT / "public" / "textures" / "store_pano_v16.webp"
-OUT_OFF = ROOT / "public" / "textures" / "store_pano_off_v16.webp"
-OUT_LQIP = ROOT / "public" / "textures" / "store_pano_lqip_v16.webp"
-OUT_PNG = ROOT / "public" / "textures" / "store_pano_v16.png"
+OUT_ON = ROOT / "public" / "textures" / "store_pano_v17.webp"
+OUT_OFF = ROOT / "public" / "textures" / "store_pano_off_v17.webp"
+OUT_LQIP = ROOT / "public" / "textures" / "store_pano_lqip_v17.webp"
+OUT_PNG = ROOT / "public" / "textures" / "store_pano_v17.png"
 HOTSPOT_DIR = ROOT / "public" / "hotspots"
 PROPS_DIR = ROOT / "art" / "props"
 
@@ -54,17 +53,19 @@ SRC_SIZES = {(2048, 1024), (1536, 1024), (4096, 2048)}
 # Hotspot glow planes — MUST mirror app/data/sections.ts
 # (u, v, glowW ?? w, glowH ?? h). Edge masks are drawn in projected space.
 PLANES = {
-    # Far back wall LISTEN — headphones + turntable (file ≈ x 720–900)
-    "listening-booth": (0.470, 0.355, 16.0, 18.0),
-    "crt-tv": (0.909, 0.523, 24.0, 20.0),
-    # Island bins on the moss rug — overview glow, not face-plant
-    "record-bins": (0.492, 0.600, 30.0, 20.0),
-    # Cream cash register body ONLY — not shelves behind
-    "cash-register": (0.223, 0.450, 9.0, 7.5),
-    "phone-booth": (0.148, 0.470, 10.0, 7.0),
+    # v17 cartoon: LISTEN headphones + turntable on back wall
+    "listening-booth": (0.500, 0.400, 16.0, 18.0),
+    # Cream CRT on cabinet left of night storefront
+    "crt-tv": (0.910, 0.550, 24.0, 20.0),
+    # Island bins on terracotta rug
+    "record-bins": (0.500, 0.640, 30.0, 20.0),
+    # Cream register on right counter
+    "cash-register": (0.310, 0.500, 9.0, 7.5),
+    # Black rotary right of register
+    "phone-booth": (0.230, 0.510, 10.0, 7.0),
 }
 # CRT hit plane (sections.ts w/h) — chassis footprint for the overlay stack.
-CRT_PLANE = (0.909, 0.523, 20.0, 18.0)
+CRT_PLANE = (0.910, 0.550, 20.0, 18.0)
 # Painted glass inside that footprint — MUST mirror CrtScreen.tsx.
 CRT_SCREEN_W_FAC = 0.7
 CRT_SCREEN_H_FAC = 0.68
@@ -74,7 +75,7 @@ CRT_FRAME_W_FAC = 0.95
 CRT_FRAME_H_FAC = 0.92
 # File-space chassis crop on the equirect source (bezel + stickers + tapes).
 # Coordinates are normalised against the master width/height inside crt_overlays.
-CRT_FILE_BOX_NORM = (0.03, 0.39, 0.17, 0.65)  # analog CRT chassis on 2:1 master
+CRT_FILE_BOX_NORM = (0.02, 0.42, 0.20, 0.72)  # v17 cartoon CRT cabinet
 
 # Ambient toy sprites — alpha-cut object billboards that wiggle on click.
 # MUST mirror the `toy` planes in app/components/AmbientHits.tsx.
@@ -82,13 +83,13 @@ CRT_FILE_BOX_NORM = (0.03, 0.39, 0.17, 0.65)  # analog CRT chassis on 2:1 master
 #        flood = ink-closed standalone object (plant stand);
 #        patch = soft rounded-rect crop (flat floor objects like the mat).
 TOY_SPRITES = {
-    "stool": (0.499, 0.352, 10.0, 12.0, "flood"),  # headphones on back wall
-    "owl": (0.564, 0.371, 14.0, 20.0, "flood"),  # plant by LISTEN wall
-    "cushion": (0.492, 0.742, 22.0, 10.0, "patch"),  # milk-crate cluster / rug front
-    "crate": (0.830, 0.560, 14.0, 14.0, "flood"),  # plant + cabinet by CRT
-    "poster": (0.499, 0.275, 10.0, 10.0, "patch"),  # blank yellow square above headphones
-    "fire": (0.495, 0.700, 20.0, 12.0, "patch"),  # moss rug pool
-    "wonder": (0.772, 0.450, 16.0, 20.0, "patch"),  # storefront window / street
+    "stool": (0.530, 0.360, 10.0, 12.0, "dark"),  # headphones on LISTEN wall
+    "owl": (0.440, 0.420, 14.0, 20.0, "flood"),  # plant by LISTEN wall
+    "cushion": (0.500, 0.740, 22.0, 10.0, "patch"),  # floor crates / rug front
+    "crate": (0.940, 0.580, 14.0, 14.0, "flood"),  # plant by CRT
+    "poster": (0.500, 0.280, 10.0, 10.0, "patch"),  # yellow square above LISTEN
+    "fire": (0.500, 0.720, 20.0, 12.0, "patch"),  # rug pool
+    "wonder": (0.780, 0.450, 16.0, 20.0, "patch"),  # night storefront
 }
 MASK_PLANE_RADIUS = 47.5  # SPHERE_RADIUS - 0.5 (Hotspot.tsx)
 CRT_PLANE_RADIUS = 47.2  # SPHERE_RADIUS - 0.8 (CrtScreen.tsx)
@@ -138,21 +139,16 @@ LAMP_POOLS = (
 
 
 def bt_grade(pano: Image.Image) -> Image.Image:
-    """Lift brightness / warmth toward balmingtiger.com room energy.
+    """Light polish for cartoon masters — keep ink, nudge warmth/clarity.
 
-    Keeps ink contrast; pulls muddy midtones up and adds a soft cream bias
-    so hotspots and props read clearly against the walls.
+    v17 masters are already BT-bright cartoons; avoid the heavy v16 lift.
     """
     a = np.asarray(pano).astype(np.float32) / 255.0
-    # Shadow lift + exposure
-    lifted = np.clip(a * 1.38 + 0.055, 0.0, 1.0)
-    # Mild S-curve for punch without crushing blacks
-    x = lifted
-    contrasted = np.clip(0.5 + (x - 0.5) * 1.14, 0.0, 1.0)
-    # Warm cream bias (BT hover rooms read warm, not cold grey)
-    contrasted[..., 0] = np.clip(contrasted[..., 0] * 1.07 + 0.01, 0.0, 1.0)
-    contrasted[..., 1] = np.clip(contrasted[..., 1] * 1.03, 0.0, 1.0)
-    contrasted[..., 2] = np.clip(contrasted[..., 2] * 0.94, 0.0, 1.0)
+    lifted = np.clip(a * 1.06 + 0.015, 0.0, 1.0)
+    contrasted = np.clip(0.5 + (lifted - 0.5) * 1.08, 0.0, 1.0)
+    contrasted[..., 0] = np.clip(contrasted[..., 0] * 1.03 + 0.005, 0.0, 1.0)
+    contrasted[..., 1] = np.clip(contrasted[..., 1] * 1.01, 0.0, 1.0)
+    contrasted[..., 2] = np.clip(contrasted[..., 2] * 0.97, 0.0, 1.0)
     return Image.fromarray((contrasted * 255.0).astype(np.uint8))
 
 
@@ -328,15 +324,11 @@ def edge_mask_from_prop(sid: str, tw: int, th: int) -> Image.Image | None:
 
 
 def edge_mask(pano_arr: np.ndarray, sid: str) -> Image.Image:
-    """Silhouette rim in billboard space — prop outline first, ink-flood fallback."""
+    """Silhouette rim in billboard space — ink-flood when solid, else prop sprite."""
     u, v, pw, ph = PLANES[sid]
     scale = 1024 / max(pw, ph)
     tw = max(2, round(pw * scale))
     th = max(2, round(ph * scale))
-
-    prop_edge = edge_mask_from_prop(sid, tw, th)
-    if prop_edge is not None:
-        return prop_edge
 
     crop = project_pano_to_plane(
         pano_arr, u, v, pw, ph, MASK_PLANE_RADIUS, tw, th
@@ -345,10 +337,8 @@ def edge_mask(pano_arr: np.ndarray, sid: str) -> Image.Image:
     ink_thr, open_iters, color_refine = SEG[sid]
     lum = crop.max(axis=2)
     ink = lum < ink_thr
-    # Slight dilation seals anti-aliased line gaps before flooding.
     ink = ndimage.binary_dilation(ink, iterations=1)
 
-    # Background = reachable from the crop border without crossing ink.
     free = ~ink
     labels, _ = ndimage.label(free)
     border_labels = np.unique(
@@ -358,7 +348,6 @@ def edge_mask(pano_arr: np.ndarray, sid: str) -> Image.Image:
     obj = ~bg
 
     if color_refine:
-        # Drop wall/wood interiors the flood roped in through connected ink.
         dist = np.full(crop.shape[:2], 1e9, dtype=np.float32)
         ph_p, pw_p = pano_arr.shape[0], pano_arr.shape[1]
         for nu, nv in BG_POINTS_NORM:
@@ -375,10 +364,8 @@ def edge_mask(pano_arr: np.ndarray, sid: str) -> Image.Image:
 
     obj = ndimage.binary_closing(obj, iterations=3)
     obj = ndimage.binary_fill_holes(obj)
-    # Opening drops thin ink tails (baseboard / wall trim lines).
     obj = ndimage.binary_opening(obj, iterations=open_iters)
 
-    # Keep the component anchored at the plane center (the target itself).
     labels, n = ndimage.label(obj)
     if n > 1:
         cy, cx = th // 2, tw // 2
@@ -391,6 +378,13 @@ def edge_mask(pano_arr: np.ndarray, sid: str) -> Image.Image:
         if center_label:
             obj = labels == center_label
     obj = ndimage.binary_fill_holes(obj)
+
+    cover = float(obj.mean())
+    # Cream register / dark phone often dissolve into wallpaper — use prop art.
+    if cover < 0.06 or cover > 0.82 or sid in ("cash-register", "phone-booth"):
+        prop_edge = edge_mask_from_prop(sid, tw, th)
+        if prop_edge is not None:
+            return prop_edge
 
     return _compose_rim(_bt_rim(obj.astype(np.float32)))
 

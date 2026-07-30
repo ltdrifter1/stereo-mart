@@ -1,19 +1,15 @@
-# Stereo-Mart hotspot props (late-90s analog redraw)
+# Stereo-Mart hotspot props (v17 cartoon)
 
-Transparent PNG sprites for krpano / R3F billboards — separate from the
-baked equirect environment plate.
+Transparent PNG sprites for billboards / edge rims — cartoon bold-ink style
+matching `art/stereo-mart-equirect-cartoon-v17.png`.
 
 | File | Use |
 |---|---|
-| `crt.png` | Videos — cream CRT (dark empty tube) |
-| `crt_screen.png` | Optional animated tube glass overlay |
-| `register.png` / `phone.png` | Shop / Contact |
+| `crt.png` | Videos — cream CRT |
 | `listen.png` | Music — headphones + turntable |
-| `bins.png` / `crates.png` / `cassettes.png` | Artists / floor stacks |
-| `sign.png` | Storefront STEREO-MART lettering |
+| `bins.png` | Artists — record island |
+| `register.png` / `phone.png` | Shop / Contact |
+| `sign.png` | Storefront lettering (legacy) |
 | `icon-*.png` | Small hotspot UI icons |
 
 Runtime copies also ship under `public/hotspots/props/`.
-
-Master equirect: `art/stereo-mart-equirect-analog-v15-2x1.png` (4096×2048).
-Recommended 8k master is generated at bake/export time (8192×4096).

@@ -88,7 +88,7 @@ export type Section = {
 
 /**
  * Discoverable hotspots around the 360° store.
- * Tuned against the v13 BT-style empty shop pano — looktos frame objects
+ * Tuned against the v17 cartoon BT-palette shop pano — looktos frame objects
  * with room context; Artists stays an overview (no bin face-plant).
  * Append ?debug=1 to tint hit areas while tuning (u,v).
  */
@@ -102,13 +102,11 @@ export const SECTIONS: Section[] = [
     kicker: 'Music',
     intro: '',
     accent: '#c4953a',
-    // v13: headphones + turntable shelf on the far back wall
-    // (file ≈ x 720–900, y 300–430). Aim above the island so Music
-    // frames the LISTEN station, not the bin tops.
-    u: 0.47,
-    v: 0.355,
-    lookU: 0.47,
-    lookV: 0.34,
+    // v17 cartoon: headphones + turntable on back wall LISTEN nook
+    u: 0.5,
+    v: 0.4,
+    lookU: 0.5,
+    lookV: 0.38,
     w: 16,
     h: 18,
     glowW: 16,
@@ -129,12 +127,11 @@ export const SECTIONS: Section[] = [
     kicker: 'Videos',
     intro: '',
     accent: '#7a9bb0',
-    // v13 Y2K redraw: silver CRT on the low cabinet by the night storefront
-    // (file ≈ x 50–230, y 430–640). Aim on the chassis; glass is inset.
-    u: 0.909,
-    v: 0.523,
-    lookU: 0.909,
-    lookV: 0.52,
+    // v17 cartoon: cream CRT on cabinet left of night storefront
+    u: 0.91,
+    v: 0.55,
+    lookU: 0.91,
+    lookV: 0.54,
     w: 20,
     h: 18,
     glowW: 24,
@@ -156,13 +153,11 @@ export const SECTIONS: Section[] = [
     kicker: 'Artists',
     intro: '',
     accent: '#a65d6a',
-    // v13: island on the moss rug (file ≈ x 560–1000, y 500–760).
-    // Hit sits on the wood tub; lookto is a mid-room overview so the
-    // camera never face-plants into the bin rows.
-    u: 0.492,
-    v: 0.6,
+    // v17 cartoon: island on terracotta rug — lookto mid-room overview
+    u: 0.5,
+    v: 0.64,
     lookU: 0.5,
-    lookV: 0.48,
+    lookV: 0.5,
     w: 30,
     h: 20,
     glowW: 30,
@@ -183,11 +178,11 @@ export const SECTIONS: Section[] = [
     kicker: 'New Releases',
     intro: '',
     accent: '#8fa37a',
-    // v13: cream register body ONLY (file ≈ x 1138–1249, y 422–505).
-    u: 0.223,
-    v: 0.45,
-    lookU: 0.223,
-    lookV: 0.448,
+    // v17 cartoon: cream register on right checkout counter
+    u: 0.31,
+    v: 0.5,
+    lookU: 0.31,
+    lookV: 0.495,
     w: 9,
     h: 7.5,
     lookFov: 44,
@@ -206,12 +201,11 @@ export const SECTIONS: Section[] = [
     kicker: 'Contact',
     intro: '',
     accent: '#c4a574',
-    // v13: black rotary to the right of the register
-    // (file ≈ x 1258–1360, y 442–525).
-    u: 0.148,
-    v: 0.47,
-    lookU: 0.155,
-    lookV: 0.468,
+    // v17 cartoon: black rotary to the right of the register
+    u: 0.23,
+    v: 0.51,
+    lookU: 0.235,
+    lookV: 0.505,
     w: 10,
     h: 7,
     lookFov: 42,
