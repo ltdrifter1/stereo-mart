@@ -48,7 +48,7 @@ export default function ParallaxLayers({ enabled = true }: { enabled?: boolean }
           side={THREE.BackSide}
           depthWrite={false}
           transparent
-          opacity={0.55}
+          opacity={0.62}
         />
       </mesh>
       <mesh>
@@ -59,7 +59,7 @@ export default function ParallaxLayers({ enabled = true }: { enabled?: boolean }
           side={THREE.BackSide}
           depthWrite={false}
           transparent
-          opacity={0.4}
+          opacity={0.48}
         />
       </mesh>
     </group>

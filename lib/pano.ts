@@ -200,14 +200,14 @@ export function uvToLocal(u: number, v: number): [number, number, number] {
   return uvToSpherical(u, v, SPHERE_RADIUS - 0.35);
 }
 
-/** v18 — Stereo-Mart PNW warehouse editorial (cool charcoal equirect). */
-export const TEXTURE_SRC = '/textures/store_pano_v18.webp';
+/** v19 — Stereo-Mart cartoon warehouse ink (cool charcoal equirect). */
+export const TEXTURE_SRC = '/textures/store_pano_v19.webp';
 /** Darkened twin of the store — lights_off scene. */
-export const TEXTURE_OFF_SRC = '/textures/store_pano_off_v18.webp';
-export const LQIP_SRC = '/textures/store_pano_lqip_v18.webp';
+export const TEXTURE_OFF_SRC = '/textures/store_pano_off_v19.webp';
+export const LQIP_SRC = '/textures/store_pano_lqip_v19.webp';
 /** Transparent foreground / midground parallax layers. */
-export const TEXTURE_FG_SRC = '/textures/store_pano_fg_v18.webp';
-export const TEXTURE_MG_SRC = '/textures/store_pano_mg_v18.webp';
+export const TEXTURE_FG_SRC = '/textures/store_pano_fg_v19.webp';
+export const TEXTURE_MG_SRC = '/textures/store_pano_mg_v19.webp';
 export const CRT_VIDEO_SRC = '/videos/channel_b.mp4';
 
 /** Max eye offset from sphere center (walk approach). */
