@@ -66,73 +66,73 @@ const HITS: AmbientHit[] = [
   // Headphones on the back-wall LISTEN station
   {
     id: 'stool',
-    u: 0.499,
-    v: 0.352,
+    u: 0.53,
+    v: 0.36,
     w: 2.4,
     h: 2.2,
     sfx: 'stool',
-    toy: { u: 0.499, v: 0.352, w: 10, h: 12 },
+    toy: { u: 0.53, v: 0.36, w: 10, h: 12 },
   },
-  // Plant + cabinet cluster on the CRT / window side
+  // Plant beside CRT / storefront
   {
     id: 'crate',
-    u: 0.83,
-    v: 0.56,
+    u: 0.94,
+    v: 0.58,
     w: 3.5,
     h: 3.2,
     sfx: 'crate',
-    toy: { u: 0.83, v: 0.56, w: 14, h: 14 },
+    toy: { u: 0.94, v: 0.58, w: 14, h: 14 },
   },
-  // Blank yellow square above the headphones
+  // Yellow square above LISTEN
   {
     id: 'poster',
-    u: 0.499,
-    v: 0.275,
+    u: 0.5,
+    v: 0.28,
     w: 2.8,
     h: 2.8,
     sfx: 'poster',
-    toy: { u: 0.499, v: 0.275, w: 10, h: 10 },
+    toy: { u: 0.5, v: 0.28, w: 10, h: 10 },
   },
-  // Milk-crate cluster on the front of the moss rug
+  // Floor crates in front of the island
   {
     id: 'cushion',
-    u: 0.492,
-    v: 0.742,
+    u: 0.5,
+    v: 0.74,
     w: 3.5,
     h: 2.2,
     sfx: 'cushion',
-    toy: { u: 0.492, v: 0.742, w: 22, h: 10 },
+    toy: { u: 0.5, v: 0.74, w: 22, h: 10 },
   },
   // Tall plant by the LISTEN wall
   {
     id: 'owl',
-    u: 0.564,
-    v: 0.371,
+    u: 0.44,
+    v: 0.42,
     w: 2.6,
     h: 2.8,
     sfx: 'owl',
-    toy: { u: 0.564, v: 0.371, w: 14, h: 20 },
+    toy: { u: 0.44, v: 0.42, w: 14, h: 20 },
   },
-  // Moss rug pool under the island
+  // Rug pool under the island
   {
     id: 'fire',
-    u: 0.495,
-    v: 0.7,
+    u: 0.5,
+    v: 0.72,
     w: 3.2,
     h: 2.6,
     sfx: 'fire',
-    toy: { u: 0.495, v: 0.7, w: 20, h: 12 },
+    toy: { u: 0.5, v: 0.72, w: 20, h: 12 },
   },
-  // Storefront window looking onto the sunny street
+  // Night storefront window
   {
     id: 'wonder',
-    u: 0.772,
+    u: 0.78,
     v: 0.45,
     w: 3.2,
     h: 3.2,
     sfx: 'wonder',
     wonder: true,
-    toy: { u: 0.772, v: 0.45, w: 16, h: 20 },
+    toy: { u: 0.78, v: 0.45, w: 16, h: 20 },
   },
 ];
 

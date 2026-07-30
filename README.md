@@ -28,11 +28,14 @@ npm run dev
 
 ## Panorama bake
 
-Equirectangular master is **2:1** late-90s analog shop art
-(`art/stereo-mart-pano-v12-src.png` / `art/stereo-mart-equirect-analog-v15-2x1.png`, 4096×2048 web).
+Equirectangular master is **2:1** cartoon shop art
+(`art/stereo-mart-equirect-cartoon-v17.png` / `art/stereo-mart-pano-v12-src.png`).
+Web bake is **v17** (`public/textures/store_pano_v17.webp`) — bold-ink cartoon,
+balmingtiger-warm cream/teal/night palette.
 Recommended print/master size is **8192×4096** (generate locally from the 4k plate).
 Hero props sit in the mid band away from the wrap seam; zenith/nadir stay ceiling/floor.
 Separate transparent prop sprites live in **`art/props/`** and **`public/hotspots/props/`**.
+Hotspot edge rims bake from plane silhouettes (prop fallback for register/phone).
 
 ```bash
 python3 scripts/patch-stereo-mart-v12-landmarks.py  # after landmark edits

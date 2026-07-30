@@ -200,11 +200,11 @@ export function uvToLocal(u: number, v: number): [number, number, number] {
   return uvToSpherical(u, v, SPHERE_RADIUS - 0.35);
 }
 
-/** v15 — STEREO-MART late-90s analog VHS/cassette shop equirect. */
-export const TEXTURE_SRC = '/textures/store_pano_v15.webp';
+/** v17 — Stereo-Mart cartoon shop (BT palette, bold ink equirect). */
+export const TEXTURE_SRC = '/textures/store_pano_v17.webp';
 /** Darkened twin of the store — lights_off scene. */
-export const TEXTURE_OFF_SRC = '/textures/store_pano_off_v15.webp';
-export const LQIP_SRC = '/textures/store_pano_lqip_v15.webp';
+export const TEXTURE_OFF_SRC = '/textures/store_pano_off_v17.webp';
+export const LQIP_SRC = '/textures/store_pano_lqip_v17.webp';
 export const CRT_VIDEO_SRC = '/videos/channel_b.mp4';
 
 /** Max eye offset from sphere center (walk approach). */

@@ -115,7 +115,7 @@ const desktop = {
   assert.equal(crt.items[0]?.label, 'STEREO-MART-TV');
   assert.equal(crt.items[0]?.videoSrc, '/videos/channel_b.mp4');
   // CRT video plane must sit inside painted glass — not the old 0.7×0.58 overshoot.
-  assert.ok(crt.w === 20 && crt.h === 16, 'CRT hit plane matches v13 tube-set size');
+  assert.ok(crt.w === 20 && crt.h === 18, 'CRT hit plane matches v13 tube-set size');
   const desk = resolveLookMfov(crt, desktop);
   const mob = resolveLookMfov(crt, phone);
   assert.equal(desk, 56, `desktop CRT should stay authored 56, got ${desk}`);
@@ -181,7 +181,7 @@ const desktop = {
     'Shop lookto aims at the register, not the shelf wall',
   );
   assert.ok(
-    Math.abs(shopSec.u - 0.223) < 0.02 && Math.abs(shopSec.v - 0.45) < 0.02,
+    Math.abs(shopSec.u - 0.31) < 0.02 && Math.abs(shopSec.v - 0.5) < 0.02,
     'Shop centers on the cream cash register',
   );
   const musicTarget = resolveLookTarget(musicSec, desktop);
