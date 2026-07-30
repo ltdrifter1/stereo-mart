@@ -9,7 +9,7 @@ import gsap from 'gsap';
 import { GATE_FADE_DUR, LQIP_SRC } from '@/lib/pano';
 
 /**
- * Entry gate — bright cartoon shopfront for Stereo-Mart Records.
+ * Entry gate — dark industrial editorial warehouse for Stereo-Mart Records.
  * Enter unlocks audio + drop pose, waits one paint, then fades so the
  * little-planet frame is visible as the gate clears (iOS Safari sync).
  * Audio unlock must run in the click gesture (not deferred to GSAP alone).
@@ -130,7 +130,7 @@ export default function LoadingGate({
           <span className="gate-vinyl-hole" />
         </div>
 
-        <p className="gate-kicker">Illustrated record shop</p>
+        <p className="gate-kicker">Underground record shop</p>
 
         <h1 className="gate-mark">
           <span className="gate-mark-brand">{BRAND_NAME}</span>
@@ -151,7 +151,7 @@ export default function LoadingGate({
           <i ref={bar} />
         </div>
         <div className="gate-status">
-          <span>{ready ? 'Ready' : 'Preparing the shop'}</span>
+          <span>{ready ? 'Ready' : 'Preparing the warehouse'}</span>
           <span>{pct}%</span>
         </div>
 
@@ -163,7 +163,7 @@ export default function LoadingGate({
           disabled={!ready || entering}
           data-cursor="click"
         >
-          {ready ? 'Enter the shop' : 'Loading…'}
+          {ready ? 'Enter the warehouse' : 'Loading…'}
         </button>
       </div>
     </div>

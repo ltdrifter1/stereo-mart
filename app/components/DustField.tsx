@@ -13,7 +13,7 @@ const RADIUS_MAX = 14;
 export default function DustField({ count = 200 }: { count?: number }) {
   const points = useRef<THREE.Points>(null);
   const env = useSceneEnv();
-  const tex = useMemo(() => makeDotTexture('#ffe1b0'), []);
+  const tex = useMemo(() => makeDotTexture('#c8d4dc'), []);
 
   const { positions, speeds, sizes } = useMemo(() => {
     const positions = new Float32Array(count * 3);

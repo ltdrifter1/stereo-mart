@@ -3,10 +3,10 @@
  * maps drop into public/hotspots/. Swap the files, then tune here.
  */
 export const GLOW = {
-  /** Warm gold rim — balmingtiger hover glow (cream). */
-  edgeTint: '#fff0c2',
-  /** Amber outer aura behind the rim. */
-  bloomTint: '#ffd88a',
+  /** Cool silver rim — balmingtiger hover glow (oxidized cream). */
+  edgeTint: '#e8f0f4',
+  /** Muted blue-silver outer aura behind the rim. */
+  bloomTint: '#9bb4c4',
   /** Bloom quad size vs the rim quad — spreads aura past the silhouette. */
   bloomScale: 1.18,
   /** Hover fade in/out duration (s). */
