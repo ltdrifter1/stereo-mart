@@ -48,8 +48,8 @@ Replace the loose masks already in `public/hotspots/`.
 
 ## What we send the artist
 
-- Equirect plate: `public/textures/store_pano_v15.webp` (or master PNG in `art/`)
-- Current (too-loose) edges in `public/hotspots/*_edge.webp` as “what not to ship”
+- Equirect plate: `public/textures/store_pano_v16.webp` (or master PNG in `art/`)
+- Current edges in `public/hotspots/*_edge.webp` (regenerate via `python3 scripts/build-v12-pano.py`)
 - Per-object UV crop + lookto screenshot for each of the 5 hotspots
 - Link: https://balmingtiger.com — hover objects in the room for the glow *feel* only
 

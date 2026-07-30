@@ -30,9 +30,11 @@ npm run dev
 
 Equirectangular master is **2:1** late-90s analog shop art
 (`art/stereo-mart-pano-v12-src.png` / `art/stereo-mart-equirect-analog-v15-2x1.png`, 4096×2048 web).
+Web bake is **v16** (`public/textures/store_pano_v16.webp`) with a BT-bright grade.
 Recommended print/master size is **8192×4096** (generate locally from the 4k plate).
 Hero props sit in the mid band away from the wrap seam; zenith/nadir stay ceiling/floor.
 Separate transparent prop sprites live in **`art/props/`** and **`public/hotspots/props/`**.
+Hotspot edge rims are rebuilt from those prop silhouettes during the pano bake.
 
 ```bash
 python3 scripts/patch-stereo-mart-v12-landmarks.py  # after landmark edits

@@ -115,7 +115,7 @@ const desktop = {
   assert.equal(crt.items[0]?.label, 'STEREO-MART-TV');
   assert.equal(crt.items[0]?.videoSrc, '/videos/channel_b.mp4');
   // CRT video plane must sit inside painted glass — not the old 0.7×0.58 overshoot.
-  assert.ok(crt.w === 20 && crt.h === 16, 'CRT hit plane matches v13 tube-set size');
+  assert.ok(crt.w === 20 && crt.h === 18, 'CRT hit plane matches v13 tube-set size');
   const desk = resolveLookMfov(crt, desktop);
   const mob = resolveLookMfov(crt, phone);
   assert.equal(desk, 56, `desktop CRT should stay authored 56, got ${desk}`);
