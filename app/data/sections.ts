@@ -88,7 +88,7 @@ export type Section = {
 
 /**
  * Discoverable hotspots around the 360° store.
- * Tuned against the v18 warehouse editorial pano — looktos frame objects
+ * Tuned against the v19 cartoon warehouse ink pano — looktos frame objects
  * with room context; Artists stays an overview (no bin face-plant).
  * Append ?debug=1 to tint hit areas while tuning (u,v).
  */
@@ -102,7 +102,7 @@ export const SECTIONS: Section[] = [
     kicker: 'Music',
     intro: '',
     accent: '#8a9baa',
-    // v18 warehouse: headphones + turntable on back wall LISTEN nook
+    // v19 cartoon warehouse: headphones + turntable on back wall LISTEN nook
     u: 0.5,
     v: 0.4,
     lookU: 0.5,
@@ -127,11 +127,11 @@ export const SECTIONS: Section[] = [
     kicker: 'Videos',
     intro: '',
     accent: '#6b8a9e',
-    // v18 warehouse: CRT on cabinet by night dock windows
-    u: 0.91,
-    v: 0.55,
-    lookU: 0.91,
-    lookV: 0.54,
+    // v19 cartoon warehouse: CRT on cabinet by night dock windows
+    u: 0.688,
+    v: 0.48,
+    lookU: 0.688,
+    lookV: 0.47,
     w: 20,
     h: 18,
     glowW: 24,
@@ -153,7 +153,7 @@ export const SECTIONS: Section[] = [
     kicker: 'Artists',
     intro: '',
     accent: '#8a7a82',
-    // v18 warehouse: island bins on concrete floor — lookto mid-room overview
+    // v19 cartoon warehouse: island bins on concrete floor — lookto mid-room overview
     u: 0.5,
     v: 0.64,
     lookU: 0.5,
@@ -178,7 +178,7 @@ export const SECTIONS: Section[] = [
     kicker: 'New Releases',
     intro: '',
     accent: '#6b8f72',
-    // v18 warehouse: register on checkout counter
+    // v19 cartoon warehouse: register on checkout counter
     u: 0.27,
     v: 0.5,
     lookU: 0.27,
@@ -201,7 +201,7 @@ export const SECTIONS: Section[] = [
     kicker: 'Contact',
     intro: '',
     accent: '#9aabb8',
-    // v18 warehouse: black rotary beside the register
+    // v19 cartoon warehouse: black rotary beside the register
     u: 0.22,
     v: 0.51,
     lookU: 0.225,

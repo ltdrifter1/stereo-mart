@@ -73,17 +73,17 @@ const HITS: AmbientHit[] = [
     sfx: 'stool',
     toy: { u: 0.53, v: 0.36, w: 10, h: 12 },
   },
-  // Plant beside CRT / storefront
+  // Plant / gear beside CRT cabinet
   {
     id: 'crate',
-    u: 0.94,
-    v: 0.58,
+    u: 0.72,
+    v: 0.52,
     w: 3.5,
     h: 3.2,
     sfx: 'crate',
-    toy: { u: 0.94, v: 0.58, w: 14, h: 14 },
+    toy: { u: 0.72, v: 0.52, w: 14, h: 14 },
   },
-  // Yellow square above LISTEN
+  // Sign band above LISTEN
   {
     id: 'poster',
     u: 0.5,
@@ -113,7 +113,7 @@ const HITS: AmbientHit[] = [
     sfx: 'owl',
     toy: { u: 0.44, v: 0.42, w: 14, h: 20 },
   },
-  // Rug pool under the island
+  // Floor pool under the island
   {
     id: 'fire',
     u: 0.5,
@@ -123,7 +123,7 @@ const HITS: AmbientHit[] = [
     sfx: 'fire',
     toy: { u: 0.5, v: 0.72, w: 20, h: 12 },
   },
-  // Night storefront window
+  // Night dock windows
   {
     id: 'wonder',
     u: 0.78,

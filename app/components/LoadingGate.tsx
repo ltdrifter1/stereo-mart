@@ -151,7 +151,7 @@ export default function LoadingGate({
           <i ref={bar} />
         </div>
         <div className="gate-status">
-          <span>{ready ? 'Ready' : 'Preparing the warehouse'}</span>
+          <span>{ready ? 'Ready' : 'Preparing the room'}</span>
           <span>{pct}%</span>
         </div>
 
@@ -163,7 +163,7 @@ export default function LoadingGate({
           disabled={!ready || entering}
           data-cursor="click"
         >
-          {ready ? 'Enter the warehouse' : 'Loading…'}
+          {ready ? 'CLICK TO ENTER' : 'Loading…'}
         </button>
       </div>
     </div>

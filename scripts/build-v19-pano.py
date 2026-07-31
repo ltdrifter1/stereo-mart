@@ -1,0 +1,611 @@
+#!/usr/bin/env python3
+"""
+V19 panorama production bake — Stereo-Mart cartoon warehouse ink.
+
+Input : art/stereo-mart-equirect-cartoon-v19.png  (cartoon ink warehouse)
+Output: public/textures/store_pano_v19.webp         4096x2048 lights-on
+        public/textures/store_pano_off_v19.webp     4096x2048 lights-off grade
+        public/textures/store_pano_lqip_v19.webp    512x256 preview
+        public/textures/store_pano_fg_v19.webp      transparent FG parallax
+        public/textures/store_pano_mg_v19.webp      transparent MG parallax
+        public/hotspots/<id>_edge.webp             silhouette rim masks
+        (+ CRT overlays / toy sprites as in v17 bake)
+
+Edge masks prefer transparent prop sprites in art/props/; ink-flood fallback
+from the equirect when a prop is missing.
+
+Run: python3 scripts/compose-v19-equirect.py
+     python3 scripts/build-v19-pano.py
+"""
+from pathlib import Path
+
+import numpy as np
+from PIL import Image, ImageFilter
+from scipy import ndimage
+
+ROOT = Path(__file__).resolve().parent.parent
+SRC = ROOT / "art" / "stereo-mart-equirect-cartoon-v19.png"
+SRC_FG = ROOT / "art" / "layers" / "warehouse-fg-v19.png"
+SRC_MG = ROOT / "art" / "layers" / "warehouse-mg-v19.png"
+OUT_ON = ROOT / "public" / "textures" / "store_pano_v19.webp"
+OUT_OFF = ROOT / "public" / "textures" / "store_pano_off_v19.webp"
+OUT_LQIP = ROOT / "public" / "textures" / "store_pano_lqip_v19.webp"
+OUT_LQIP_AVIF = ROOT / "public" / "textures" / "store_pano_lqip_v19.avif"
+OUT_FG = ROOT / "public" / "textures" / "store_pano_fg_v19.webp"
+OUT_MG = ROOT / "public" / "textures" / "store_pano_mg_v19.webp"
+OUT_PNG = ROOT / "public" / "textures" / "store_pano_v19.png"
+HOTSPOT_DIR = ROOT / "public" / "hotspots"
+PROPS_DIR = ROOT / "art" / "props"
+
+# Prop sprite → hotspot edge silhouette (exact object outline).
+PROP_EDGE_SRC = {
+    "listening-booth": "listen.png",
+    "crt-tv": "crt.png",
+    "record-bins": "bins.png",
+    "cash-register": "register.png",
+    "phone-booth": "phone.png",
+}
+# Cool oxidized rim — Hotspot.tsx forces white then tints via GLOW.edgeTint.
+EDGE_CREAM = (210, 224, 230)
+
+W, H = 4096, 2048
+SEAM_BAND = 128  # px cross-faded across the wrap seam
+# Accepted illustration masters (prefer true 2:1 equirect).
+SRC_SIZES = {(2048, 1024), (1536, 1024), (4096, 2048)}
+
+# Hotspot glow planes — MUST mirror app/data/sections.ts
+# (u, v, glowW ?? w, glowH ?? h). Edge masks are drawn in projected space.
+PLANES = {
+    # v19 cartoon warehouse: LISTEN headphones + turntable on back wall
+    "listening-booth": (0.500, 0.400, 16.0, 18.0),
+    # CRT on cabinet by night dock windows (file_u ≈ 0.31)
+    "crt-tv": (0.688, 0.480, 24.0, 20.0),
+    # Island bins on concrete floor
+    "record-bins": (0.500, 0.640, 30.0, 20.0),
+    # Register on checkout counter
+    "cash-register": (0.270, 0.500, 9.0, 7.5),
+    # Black rotary beside register
+    "phone-booth": (0.220, 0.510, 10.0, 7.0),
+}
+# CRT hit plane (sections.ts w/h) — chassis footprint for the overlay stack.
+CRT_PLANE = (0.688, 0.480, 20.0, 18.0)
+# Painted glass inside that footprint — MUST mirror CrtScreen.tsx.
+CRT_SCREEN_W_FAC = 0.7
+CRT_SCREEN_H_FAC = 0.68
+CRT_SCREEN_OX = 0.35
+CRT_SCREEN_OY = -0.55
+CRT_FRAME_W_FAC = 0.95
+CRT_FRAME_H_FAC = 0.92
+# File-space chassis crop on the equirect source (bezel + stickers + tapes).
+# Coordinates are normalised against the master width/height inside crt_overlays.
+CRT_FILE_BOX_NORM = (0.28, 0.40, 0.38, 0.58)  # v19 CRT chassis only (file space)
+
+# Ambient toy sprites — alpha-cut object billboards that wiggle on click.
+# MUST mirror the `toy` planes in app/components/AmbientHits.tsx.
+# Modes: dark = near-black object on lighter bg (headphones);
+#        flood = ink-closed standalone object (plant stand);
+#        patch = soft rounded-rect crop (flat floor objects like the mat).
+TOY_SPRITES = {
+    "stool": (0.530, 0.360, 10.0, 12.0, "dark"),  # headphones on LISTEN wall
+    "owl": (0.440, 0.420, 14.0, 20.0, "flood"),  # plant by LISTEN wall
+    "cushion": (0.500, 0.740, 22.0, 10.0, "patch"),  # floor crates / rug front
+    "crate": (0.720, 0.520, 14.0, 14.0, "flood"),  # plant / gear by CRT
+    "poster": (0.500, 0.280, 10.0, 10.0, "patch"),  # sign above LISTEN
+    "fire": (0.500, 0.720, 20.0, 12.0, "patch"),  # floor pool
+    "wonder": (0.780, 0.450, 16.0, 20.0, "patch"),  # night storefront / windows
+}
+MASK_PLANE_RADIUS = 47.5  # SPHERE_RADIUS - 0.5 (Hotspot.tsx)
+CRT_PLANE_RADIUS = 47.2  # SPHERE_RADIUS - 0.8 (CrtScreen.tsx)
+
+# Ink-flood tuning per target:
+# (ink luminance threshold, opening iterations, color-refine against bg refs)
+# Opening must exceed half the ink-line width in mask space (~30px for the
+# tight phone/CRT projections) to drop stray outline tails; color refine
+# subtracts wood/cream interiors (counter corner, cabinet top) that the
+# flood ropes in via connected ink. The register stays color-refine-free —
+# its cream body matches the cream wall.
+# Register refine is OFF in v9: its cream body matches the cream wall again.
+SEG = {
+    "listening-booth": (85, 4, False),
+    "crt-tv": (70, 4, False),
+    "record-bins": (110, 6, True),
+    "cash-register": (130, 5, False),
+    "phone-booth": (60, 3, False),
+}
+
+# Background samples for color refine — normalised later against source size.
+BG_POINTS_NORM = (
+    (0.81, 0.35),
+    (0.04, 0.34),
+    (0.61, 0.46),
+    (0.72, 0.55),
+    (0.26, 0.78),
+    (0.42, 0.62),
+    (0.13, 0.56),
+    (0.50, 0.27),
+    (0.33, 0.88),
+    (0.20, 0.20),
+    (0.91, 0.24),
+)
+
+# Lamp pools for lights-off grade (file-space u/v) — cool tungsten + CRT.
+LAMP_POOLS = (
+    (0.28, 0.14, 0.16, 0.45),
+    (0.50, 0.14, 0.16, 0.5),
+    (0.72, 0.14, 0.14, 0.42),
+    (0.50, 0.30, 0.12, 0.32),
+    (0.09, 0.52, 0.12, 0.38),
+    (0.30, 0.45, 0.12, 0.28),
+)
+
+
+def bt_grade(pano: Image.Image) -> Image.Image:
+    """Cool cartoon polish — ink clarity with PNW grade, readable midtones."""
+    a = np.asarray(pano).astype(np.float32) / 255.0
+    lifted = np.clip(a * 1.08 + 0.025, 0.0, 1.0)
+    contrasted = np.clip(0.5 + (lifted - 0.5) * 1.12, 0.0, 1.0)
+    contrasted[..., 0] = np.clip(contrasted[..., 0] * 0.97, 0.0, 1.0)
+    contrasted[..., 1] = np.clip(contrasted[..., 1] * 1.015, 0.0, 1.0)
+    contrasted[..., 2] = np.clip(contrasted[..., 2] * 1.05, 0.0, 1.0)
+    return Image.fromarray((contrasted * 255.0).astype(np.uint8))
+
+
+def bake_pano() -> Image.Image:
+    src = Image.open(SRC).convert("RGB")
+    if src.size not in SRC_SIZES:
+        raise SystemExit(f"unexpected source size {src.size}; expected one of {sorted(SRC_SIZES)}")
+
+    pano = src.resize((W, H), Image.Resampling.LANCZOS)
+    # Two-pass unsharp keeps the clean ink lines crisp after upscale.
+    pano = pano.filter(ImageFilter.UnsharpMask(radius=1.8, percent=85, threshold=2))
+    pano = pano.filter(ImageFilter.UnsharpMask(radius=3.6, percent=32, threshold=3))
+
+    # Wrap band: cross-fade left/right edges so u=0 joins u=1 seamlessly.
+    arr = np.asarray(pano).astype(np.float32)
+    band = SEAM_BAND
+    left = arr[:, :band].copy()
+    right = arr[:, -band:].copy()
+    t = (np.arange(band, dtype=np.float32) / (band - 1))[None, :, None]
+    blend = right * (1 - t) + left * t
+    half = band // 2
+    arr[:, :half] = blend[:, half:]
+    arr[:, -half:] = blend[:, :half]
+    pano = Image.fromarray(arr.astype(np.uint8))
+    return bt_grade(pano)
+
+
+def lights_off(pano: Image.Image) -> Image.Image:
+    """Night grade: cool warehouse dark, faint pendant + CRT pools."""
+    a = np.asarray(pano).astype(np.float32) / 255.0
+
+    dark = a ** 1.25
+    dark[..., 0] *= 0.32
+    dark[..., 1] *= 0.4
+    dark[..., 2] *= 0.58
+
+    yy, xx = np.mgrid[0 : pano.height, 0 : pano.width].astype(np.float32)
+    warm = np.zeros_like(a)
+    for fu, fv, radius, gain in LAMP_POOLS:
+        cx, cy = fu * pano.width, fv * pano.height
+        d2 = ((xx - cx) / (radius * pano.width)) ** 2 + (
+            (yy - cy) / (radius * pano.width)
+        ) ** 2
+        glow = np.exp(-d2)[..., None] * gain
+        warm += glow * np.array([0.85, 0.78, 0.55])[None, None, :]
+
+    out = np.clip(dark + warm * a * 0.85, 0, 1)
+    return Image.fromarray((out * 255).astype(np.uint8))
+
+
+def plane_basis(u: float, v: float, radius: float):
+    """Billboard basis matching uvToSpherical + lookAt(origin).
+
+    three.js Object3D.lookAt points a non-camera's +z AT the target, so the
+    plane's +z faces the origin and textures read in file space (verified:
+    v6 file-space crops rendered un-mirrored on these billboards).
+    """
+    yaw = (u - 0.5) * np.pi * 2 - np.pi / 2
+    pitch = (0.5 - v) * np.pi
+    cp, sp = np.cos(pitch), np.sin(pitch)
+    sy, cy = np.sin(yaw), np.cos(yaw)
+    center = np.array([-sy * cp, sp, -cy * cp]) * radius
+    z_ax = -center / np.linalg.norm(center)
+    x_ax = np.cross(np.array([0.0, 1.0, 0.0]), z_ax)
+    x_ax /= np.linalg.norm(x_ax)
+    y_ax = np.cross(z_ax, x_ax)
+    return center, x_ax, y_ax
+
+
+def project_pano_to_plane(
+    pano: np.ndarray,
+    u: float,
+    v: float,
+    pw: float,
+    ph: float,
+    radius: float,
+    tex_w: int,
+    tex_h: int,
+) -> np.ndarray:
+    """Sample the pano along rays through every texel of the billboard plane."""
+    center, x_ax, y_ax = plane_basis(u, v, radius)
+    mu = (np.arange(tex_w) + 0.5) / tex_w
+    mv = (np.arange(tex_h) + 0.5) / tex_h
+    gu, gv = np.meshgrid(mu, mv)
+    lx = (gu - 0.5) * pw
+    ly = (0.5 - gv) * ph
+    pos = center[None, None, :] + lx[..., None] * x_ax + ly[..., None] * y_ax
+    d = pos / np.linalg.norm(pos, axis=-1, keepdims=True)
+
+    theta = np.arccos(np.clip(d[..., 1], -1, 1))
+    st = np.maximum(np.sin(theta), 1e-9)
+    phi = np.mod(np.arctan2(d[..., 2] / st, -d[..., 0] / st), 2 * np.pi)
+    file_u = np.mod(1 - phi / (2 * np.pi), 1)
+    file_v = theta / np.pi
+
+    h, w = pano.shape[:2]
+    px = np.clip((file_u * w).astype(np.int32), 0, w - 1)
+    py = np.clip((file_v * h).astype(np.int32), 0, h - 1)
+    return pano[py, px]
+
+
+def _fit_prop_mask(mask: np.ndarray, tw: int, th: int, scale: float = 0.90) -> np.ndarray:
+    """Center a prop alpha into the glow-plane canvas with bloom margin."""
+    ys, xs = np.where(mask > 0.08)
+    if len(xs) == 0:
+        return np.zeros((th, tw), dtype=np.float32)
+    x0, x1 = int(xs.min()), int(xs.max()) + 1
+    y0, y1 = int(ys.min()), int(ys.max()) + 1
+    cropped = mask[y0:y1, x0:x1]
+    ch, cw = cropped.shape
+    s = min((tw * scale) / cw, (th * scale) / ch)
+    nw, nh = max(1, int(round(cw * s))), max(1, int(round(ch * s)))
+    # Work at 2× then downscale for smoother silhouettes.
+    hi = Image.fromarray((cropped * 255).astype(np.uint8), mode="L").resize(
+        (nw * 2, nh * 2), Image.Resampling.LANCZOS
+    )
+    lo = hi.resize((nw, nh), Image.Resampling.LANCZOS)
+    resized = np.asarray(lo, dtype=np.float32) / 255.0
+    canvas = np.zeros((th, tw), dtype=np.float32)
+    ox, oy = (tw - nw) // 2, (th - nh) // 2
+    canvas[oy : oy + nh, ox : ox + nw] = resized
+    return canvas
+
+
+def _bt_rim(mask: np.ndarray) -> np.ndarray:
+    """Warm BT-style edge: thin bright core + soft outer aura, no fill."""
+    # Clean fringe noise before distance fields.
+    hard = mask > 0.42
+    hard = ndimage.binary_closing(hard, iterations=2)
+    hard = ndimage.binary_fill_holes(hard)
+    hard = ndimage.binary_opening(hard, iterations=1)
+
+    dist_out = ndimage.distance_transform_edt(~hard).astype(np.float32)
+    dist_in = ndimage.distance_transform_edt(hard).astype(np.float32)
+
+    core = np.exp(-((dist_out - 0.5) ** 2) / (2 * 0.95**2))
+    core *= (dist_out < 4.5).astype(np.float32)
+    inside = np.exp(-(dist_in**2) / (2 * 1.2**2)) * hard.astype(np.float32)
+    core = np.maximum(core, inside * 0.5)
+
+    aura = np.exp(-(dist_out**2) / (2 * 8.0**2))
+    aura *= (dist_out > 0.15).astype(np.float32)
+    aura *= (~hard).astype(np.float32)
+
+    rim = np.clip(core * 1.2 + aura * 0.48, 0.0, 1.0)
+    rim[hard & (dist_in > 4.0)] = 0.0
+    rim = ndimage.gaussian_filter(rim, 0.7)
+    return np.clip(rim, 0.0, 1.0)
+
+
+def _compose_rim(rim: np.ndarray) -> Image.Image:
+    th, tw = rim.shape
+    out = np.zeros((th, tw, 4), dtype=np.uint8)
+    out[..., 0] = EDGE_CREAM[0]
+    out[..., 1] = EDGE_CREAM[1]
+    out[..., 2] = EDGE_CREAM[2]
+    out[..., 3] = (np.clip(rim, 0, 1) * 255).astype(np.uint8)
+    return Image.fromarray(out)
+
+
+def edge_mask_from_prop(sid: str, tw: int, th: int) -> Image.Image | None:
+    """Build a BT rim from the transparent prop sprite for this hotspot."""
+    name = PROP_EDGE_SRC.get(sid)
+    if not name:
+        return None
+    path = PROPS_DIR / name
+    if not path.exists():
+        return None
+    prop = Image.open(path).convert("RGBA")
+    alpha = np.asarray(prop, dtype=np.float32)[:, :, 3] / 255.0
+    fitted = _fit_prop_mask(alpha, tw, th, scale=0.90)
+    return _compose_rim(_bt_rim(fitted))
+
+
+def edge_mask(pano_arr: np.ndarray, sid: str) -> Image.Image:
+    """Silhouette rim in billboard space — ink-flood when solid, else prop sprite."""
+    u, v, pw, ph = PLANES[sid]
+    scale = 1024 / max(pw, ph)
+    tw = max(2, round(pw * scale))
+    th = max(2, round(ph * scale))
+
+    crop = project_pano_to_plane(
+        pano_arr, u, v, pw, ph, MASK_PLANE_RADIUS, tw, th
+    ).astype(np.float32)
+
+    ink_thr, open_iters, color_refine = SEG[sid]
+    lum = crop.max(axis=2)
+    ink = lum < ink_thr
+    ink = ndimage.binary_dilation(ink, iterations=1)
+
+    free = ~ink
+    labels, _ = ndimage.label(free)
+    border_labels = np.unique(
+        np.concatenate([labels[0, :], labels[-1, :], labels[:, 0], labels[:, -1]])
+    )
+    bg = np.isin(labels, border_labels[border_labels != 0])
+    obj = ~bg
+
+    if color_refine:
+        dist = np.full(crop.shape[:2], 1e9, dtype=np.float32)
+        ph_p, pw_p = pano_arr.shape[0], pano_arr.shape[1]
+        for nu, nv in BG_POINTS_NORM:
+            cx_, cy_ = int(nu * pw_p), int(nv * ph_p)
+            cy_ = min(max(cy_, 6), ph_p - 7)
+            cx_ = min(max(cx_, 6), pw_p - 7)
+            ref = np.median(
+                pano_arr[cy_ - 6 : cy_ + 6, cx_ - 6 : cx_ + 6].reshape(-1, 3),
+                axis=0,
+            )
+            d = np.sqrt(((crop - ref[None, None, :]) ** 2).sum(axis=2))
+            dist = np.minimum(dist, d)
+        obj &= dist > 60.0
+
+    obj = ndimage.binary_closing(obj, iterations=3)
+    obj = ndimage.binary_fill_holes(obj)
+    obj = ndimage.binary_opening(obj, iterations=open_iters)
+
+    labels, n = ndimage.label(obj)
+    if n > 1:
+        cy, cx = th // 2, tw // 2
+        center_label = labels[cy, cx]
+        if center_label == 0:
+            ys, xs = np.nonzero(obj)
+            if len(ys):
+                idx = np.argmin((ys - cy) ** 2 + (xs - cx) ** 2)
+                center_label = labels[ys[idx], xs[idx]]
+        if center_label:
+            obj = labels == center_label
+    obj = ndimage.binary_fill_holes(obj)
+
+    cover = float(obj.mean())
+    # Cream register / dark phone / CRT often dissolve into wallpaper — use prop art.
+    if cover < 0.06 or cover > 0.82 or sid in ("cash-register", "phone-booth", "crt-tv"):
+        prop_edge = edge_mask_from_prop(sid, tw, th)
+        if prop_edge is not None:
+            return prop_edge
+
+    return _compose_rim(_bt_rim(obj.astype(np.float32)))
+
+
+def rounded_rect_alpha(
+    tw: int,
+    th: int,
+    rel_w: float,
+    rel_h: float,
+    radius_frac: float,
+    feather: float = 2.0,
+    center: tuple[float, float] | None = None,
+) -> np.ndarray:
+    """Anti-aliased rounded-rect mask (1 inside, 0 outside).
+
+    `center` is (cx, cy) in texels; default is the texture midpoint.
+    """
+    yy, xx = np.mgrid[0:th, 0:tw].astype(np.float32)
+    cx, cy = center if center is not None else (tw / 2, th / 2)
+    hw, hh = rel_w * tw / 2, rel_h * th / 2
+    r = radius_frac * min(hw, hh) * 2
+    dx = np.abs(xx - cx) - (hw - r)
+    dy = np.abs(yy - cy) - (hh - r)
+    dist = np.hypot(np.maximum(dx, 0), np.maximum(dy, 0)) + np.minimum(
+        np.maximum(dx, dy), 0
+    ) - r
+    return np.clip(0.5 - dist / feather, 0, 1)
+
+
+def _keep_center_component(obj: np.ndarray, th: int, tw: int) -> np.ndarray:
+    labels, n = ndimage.label(obj)
+    if n > 1:
+        cy, cx = th // 2, tw // 2
+        center_label = labels[cy, cx]
+        if center_label == 0:
+            ys, xs = np.nonzero(obj)
+            if len(ys):
+                idx = np.argmin((ys - cy) ** 2 + (xs - cx) ** 2)
+                center_label = labels[ys[idx], xs[idx]]
+        if center_label:
+            obj = labels == center_label
+    return obj
+
+
+def toy_sprite(
+    pano_arr: np.ndarray, u: float, v: float, pw: float, ph: float, mode: str
+) -> Image.Image:
+    """Alpha-cut billboard of a painted toy (filled silhouette, soft edge)."""
+    scale = 512 / max(pw, ph)
+    tw = max(2, round(pw * scale))
+    th = max(2, round(ph * scale))
+    crop = project_pano_to_plane(pano_arr, u, v, pw, ph, MASK_PLANE_RADIUS, tw, th)
+    lum = crop.astype(np.float32).max(axis=2)
+
+    if mode == "patch":
+        yy, xx = np.mgrid[0:th, 0:tw].astype(np.float32)
+        rx = np.abs(xx - tw / 2) / (tw / 2 * 0.92)
+        ry = np.abs(yy - th / 2) / (th / 2 * 0.88)
+        d = np.maximum(rx, ry)
+        alpha = np.clip((1 - d) * 8, 0, 1)
+    else:
+        if mode == "dark":
+            # Near-black AND neutral — keeps the gray headphones, drops the
+            # warm brown shadow on the wood panel behind them.
+            spread = crop.astype(np.float32).max(axis=2) - crop.astype(
+                np.float32
+            ).min(axis=2)
+            obj = (lum < 90) & (spread < 35)
+            obj = ndimage.binary_closing(obj, iterations=2)
+        else:  # flood — only true black ink blocks the fill (soft shadows pass)
+            ink = ndimage.binary_dilation(lum < 60, iterations=1)
+            free = ~ink
+            labels, _ = ndimage.label(free)
+            border_labels = np.unique(
+                np.concatenate(
+                    [labels[0, :], labels[-1, :], labels[:, 0], labels[:, -1]]
+                )
+            )
+            bg = np.isin(labels, border_labels[border_labels != 0])
+            obj = ~bg
+            obj = ndimage.binary_closing(obj, iterations=2)
+        obj = ndimage.binary_fill_holes(obj)
+        obj = ndimage.binary_opening(obj, iterations=3)
+        obj = _keep_center_component(obj, th, tw)
+        obj = ndimage.binary_fill_holes(obj)
+        alpha = np.clip(ndimage.gaussian_filter(obj.astype(np.float32), 1.2), 0, 1)
+
+    out = np.dstack([crop, (alpha * 255).astype(np.uint8)])
+    return Image.fromarray(out)
+
+
+def crt_overlays(pano_arr: np.ndarray) -> None:
+    """Bezel frame (tube hole) + tube backings, in CrtScreen plane space.
+
+    Frame is sampled from the file-space chassis crop so the silver bezel /
+    stickers survive even when the gnomonic billboard is tube-dominant.
+    """
+    u, v, w, h = CRT_PLANE
+    frame_w, frame_h = w * CRT_FRAME_W_FAC, h * CRT_FRAME_H_FAC
+    screen_w, screen_h = w * CRT_SCREEN_W_FAC, h * CRT_SCREEN_H_FAC
+    tw = 1024
+    th = max(2, round(tw * frame_h / frame_w))
+
+    # Chassis from the illustration source (keeps bezel readable).
+    src = Image.open(SRC).convert("RGB")
+    sw, sh = src.size
+    nu0, nv0, nu1, nv1 = CRT_FILE_BOX_NORM
+    box = (int(nu0 * sw), int(nv0 * sh), int(nu1 * sw), int(nv1 * sh))
+    chassis = src.crop(box).resize((tw, th), Image.Resampling.LANCZOS)
+    rgb = np.asarray(chassis).astype(np.float32)
+    lum = rgb.mean(axis=2)
+
+    # Dark empty tube punched as the video hole (feathered).
+    dark = lum < 72
+    yy, xx = np.mgrid[0:th, 0:tw].astype(np.float32)
+    # Prefer the central glass pocket — ignore dark floor/wall in the crop.
+    cx0, cy0 = tw * 0.52, th * 0.58
+    rad = np.sqrt(((xx - cx0) / (tw * 0.36)) ** 2 + ((yy - cy0) / (th * 0.40)) ** 2)
+    dark &= rad < 1.0
+    dark = ndimage.binary_opening(dark, iterations=2)
+    dark = ndimage.binary_closing(dark, iterations=5)
+    dark = ndimage.binary_fill_holes(dark)
+    labels, n = ndimage.label(dark)
+    if n:
+        sizes = [(labels == i).sum() for i in range(1, n + 1)]
+        hole = labels == (int(np.argmax(sizes)) + 1)
+    else:
+        hole = np.zeros((th, tw), dtype=bool)
+    hole_f = np.clip(ndimage.gaussian_filter(hole.astype(np.float32), 1.6), 0, 1)
+
+    # Soft-round the authored screen rect as a fallback / union so CrtScreen
+    # video always has a clean aperture even if flood detection shrinks.
+    hole_cx = (0.5 + CRT_SCREEN_OX / frame_w) * tw
+    hole_cy = (0.5 - CRT_SCREEN_OY / frame_h) * th
+    authored = rounded_rect_alpha(
+        tw,
+        th,
+        screen_w / frame_w,
+        screen_h / frame_h,
+        0.14,
+        feather=3.0,
+        center=(hole_cx, hole_cy),
+    )
+    hole_f = np.maximum(hole_f, authored)
+
+    frame = np.dstack([rgb.astype(np.uint8), ((1 - hole_f) * 255).astype(np.uint8)])
+    Image.fromarray(frame).save(HOTSPOT_DIR / "crt_frame.webp", "WEBP", quality=92)
+    print(f"wrote crt_frame.webp {tw}x{th} hole@({hole_cx:.0f},{hole_cy:.0f})")
+
+    # Backings render on planes of screen*1.04 / screen*1.02 — draw the tube
+    # rounded-rect at ~1/1.04 relative size so it matches the painted glass.
+    bw = 1024
+    bh = max(2, round(bw * screen_h / screen_w))
+    for name, base, edge_gain in (
+        ("crt_backing_off", (18, 28, 36), 0.55),
+        ("crt_backing_playing", (5, 5, 6), 0.9),
+    ):
+        glass = rounded_rect_alpha(bw, bh, 1 / 1.04, 1 / 1.04, 0.14, feather=3.0)
+        yy, xx = np.mgrid[0:bh, 0:bw].astype(np.float32)
+        r2 = ((xx - bw / 2) / (bw / 2)) ** 2 + ((yy - bh / 2) / (bh / 2)) ** 2
+        shade = 1 - edge_gain * np.clip(r2, 0, 1)
+        img = np.zeros((bh, bw, 4), dtype=np.uint8)
+        for c in range(3):
+            img[..., c] = np.clip(base[c] * shade, 0, 255).astype(np.uint8)
+        img[..., 3] = (glass * 255).astype(np.uint8)
+        Image.fromarray(img).save(HOTSPOT_DIR / f"{name}.webp", "WEBP", quality=90)
+        print(f"wrote {name}.webp {bw}x{bh}")
+
+
+def bake_parallax_layers() -> None:
+    """Copy painted FG/MG plates into public textures (WebP RGBA)."""
+    for src, dst in ((SRC_FG, OUT_FG), (SRC_MG, OUT_MG)):
+        if not src.exists():
+            print(f"skip parallax layer (missing {src.name})")
+            continue
+        layer = Image.open(src).convert("RGBA")
+        if layer.size != (W, H):
+            layer = layer.resize((W, H), Image.Resampling.LANCZOS)
+        layer.save(dst, "WEBP", quality=85, method=6)
+        print(f"wrote {dst.name} {layer.size}")
+
+
+def main() -> None:
+    pano = bake_pano()
+    pano.save(OUT_ON, "WEBP", quality=86, method=6)
+    print(f"wrote {OUT_ON.name} {pano.size} meanL={np.asarray(pano).mean():.1f}")
+
+    # Skip huge PNG bake by default — WebP is the runtime texture.
+    if OUT_PNG.exists():
+        OUT_PNG.unlink()
+
+    off = lights_off(pano)
+    off.save(OUT_OFF, "WEBP", quality=84, method=6)
+    print(f"wrote {OUT_OFF.name}")
+
+    lqip = pano.resize((512, 256), Image.Resampling.LANCZOS)
+    lqip.save(OUT_LQIP, "WEBP", quality=68)
+    print(f"wrote {OUT_LQIP.name}")
+    try:
+        lqip.save(OUT_LQIP_AVIF, "AVIF", quality=55)
+        print(f"wrote {OUT_LQIP_AVIF.name}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"skip AVIF LQIP ({exc})")
+
+    bake_parallax_layers()
+
+    pano_arr = np.asarray(pano.convert("RGB"))
+    for sid in PLANES:
+        mask = edge_mask(pano_arr, sid)
+        out = HOTSPOT_DIR / f"{sid}_edge.webp"
+        mask.save(out, "WEBP", quality=90)
+        cover = np.asarray(mask)[..., 3]
+        print(f"wrote {out.name} {mask.size} rim={100 * (cover > 30).mean():.1f}%")
+
+    crt_overlays(pano_arr)
+
+    for sid, (u, v, pw, ph, mode) in TOY_SPRITES.items():
+        sprite = toy_sprite(pano_arr, u, v, pw, ph, mode)
+        out = HOTSPOT_DIR / f"toy_{sid}.webp"
+        sprite.save(out, "WEBP", quality=90)
+        cover = np.asarray(sprite)[..., 3]
+        print(f"wrote {out.name} {sprite.size} fill={100 * (cover > 30).mean():.1f}%")
+
+
+if __name__ == "__main__":
+    main()
