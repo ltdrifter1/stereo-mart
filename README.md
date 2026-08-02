@@ -2,11 +2,11 @@
 
 `stereo-mart.com` — immersive **360° illustrated record shop**.
 
-> **v20 rebuild in progress** — the experience is being rebuilt from scratch
-> as a fully illustrated KRPano world (nothing below is reused). The new
-> workspace, art direction, redrawn plates, and krpano skeleton live in
-> [`v20/`](v20/README.md). Everything else in this repo is the legacy
-> v17–v19 Next.js + React Three Fiber build, kept only until v20 ships.
+> **v20 is live on `/`.** The Next.js sphere now loads
+> `public/textures/store_pano_v20.webp` (baked from
+> [`v20/`](v20/README.md)). The KRPano skeleton + full art pipeline also
+> live under `v20/` for the eventual viewer swap. Legacy v17–v19 textures
+> remain in `public/textures/` unused.
 
 ## Routes
 
@@ -34,23 +34,16 @@ npm run dev
 
 ## Panorama bake
 
-Equirectangular master is **2:1** PNW warehouse cartoon-ink art
-(`art/stereo-mart-equirect-cartoon-v19.png`).
-Web bake is **v19** (`public/textures/store_pano_v19.webp`) — charcoal-cool
-underground shop, late-90s JP manual / PS2 concept line work.
-Recommended print/master size is **8192×4096** (generate locally from the 2k plate).
-Hero props sit in the mid band away from the wrap seam; zenith/nadir stay ceiling/floor.
-Separate transparent prop sprites live in **`art/props/`** and **`public/hotspots/props/`**.
-Foreground / midground parallax layers export to `store_pano_fg_v19.webp` and
-`store_pano_mg_v19.webp`. Hotspot edge rims bake from plane silhouettes
-(prop fallback for CRT / register / phone).
+Live texture is **v20** (`public/textures/store_pano_v20.webp`), baked from
+the illustrated plate in [`v20/`](v20/README.md):
 
 ```bash
-python3 scripts/compose-v19-equirect.py              # cartoon composite + layers
-python3 scripts/build-v19-pano.py                    # webp / avif / edges / CRT / toys
-python3 scripts/export-stereo-mart-brand-assets.py   # og / thumb / icon
+python3 v20/scripts/make-equirect.py              # 8192 master + mobile + LQIP
+# then copy mobile → public/textures/store_pano_v20.webp (see last commit)
 ```
 
+KRPano tour (full rebuild target) lives under `v20/krpano/`. The Next.js
+R3F shell is a temporary host until the licensed krpano viewer is wired in.
 ## Deploy
 
 Vercel (Next.js). Point `stereo-mart.com` at this project.

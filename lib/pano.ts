@@ -75,14 +75,13 @@ export const INTRO_DROP_V = 0.1;
 /** Soft yaw sweep (degrees) during the tilt — room reads as a place, not a still. */
 export const INTRO_PAN_DEG = 38;
 /**
- * Base view — aisle toward the back-wall LISTEN station (headphones +
- * turntable), bins kept in the lower third. v=0.5 aimed into the island
- * face and felt like starting inside a record bin on the v13 pano.
+ * Base view — storefront window (ath 0 on the v20 plate). Street, globe
+ * decal, and record bins in the sill read as the first "you're here" beat.
  */
-/** Center of the aisle after BackSide U-flip (texture u ↔ 1−u). */
+/** Storefront after BackSide U-flip (texture u ↔ 1−u). */
 export const START_LOOK_U = 0.5;
-/** Slightly above level — framed on the LISTEN wall, not the bin tops. */
-export const START_LOOK_V = 0.38;
+/** Level with the OPEN door / window mid-band. */
+export const START_LOOK_V = 0.48;
 
 /**
  * krpano vtourskin defaults:
@@ -200,14 +199,17 @@ export function uvToLocal(u: number, v: number): [number, number, number] {
   return uvToSpherical(u, v, SPHERE_RADIUS - 0.35);
 }
 
-/** v19 — Stereo-Mart cartoon warehouse ink (cool charcoal equirect). */
-export const TEXTURE_SRC = '/textures/store_pano_v19.webp';
+/** v20 — hand-illustrated PNW/Seoul record shop (from v20/art/plates). */
+export const TEXTURE_SRC = '/textures/store_pano_v20.webp';
 /** Darkened twin of the store — lights_off scene. */
-export const TEXTURE_OFF_SRC = '/textures/store_pano_off_v19.webp';
-export const LQIP_SRC = '/textures/store_pano_lqip_v19.webp';
-/** Transparent foreground / midground parallax layers. */
-export const TEXTURE_FG_SRC = '/textures/store_pano_fg_v19.webp';
-export const TEXTURE_MG_SRC = '/textures/store_pano_mg_v19.webp';
+export const TEXTURE_OFF_SRC = '/textures/store_pano_off_v20.webp';
+export const LQIP_SRC = '/textures/store_pano_lqip_v20.webp';
+/**
+ * Transparent FG/MG parallax layers. v20 ships empty placeholders —
+ * the illustration is a single plate (no separated prop layers yet).
+ */
+export const TEXTURE_FG_SRC = '/textures/store_pano_fg_v20.webp';
+export const TEXTURE_MG_SRC = '/textures/store_pano_mg_v20.webp';
 export const CRT_VIDEO_SRC = '/videos/channel_b.mp4';
 
 /** Max eye offset from sphere center (walk approach). */
