@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>STEREO-MART — dev preview (no krpano license needed)</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<!--
+		DEV TOOL ONLY — not part of the shipped experience.
+		Renders the baked master with open-source pannellum so hotspot
+		coordinates can be eyeballed without the krpano viewer. Click
+		anywhere to copy ath/atv for the XML (pannellum yaw==ath,
+		pitch==-atv). Markers mirror include/hotspots-nav.xml.
+	-->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" />
+	<script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+	<style>
+		html, body { width:100%; height:100%; margin:0; background:#232840; }
+		#pano { width:100%; height:100%; }
+		#readout {
+			position:fixed; left:12px; bottom:12px; z-index:10;
+			font:14px/1.4 monospace; color:#ece4d2; background:rgba(35,40,64,.85);
+			padding:8px 12px; border-radius:4px; pointer-events:none;
+		}
+		.hs-label {
+			font:12px monospace; color:#232840; background:#ece4d2;
+			border:2px solid #232840; border-radius:3px; padding:2px 6px; white-space:nowrap;
+		}
+	</style>
+</head>
+<body>
+	<div id="pano"></div>
+	<div id="readout">click to read ath/atv</div>
+	<script>
+		// mirror of include/hotspots-nav.xml + hotspots-life.xml coordinates
+		var spots = [
+			["nav_crate", 172, 5], ["nav_cassettes", 138, -12],
+			["nav_posters", -175, -25], ["nav_desk", 95, 15],
+			["nav_door", 44, -3], ["nav_mailslot", 43, 13],
+			["nav_listen", -88, -6],
+			["life_cat", -163.4, 23.9], ["life_steam", 92, 12],
+			["life_lamp", 88, 5], ["egg_ghost", 109, -5],
+			["egg_rabbit", -114, 20], ["egg_turtle", -146, 19],
+			["egg_mushroom", -53, 15]
+		];
+		var viewer = pannellum.viewer("pano", {
+			type: "equirectangular",
+			panorama: "../art/plates/pano-equirect-mobile.jpg",
+			autoLoad: true,
+			yaw: 0, pitch: -4, hfov: 92, maxHfov: 110, minHfov: 45,
+			friction: 0.15, compass: false, showControls: false,
+			hotSpots: spots.map(function (s) {
+				return {
+					id: s[0], yaw: s[1], pitch: -s[2],
+					cssClass: "hs-label", createTooltipFunc: function (div) { div.textContent = s[0]; },
+					// dummy arg keeps pannellum's tooltip factory happy
+					createTooltipArgs: null
+				};
+			})
+		});
+		viewer.on("mousedown", function (e) {
+			var c = viewer.mouseEventToCoords(e);
+			var txt = 'ath="' + c[1].toFixed(1) + '" atv="' + (-c[0]).toFixed(1) + '"';
+			document.getElementById("readout").textContent = txt;
+			if (navigator.clipboard) navigator.clipboard.writeText(txt).catch(function () {});
+		});
+	</script>
+</body>
+</html>

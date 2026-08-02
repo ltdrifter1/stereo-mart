@@ -1,53 +1,64 @@
 #!/usr/bin/env python3
 """Bake the painted interior plate into a 2:1 equirectangular master.
 
-Basics-only pipeline step:
   1. resample the 16:9 plate to 2:1 (slight vertical squash — fine for
      stylized art; repaint fixes go into the plate, not here)
-  2. cross-fade the horizontal wrap seam so left/right edges meet cleanly
-  3. emit the full-size master plus a tiny blurred LQIP preview
+  2. seam-safe wrap: cross-fade mirrored edge columns so the left and right
+     edges meet on the exact same pixels (the seam lands on the quiet wall
+     band per ART_DIRECTION.md, so the narrow blend is invisible)
+  3. mild unsharp mask to keep ink lines crisp through the upscale
+  4. emit the master (JPEG q92 above 4096 to keep the repo sane, PNG below),
+     a tiny blurred LQIP preview, and a mobile-friendly 4096 JPEG
 
 Usage:
   python3 v20/scripts/make-equirect.py [--width 8192]
 
 Output:
-  v20/art/plates/pano-equirect-master.png   (WIDTHx WIDTH/2)
-  v20/art/plates/pano-equirect-lqip.jpg     (512x256, blurred)
+  v20/art/plates/pano-equirect-master.jpg   (WIDTH x WIDTH/2)
+  v20/art/plates/pano-equirect-mobile.jpg   (4096 x 2048)
+  v20/art/plates/pano-equirect-lqip.jpg     (512 x 256, blurred)
 
-The master then feeds krpanotools makepano for the multires cube tiles in
-v20/krpano/panos/.
+The master feeds krpanotools makepano for multires cube tiles; until tiles
+exist the tour loads the master directly as a <sphere> image.
 """
 from __future__ import annotations
 
 import argparse
 from pathlib import Path
 
+import numpy as np
 from PIL import Image, ImageFilter
 
 ROOT = Path(__file__).resolve().parents[1]
 PLATE = ROOT / "art" / "plates" / "pano-interior-plate.png"
-MASTER = ROOT / "art" / "plates" / "pano-equirect-master.png"
+MASTER = ROOT / "art" / "plates" / "pano-equirect-master.jpg"
+MOBILE = ROOT / "art" / "plates" / "pano-equirect-mobile.jpg"
 LQIP = ROOT / "art" / "plates" / "pano-equirect-lqip.jpg"
 
-SEAM_PX_FRACTION = 0.015  # width of the wrap cross-fade band
+SEAM_FRACTION = 0.02  # width of the wrap cross-fade band (each side)
 
 
 def blend_seam(img: Image.Image) -> Image.Image:
-    """Cross-fade the left edge over the (wrapped) right edge."""
-    w, h = img.size
-    band = max(8, int(w * SEAM_PX_FRACTION))
-    img = img.convert("RGB")
-    left = img.crop((0, 0, band, h))
-    right = img.crop((w - band, 0, w, h))
-    for x in range(band):
-        t = x / (band - 1)  # 0 at outer edge -> 1 inward
-        lcol = left.crop((x, 0, x + 1, h))
-        rcol = right.crop((x, 0, x + 1, h))
-        # pull each edge toward the opposite edge's pixels
-        img.paste(Image.blend(rcol, lcol, 0.5 + t / 2), (x, 0))
-        img.paste(Image.blend(lcol.transpose(Image.Transpose.FLIP_LEFT_RIGHT),
-                              rcol, 0.5 + (1 - t) / 2), (w - band + x, 0))
-    return img
+    """Cross-fade mirrored edge columns so column 0 == column W-1.
+
+    For band index i (0 = outer edge), both edges converge to the average of
+    the two original edge columns, ramping back to the untouched image at the
+    inner end of the band.
+    """
+    a = np.asarray(img.convert("RGB"), dtype=np.float32)
+    h, w, _ = a.shape
+    band = max(16, int(w * SEAM_FRACTION))
+
+    left = a[:, :band].copy()               # columns 0..band-1
+    right = a[:, w - band:].copy()          # columns w-band..w-1
+    right_mirr = right[:, ::-1]             # right edge indexed from seam out
+
+    for i in range(band):
+        wgt = 0.5 * (1.0 - i / band)        # 0.5 at seam -> 0 inward
+        a[:, i] = (1 - wgt) * left[:, i] + wgt * right_mirr[:, i]
+        a[:, w - 1 - i] = (1 - wgt) * right_mirr[:, i] + wgt * left[:, i]
+
+    return Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
 
 
 def main() -> None:
@@ -60,9 +71,18 @@ def main() -> None:
 
     plate = Image.open(PLATE)
     master = plate.resize((w, h), Image.Resampling.LANCZOS)
+    master = master.filter(ImageFilter.UnsharpMask(radius=3, percent=60, threshold=2))
     master = blend_seam(master)
-    master.save(MASTER, optimize=True)
+
+    if w > 4096:
+        master.save(MASTER, quality=92, optimize=True)
+    else:
+        master.save(MASTER.with_suffix(".png"), optimize=True)
     print(f"master  {MASTER.relative_to(ROOT)}  {master.size[0]}x{master.size[1]}")
+
+    mobile = master.resize((4096, 2048), Image.Resampling.LANCZOS)
+    mobile.save(MOBILE, quality=88, optimize=True)
+    print(f"mobile  {MOBILE.relative_to(ROOT)}  4096x2048")
 
     lqip = master.resize((512, 256), Image.Resampling.LANCZOS)
     lqip = lqip.filter(ImageFilter.GaussianBlur(2.2))

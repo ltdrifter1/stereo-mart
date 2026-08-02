@@ -3,18 +3,33 @@
 	<!--
 		Shared interaction verbs. Every nav hotspot calls these; nothing is
 		hardwired per-hotspot so the feel stays consistent everywhere.
+
+		Nav hotspots are invisible glow silhouettes sitting exactly over the
+		painted objects (alpha 0 -> soft warm aura on hover). Custom attrs on
+		each hotspot drive the shared actions: tooltip, zoomfov, panel.
 	-->
 
-	<!-- hover: slight scale + soft glow sprite + hand-drawn tooltip -->
-	<action name="hs_over">
+	<!-- glow-silhouette nav hotspot: fade the aura in, show the tooltip -->
+	<action name="nav_over">
+		tween(alpha, 0.55, 0.35, easeOutQuad);
+		tooltip_show(get(tooltip));
+	</action>
+
+	<action name="nav_out">
+		tween(alpha, 0.0, 0.5, easeOutQuad);
+		tooltip_hide();
+	</action>
+
+	<!-- visible overlay prop (e.g. mail slot): light its paired glow_* sprite -->
+	<action name="prop_over">
 		tween(scale, 1.06, 0.35, easeOutQuad);
 		if(hotspot[calc('glow_' + name)] !== null,
-			tween(hotspot[calc('glow_' + name)].alpha, 0.85, 0.4);
+			tween(hotspot[calc('glow_' + name)].alpha, 0.7, 0.35);
 		);
 		tooltip_show(get(tooltip));
 	</action>
 
-	<action name="hs_out">
+	<action name="prop_out">
 		tween(scale, 1.0, 0.45, easeOutQuad);
 		if(hotspot[calc('glow_' + name)] !== null,
 			tween(hotspot[calc('glow_' + name)].alpha, 0.0, 0.5);
@@ -24,22 +39,24 @@
 
 	<!--
 		click: smooth camera glide toward the object, gentle zoom, then open
-		the content panel and cross-fade the ambience. args: ath, atv, fov, panel
+		the content panel and let the ambience swell. Reads the hotspot's
+		own ath/atv/zoomfov/panel attributes.
 	-->
-	<action name="hs_go">
+	<action name="nav_go">
 		sound_ui_click();
-		lookto(%1, %2, %3, smooth(120, 20, 40), true, true,
-			panel_open(%4);
+		tooltip_hide();
+		lookto(get(ath), get(atv), get(zoomfov), smooth(120, 20, 40), true, true,
+			panel_open(get(panel));
 			ambience_swell();
 		);
 	</action>
 
 	<!-- paper-scrap tooltip drawn as a styled textfield layer -->
-	<layer name="tooltip" type="text" visible="false" keep="true"
+	<layer name="tooltip" type="text" visible="false" alpha="0" keep="true"
 		align="top" y="8%" edge="top"
 		background="true" backgroundcolor="0xece4d2" backgroundalpha="0.96"
 		border="true" bordercolor="0x232840" borderwidth="2" borderalpha="1"
-		roundedge="3" padding="7 14"
+		roundedge="3" padding="7 14" enabled="false"
 		css="font-family:'Patrick Hand','Comic Neue',cursive; font-size:17px; color:#232840; letter-spacing:0.06em;"
 	/>
 
@@ -53,24 +70,62 @@
 		tween(layer[tooltip].alpha, 0.0, 0.3, default, set(layer[tooltip].visible, false); );
 	</action>
 
+	<!-- bottom toast for discoveries ("you found the turtle sticker - 3/5") -->
+	<layer name="toast" type="text" visible="false" alpha="0" keep="true"
+		align="bottom" y="7%" edge="bottom"
+		background="true" backgroundcolor="0x232840" backgroundalpha="0.92"
+		roundedge="4" padding="8 16" enabled="false"
+		css="font-family:'Patrick Hand','Comic Neue',cursive; font-size:16px; color:#ece4d2; letter-spacing:0.05em;"
+	/>
+
+	<action name="toast_show">
+		stopdelayedcall(toasthide);
+		set(layer[toast].html, %1);
+		set(layer[toast].visible, true);
+		tween(layer[toast].alpha, 1.0, 0.35);
+		delayedcall(toasthide, 2.8,
+			tween(layer[toast].alpha, 0.0, 0.6, default, set(layer[toast].visible, false); );
+		);
+	</action>
+
 	<!--
-		Content panels: kept as krpano layers (scrollarea) rather than DOM
-		overlays. Panels are declared per-section in a later pass; this is
-		the shared open/close plumbing.
+		Hidden-discovery handler: wiggle, chime, persist via the JS bridge
+		(js/discoveries.js), toast the running count. %1 = id, %2 = label.
 	-->
+	<action name="egg_found">
+		tween(scale, calc(scale * 1.15), 0.15, easeOutQuad,
+			tween(scale, calc(scale / 1.15), 0.3, easeOutBack); );
+		sound_egg_chime();
+		jsget(found_msg, calc('window.smDiscoveries ? smDiscoveries.message("' + %1 + '","' + %2 + '") : "you found " + "' + %2 + '"'));
+		toast_show(get(found_msg));
+	</action>
+
+	<!-- shared open/close plumbing for the layer-based content panels -->
 	<action name="panel_open">
+		panel_close_instant();
 		set(layer[calc('panel_' + %1)].visible, true);
 		tween(layer[calc('panel_' + %1)].alpha, 1.0, 0.5, easeOutQuad);
 		set(panel_current, %1);
+		panel_open_extras();
 	</action>
 
 	<action name="panel_close">
 		if(panel_current !== null,
+			panel_close_extras();
 			tween(layer[calc('panel_' + panel_current)].alpha, 0.0, 0.4, easeInQuad,
 				set(layer[calc('panel_' + panel_current)].visible, false);
-				set(panel_current, null);
 			);
+			set(panel_current, null);
 			lookto(get(view.hlookat), 4, 92, smooth(100, 20, 30));
+		);
+	</action>
+
+	<action name="panel_close_instant">
+		if(panel_current !== null,
+			panel_close_extras();
+			set(layer[calc('panel_' + panel_current)].alpha, 0.0);
+			set(layer[calc('panel_' + panel_current)].visible, false);
+			set(panel_current, null);
 		);
 	</action>
 
