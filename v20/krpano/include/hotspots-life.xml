@@ -1,0 +1,110 @@
+<krpano>
+
+	<!--
+		Ambient life + hidden discoveries. Two groups:
+		  life_*   — always-on environmental loops (Ghibli energy, very slow)
+		  egg_*    — hidden one-shot discoveries, revealed by curiosity
+		All loops are sprite-sheet or tween based; no video, no DOM.
+	-->
+
+	<style name="lifespot"
+		type="image" keep="true" group="life"
+		distorted="false" enabled="false" zoom="false"
+	/>
+
+	<style name="eggspot"
+		type="image" keep="true" group="egg"
+		distorted="false" zoom="false" handcursor="true"
+	/>
+
+	<!-- ===== always-on loops (placeholder coords, art from art/props/) ===== -->
+
+	<!-- cat: slow blink every 6–11 s, stretches after long stare -->
+	<hotspot name="life_cat" style="lifespot" url="../art/props/cat_sleep.png" ath="98" atv="26" />
+
+	<!-- ceiling fan: continuous slow rotation at the zenith -->
+	<hotspot name="life_fan" style="lifespot" url="../art/props/fan.png" ath="0" atv="-88" rotate="0" />
+
+	<!-- record on the platter: slow spin -->
+	<hotspot name="life_platter" style="lifespot" url="../art/props/platter.png" ath="-58" atv="14" rotate="0" />
+
+	<!-- coffee steam: 3-frame drift loop above the mug -->
+	<hotspot name="life_steam" style="lifespot" url="../art/props/steam_a.png" ath="-112" atv="4" alpha="0.7" />
+
+	<!-- lamp: rare single flicker -->
+	<hotspot name="life_lamp" style="lifespot" url="../art/props/lamp_on.png" ath="-124" atv="-4" />
+
+	<action name="life_start">
+		life_fan_spin();
+		life_platter_spin();
+		life_cat_blink();
+		life_steam_drift();
+		life_lamp_flicker();
+	</action>
+
+	<action name="life_fan_spin">
+		tween(hotspot[life_fan].rotate, 360, 9.0, linearTween,
+			set(hotspot[life_fan].rotate, 0); life_fan_spin(); );
+	</action>
+
+	<action name="life_platter_spin">
+		tween(hotspot[life_platter].rotate, 360, 1.8, linearTween,
+			set(hotspot[life_platter].rotate, 0); life_platter_spin(); );
+	</action>
+
+	<action name="life_cat_blink">
+		delayedcall(catblink, calc(6 + random * 5),
+			set(hotspot[life_cat].url, '../art/props/cat_blink.png');
+			delayedcall(catopen, 0.18,
+				set(hotspot[life_cat].url, '../art/props/cat_sleep.png');
+				life_cat_blink();
+			);
+		);
+	</action>
+
+	<action name="life_steam_drift">
+		tween(hotspot[life_steam].oy, -6, 2.6, easeInOutSine,
+			tween(hotspot[life_steam].oy, 0, 2.6, easeInOutSine, life_steam_drift(); );
+		);
+	</action>
+
+	<action name="life_lamp_flicker">
+		delayedcall(lampflick, calc(25 + random * 50),
+			tween(hotspot[life_lamp].alpha, 0.55, 0.06, default,
+				tween(hotspot[life_lamp].alpha, 1.0, 0.10, default, life_lamp_flicker(); );
+			);
+		);
+	</action>
+
+	<!-- ===== hidden discoveries (a few wired now, list in NAVIGATION.md) ===== -->
+
+	<!-- tiny ghost: blips into the storage doorway for ~1.2 s, rarely -->
+	<hotspot name="egg_ghost" style="eggspot" url="../art/props/ghost.png"
+		ath="156" atv="4" alpha="0.0" enabled="false" />
+
+	<action name="egg_ghost_haunt">
+		delayedcall(ghost, calc(90 + random * 200),
+			tween(hotspot[egg_ghost].alpha, 0.8, 0.3, default,
+				delayedcall(ghosthold, 1.2,
+					tween(hotspot[egg_ghost].alpha, 0.0, 0.4, default, egg_ghost_haunt(); );
+				);
+			);
+		);
+	</action>
+
+	<!-- stickers & doodles: findable, wiggle once when clicked -->
+	<hotspot name="egg_rabbit" style="eggspot" url="../art/props/sticker_rabbit.png"
+		ath="70" atv="22" scale="0.5" onclick="egg_found(rabbit);" />
+	<hotspot name="egg_turtle" style="eggspot" url="../art/props/sticker_turtle.png"
+		ath="-142" atv="30" scale="0.5" onclick="egg_found(turtle);" />
+	<hotspot name="egg_mushroom" style="eggspot" url="../art/props/mushroom.png"
+		ath="88" atv="34" scale="0.45" onclick="egg_found(mushroom);" />
+
+	<action name="egg_found">
+		tween(scale, calc(scale * 1.15), 0.15, easeOutQuad,
+			tween(scale, calc(scale / 1.15), 0.25, easeOutBack); );
+		sound_egg_chime();
+		<!-- per-visit discovery tracking (localStorage) comes with the panels pass -->
+	</action>
+
+</krpano>

@@ -1,0 +1,77 @@
+<krpano>
+
+	<!--
+		Shared interaction verbs. Every nav hotspot calls these; nothing is
+		hardwired per-hotspot so the feel stays consistent everywhere.
+	-->
+
+	<!-- hover: slight scale + soft glow sprite + hand-drawn tooltip -->
+	<action name="hs_over">
+		tween(scale, 1.06, 0.35, easeOutQuad);
+		if(hotspot[calc('glow_' + name)] !== null,
+			tween(hotspot[calc('glow_' + name)].alpha, 0.85, 0.4);
+		);
+		tooltip_show(get(tooltip));
+	</action>
+
+	<action name="hs_out">
+		tween(scale, 1.0, 0.45, easeOutQuad);
+		if(hotspot[calc('glow_' + name)] !== null,
+			tween(hotspot[calc('glow_' + name)].alpha, 0.0, 0.5);
+		);
+		tooltip_hide();
+	</action>
+
+	<!--
+		click: smooth camera glide toward the object, gentle zoom, then open
+		the content panel and cross-fade the ambience. args: ath, atv, fov, panel
+	-->
+	<action name="hs_go">
+		sound_ui_click();
+		lookto(%1, %2, %3, smooth(120, 20, 40), true, true,
+			panel_open(%4);
+			ambience_swell();
+		);
+	</action>
+
+	<!-- paper-scrap tooltip drawn as a styled textfield layer -->
+	<layer name="tooltip" type="text" visible="false" keep="true"
+		align="top" y="8%" edge="top"
+		background="true" backgroundcolor="0xece4d2" backgroundalpha="0.96"
+		border="true" bordercolor="0x232840" borderwidth="2" borderalpha="1"
+		roundedge="3" padding="7 14"
+		css="font-family:'Patrick Hand','Comic Neue',cursive; font-size:17px; color:#232840; letter-spacing:0.06em;"
+	/>
+
+	<action name="tooltip_show">
+		set(layer[tooltip].html, %1);
+		set(layer[tooltip].visible, true);
+		tween(layer[tooltip].alpha, 1.0, 0.25);
+	</action>
+
+	<action name="tooltip_hide">
+		tween(layer[tooltip].alpha, 0.0, 0.3, default, set(layer[tooltip].visible, false); );
+	</action>
+
+	<!--
+		Content panels: kept as krpano layers (scrollarea) rather than DOM
+		overlays. Panels are declared per-section in a later pass; this is
+		the shared open/close plumbing.
+	-->
+	<action name="panel_open">
+		set(layer[calc('panel_' + %1)].visible, true);
+		tween(layer[calc('panel_' + %1)].alpha, 1.0, 0.5, easeOutQuad);
+		set(panel_current, %1);
+	</action>
+
+	<action name="panel_close">
+		if(panel_current !== null,
+			tween(layer[calc('panel_' + panel_current)].alpha, 0.0, 0.4, easeInQuad,
+				set(layer[calc('panel_' + panel_current)].visible, false);
+				set(panel_current, null);
+			);
+			lookto(get(view.hlookat), 4, 92, smooth(100, 20, 30));
+		);
+	</action>
+
+</krpano>
