@@ -1,0 +1,67 @@
+<krpano>
+
+	<!--
+		Primary navigation — every destination is an object in the room.
+		Coordinates are placeholders until the master plate is tiled; adjust
+		ath/atv here only (see NAVIGATION.md for the map).
+
+		Each nav hotspot is a transparent PNG cut from the plate art plus a
+		matching soft glow sprite (alpha 0, faded in on hover). Naming:
+		nav_* / glow_nav_* so actions.xml can pair them automatically.
+	-->
+
+	<style name="navspot"
+		type="image" keep="true" group="nav"
+		distorted="false" zoom="false"
+		onover="hs_over();" onout="hs_out();"
+		capture="false" handcursor="true"
+	/>
+
+	<style name="navglow"
+		type="image" keep="true" group="nav"
+		alpha="0.0" enabled="false" blendmode="screen"
+	/>
+
+	<!-- Record crate → Releases -->
+	<hotspot name="nav_crate" style="navspot" url="../art/props/crate.png"
+		ath="24" atv="18" scale="1.0" tooltip="dig the crates — releases"
+		onclick="hs_go(24, 18, 55, releases);" />
+	<hotspot name="glow_nav_crate" style="navglow" url="../art/props/crate_glow.png" ath="24" atv="18" />
+
+	<!-- Cassette rack → Catalog -->
+	<hotspot name="nav_cassettes" style="navspot" url="../art/props/cassettes.png"
+		ath="63" atv="6" scale="1.0" tooltip="tape wall — full catalog"
+		onclick="hs_go(63, 6, 55, catalog);" />
+	<hotspot name="glow_nav_cassettes" style="navglow" url="../art/props/cassettes_glow.png" ath="63" atv="6" />
+
+	<!-- Poster wall → Artists -->
+	<hotspot name="nav_posters" style="navspot" url="../art/props/posters.png"
+		ath="132" atv="-8" scale="1.0" tooltip="poster wall — artists"
+		onclick="hs_go(132, -8, 60, artists);" />
+	<hotspot name="glow_nav_posters" style="navglow" url="../art/props/posters_glow.png" ath="132" atv="-8" />
+
+	<!-- Desk → About -->
+	<hotspot name="nav_desk" style="navspot" url="../art/props/desk.png"
+		ath="-118" atv="12" scale="1.0" tooltip="the desk — about us"
+		onclick="hs_go(-118, 12, 55, about);" />
+	<hotspot name="glow_nav_desk" style="navglow" url="../art/props/desk_glow.png" ath="-118" atv="12" />
+
+	<!-- Mail slot → Contact -->
+	<hotspot name="nav_mailslot" style="navspot" url="../art/props/mailslot.png"
+		ath="-172" atv="8" scale="1.0" tooltip="drop us a note"
+		onclick="hs_go(-172, 8, 50, contact);" />
+	<hotspot name="glow_nav_mailslot" style="navglow" url="../art/props/mailslot_glow.png" ath="-172" atv="8" />
+
+	<!-- Door → Enter Store -->
+	<hotspot name="nav_door" style="navspot" url="../art/props/door.png"
+		ath="-180" atv="2" scale="1.0" tooltip="come on in — store"
+		onclick="hs_go(-180, 2, 60, store);" />
+	<hotspot name="glow_nav_door" style="navglow" url="../art/props/door_glow.png" ath="-180" atv="2" />
+
+	<!-- Listening station → Music player -->
+	<hotspot name="nav_listen" style="navspot" url="../art/props/listen.png"
+		ath="-58" atv="10" scale="1.0" tooltip="put the headphones on"
+		onclick="hs_go(-58, 10, 50, player);" />
+	<hotspot name="glow_nav_listen" style="navglow" url="../art/props/listen_glow.png" ath="-58" atv="10" />
+
+</krpano>

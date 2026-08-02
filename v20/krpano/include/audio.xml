@@ -1,0 +1,46 @@
+<krpano>
+
+	<!--
+		Quiet environmental bed via the krpano soundinterface plugin.
+		Everything is opt-in behind one gesture (first click on the room);
+		music itself NEVER autoplays — only via the listening station.
+	-->
+
+	<plugin name="soundinterface" url="%VIEWER%/plugins/soundinterface.js" keep="true" preload="true" />
+
+	<action name="ambience_start">
+		playsound(bed_street,  'audio/street.ogg',   0, 0.10);
+		playsound(bed_birds,   'audio/birds.ogg',    0, 0.08);
+		playsound(bed_hum,     'audio/hvac.ogg',     0, 0.06);
+		playsound(bed_crackle, 'audio/crackle.ogg',  0, 0.07);
+		delayedcall(trainloop, calc(60 + random * 120), ambience_train() );
+		delayedcall(muffled,   calc(45 + random * 90),  ambience_muffled() );
+	</action>
+
+	<!-- distant train passes by once in a while -->
+	<action name="ambience_train">
+		playsound(fx_train, 'audio/train.ogg', 1, 0.05);
+		delayedcall(trainloop, calc(120 + random * 240), ambience_train() );
+	</action>
+
+	<!-- muffled music leaks from the back room occasionally -->
+	<action name="ambience_muffled">
+		playsound(fx_muffled, 'audio/muffled.ogg', 1, 0.06);
+		delayedcall(muffled, calc(150 + random * 200), ambience_muffled() );
+	</action>
+
+	<!-- brief warm swell used by hs_go transitions -->
+	<action name="ambience_swell">
+		setsoundvolume(bed_street, 0.16, 0.6);
+		delayedcall(swellback, 1.2, setsoundvolume(bed_street, 0.10, 1.5); );
+	</action>
+
+	<action name="sound_ui_click">
+		playsound(ui_click, 'audio/click.ogg', 1, 0.3);
+	</action>
+
+	<action name="sound_egg_chime">
+		playsound(ui_chime, 'audio/chime.ogg', 1, 0.25);
+	</action>
+
+</krpano>

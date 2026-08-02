@@ -1,0 +1,42 @@
+<krpano>
+
+	<!--
+		Camera: free look with natural limits, smooth inertia, comfortable
+		FOV, wheel zoom, touch friendly, and a slight idle "breathing".
+	-->
+
+	<view
+		hlookat="0" vlookat="4"
+		fov="92" fovmin="45" fovmax="110" fovtype="MFOV"
+		maxpixelzoom="1.2"
+		limitview="lookat"
+		vlookatmin="-62" vlookatmax="55"
+	/>
+
+	<!-- soft drag + slow glide-out = cozy, never snappy -->
+	<control
+		mouse="drag" touch="drag"
+		zoomtocursor="true"
+		mousefovchange="0.6"
+		touchfriction="0.93"
+		draginertia="0.15"
+		keybaccelerate="0.25" keybfriction="0.9"
+	/>
+
+	<display fps="60" mipmapping="true" texturequality="high" />
+	<network caching="true" />
+
+	<!-- idle breathing: barely-there vertical bob + fov swell, pauses on input -->
+	<action name="start_idle_breathing">
+		tween(view.vlookat, calc(view.vlookat + 0.4), 4.0, easeInOutSine,
+			tween(view.vlookat, calc(view.vlookat - 0.4), 4.0, easeInOutSine, start_idle_breathing() );
+		);
+	</action>
+
+	<events name="idle_guard"
+		onviewchanged=""
+		onmousedown="stoptween(view.vlookat);"
+		onmouseup="delayedcall(breath, 6.0, start_idle_breathing() );"
+	/>
+
+</krpano>

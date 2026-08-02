@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 240" role="img" aria-label="Stereo-Mart Records wordmark">
+	<!--
+		Horizontal lockup from the supplied sheet: bold italic condensed
+		STEREO-MART over a skewed RECORDS banner. `data-variant` colors:
+		ink-on-light (default)  swap fills for the mono/red variants.
+	-->
+	<defs>
+		<style>
+			.word { font-family:'Haettenschweiler','Archivo Black','Arial Narrow',sans-serif;
+			        font-style:italic; font-weight:900; letter-spacing:-3px; }
+		</style>
+	</defs>
+
+	<text class="word" x="20" y="140" font-size="132" fill="#232840">STEREO-MART</text>
+
+	<!-- skewed banner echoing the italic slant -->
+	<polygon points="38,168 726,168 706,226 18,226" fill="#a63a32" />
+	<text x="372" y="211" text-anchor="middle"
+		font-family="'Archivo Black','Arial Black',sans-serif" font-weight="800"
+		font-size="38" letter-spacing="22" fill="#ece4d2">RECORDS</text>
+</svg>

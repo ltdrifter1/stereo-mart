@@ -1,6 +1,12 @@
 # STEREO-MART
 
-`stereo-mart.com` — immersive **360° illustrated record shop** (Next.js + React Three Fiber).
+`stereo-mart.com` — immersive **360° illustrated record shop**.
+
+> **v20 rebuild in progress** — the experience is being rebuilt from scratch
+> as a fully illustrated KRPano world (nothing below is reused). The new
+> workspace, art direction, redrawn plates, and krpano skeleton live in
+> [`v20/`](v20/README.md). Everything else in this repo is the legacy
+> v17–v19 Next.js + React Three Fiber build, kept only until v20 ships.
 
 ## Routes
 

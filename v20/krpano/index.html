@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>STEREO-MART — Records</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<meta name="description" content="An illustrated 360° record label shop. Come in and look around." />
+	<style>
+		/* The page is only a frame; everything lives inside the panorama. */
+		html, body { width:100%; height:100%; margin:0; padding:0; overflow:hidden; background:#232840; }
+		#pano { width:100%; height:100%; }
+	</style>
+</head>
+<body>
+	<div id="pano"></div>
+	<!-- krpano.js ships with the licensed krpano tools; not committed to the repo -->
+	<script src="krpano.js"></script>
+	<script>
+		embedpano({
+			xml: "tour.xml",
+			target: "pano",
+			html5: "only",
+			mobilescale: 1.0,
+			passQueryParameters: "startscene,startlookat",
+			consolelog: false
+		});
+	</script>
+</body>
+</html>
