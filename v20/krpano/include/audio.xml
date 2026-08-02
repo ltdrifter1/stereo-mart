@@ -8,6 +8,14 @@
 
 	<plugin name="soundinterface" url="%VIEWER%/plugins/soundinterface.js" keep="true" preload="true" />
 
+	<!-- first user gesture on the pano arms the ambience, exactly once -->
+	<action name="ambience_boot">
+		if(ambience_started !== true,
+			set(ambience_started, true);
+			ambience_start();
+		);
+	</action>
+
 	<action name="ambience_start">
 		playsound(bed_street,  'audio/street.ogg',   0, 0.10);
 		playsound(bed_birds,   'audio/birds.ogg',    0, 0.08);

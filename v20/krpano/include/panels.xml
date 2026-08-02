@@ -1,0 +1,101 @@
+<krpano>
+
+	<!--
+		Layer-based content panels (no DOM overlays). One paper card per
+		destination; copy is placeholder structure for now — real catalog /
+		artist data gets wired in the content pass.
+
+		Panels open via panel_open(name) from actions.xml. Clicking the
+		dimmer or the x closes.
+	-->
+
+	<!-- click-catcher dim behind any open panel -->
+	<layer name="panel_dim" type="container" keep="true"
+		align="lefttop" width="100%" height="100%"
+		bgcapture="true" bgcolor="0x232840" bgalpha="0.0"
+		visible="false" onclick="panel_close();" zorder="90" />
+
+	<action name="panel_dim_show">
+		set(layer[panel_dim].visible, true);
+		tween(layer[panel_dim].bgalpha, 0.35, 0.5);
+	</action>
+
+	<action name="panel_dim_hide">
+		tween(layer[panel_dim].bgalpha, 0.0, 0.4, default, set(layer[panel_dim].visible, false); );
+	</action>
+
+	<!-- paper card style -->
+	<style name="panelcard"
+		type="text" keep="true" visible="false" alpha="0" zorder="100"
+		align="rightcenter" x="28" edge="rightcenter"
+		width="340" bgborder="3 0x232840 1" backgroundcolor="0xece4d2" backgroundalpha="0.98"
+		roundedge="6" padding="20 22"
+		css="font-family:'Patrick Hand','Comic Neue',cursive; font-size:16px; color:#232840; line-height:1.45;"
+	/>
+
+	<style name="panelclose"
+		type="text" keep="true" visible="false" alpha="0" zorder="101"
+		align="rightcenter" edge="leftbottom"
+		background="false" enabled="true" handcursor="true"
+		css="font-family:'Patrick Hand',cursive; font-size:22px; color:#a63a32;"
+	/>
+
+	<layer name="panel_releases" style="panelcard" html="[h2]RELEASES[/h2]
+[b]SM-011[/b] — Inlet Knight, 'Harbor Lights' LP[br]
+[b]SM-010[/b] — Various, 'Night Bus Vol. 2' cassette[br]
+[b]SM-009[/b] — Moss Choir, 'Overcast' EP[br][br]
+[i]full discography lands with the content pass —
+for now, keep digging.[/i]" />
+
+	<layer name="panel_catalog" style="panelcard" html="[h2]CATALOG[/h2]
+every tape on the wall, alphabetized badly on purpose.[br][br]
+[i]searchable catalog wires in next — ask the person at the desk.[/i]" />
+
+	<layer name="panel_artists" style="panelcard" html="[h2]ARTISTS[/h2]
+the poster wall keeps the family tree: touring bands, one-off
+collabs, that project nobody will confirm exists.[br][br]
+[i]artist pages arrive with the content pass.[/i]" />
+
+	<layer name="panel_about" style="panelcard" html="[h2]ABOUT[/h2]
+STEREO-MART RECORDS — an independent label run from a desk buried
+in demo tapes. underground sound, musical discovery, coffee
+permanently going cold.[br][br]
+support your local record store." />
+
+	<layer name="panel_contact" style="panelcard" html="[h2]CONTACT[/h2]
+slide it through the mail slot:[br][br]
+demos — [b]demos@stereo-mart.com[/b][br]
+everything else — [b]hello@stereo-mart.com[/b][br][br]
+[i](a real form arrives with the content pass.)[/i]" />
+
+	<layer name="panel_store" style="panelcard" html="[h2]THE STORE[/h2]
+vinyl, tapes, shirts and stickers — the web store connects here
+soon. until then the door stays propped open.[br][br]
+[i]storefront checkout wires in next.[/i]" />
+
+	<layer name="panel_player" style="panelcard" html="[h2]LISTENING STATION[/h2]
+put the headphones on. the music player (with the label's
+previews) docks into this panel in the content pass.[br][br]
+[i]side A, quiet volume, no autoplay — promise.[/i]" />
+
+	<!-- one close button, repositioned onto whichever panel is open -->
+	<layer name="panel_x" style="panelclose" html="close ✕" onclick="panel_close();" />
+
+	<!-- extend the shared open/close with dim + close-button handling -->
+	<action name="panel_open_extras">
+		panel_dim_show();
+		set(layer[panel_x].parent, calc('layer[panel_' + panel_current + ']'));
+		set(layer[panel_x].align, righttop);
+		set(layer[panel_x].x, 10);
+		set(layer[panel_x].y, 6);
+		set(layer[panel_x].visible, true);
+		set(layer[panel_x].alpha, 1);
+	</action>
+
+	<action name="panel_close_extras">
+		set(layer[panel_x].visible, false);
+		set(layer[panel_x].alpha, 0);
+		panel_dim_hide();
+	</action>
+
+</krpano>

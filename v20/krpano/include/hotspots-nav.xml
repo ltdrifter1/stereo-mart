@@ -1,67 +1,71 @@
 <krpano>
 
 	<!--
-		Primary navigation — every destination is an object in the room.
-		Coordinates are placeholders until the master plate is tiled; adjust
-		ath/atv here only (see NAVIGATION.md for the map).
+		Primary navigation — every destination is a painted object in the
+		room. Coordinates were measured off rendered views (see
+		preview.html; screen-to-angle math in scripts/make-patches.py
+		docstring). Distorted-hotspot pixel width = 2000 * tan(deg/2).
 
-		Each nav hotspot is a transparent PNG cut from the plate art plus a
-		matching soft glow sprite (alpha 0, faded in on hover). Naming:
-		nav_* / glow_nav_* so actions.xml can pair them automatically.
+		The plate already contains the objects, so nav hotspots are
+		INVISIBLE glow silhouettes (alpha 0) that sit exactly over the
+		painted art and only fade in as a soft warm aura on hover — no
+		double-drawn props, nothing that reads as a button.
+
+		The mail slot is the one visible overlay prop: the painted door has
+		no slot, so the sheet prop is additive.
 	-->
 
 	<style name="navspot"
 		type="image" keep="true" group="nav"
-		distorted="false" zoom="false"
-		onover="hs_over();" onout="hs_out();"
-		capture="false" handcursor="true"
+		distorted="true" alpha="0.0" zorder="10"
+		onover="nav_over();" onout="nav_out();" onclick="nav_go();"
+		handcursor="true"
 	/>
 
-	<style name="navglow"
-		type="image" keep="true" group="nav"
-		alpha="0.0" enabled="false" blendmode="screen"
-	/>
+	<!-- Record crates (ROCK/INDIE + NEW ARRIVALS bins, back corner) → Releases -->
+	<hotspot name="nav_crate" style="navspot" url="../art/props/crate_glow.png"
+		ath="172" atv="5" width="828" height="prop"
+		tooltip="dig the crates — releases" zoomfov="55" panel="releases" />
 
-	<!-- Record crate → Releases -->
-	<hotspot name="nav_crate" style="navspot" url="../art/props/crate.png"
-		ath="24" atv="18" scale="1.0" tooltip="dig the crates — releases"
-		onclick="hs_go(24, 18, 55, releases);" />
-	<hotspot name="glow_nav_crate" style="navglow" url="../art/props/crate_glow.png" ath="24" atv="18" />
+	<!-- Cassette rack (tall tape shelf, back-right corner) → Catalog -->
+	<hotspot name="nav_cassettes" style="navspot" url="../art/props/cassettes_glow.png"
+		ath="138" atv="-12" width="499" height="prop"
+		tooltip="tape wall — full catalog" zoomfov="50" panel="catalog" />
 
-	<!-- Cassette rack → Catalog -->
-	<hotspot name="nav_cassettes" style="navspot" url="../art/props/cassettes.png"
-		ath="63" atv="6" scale="1.0" tooltip="tape wall — full catalog"
-		onclick="hs_go(63, 6, 55, catalog);" />
-	<hotspot name="glow_nav_cassettes" style="navglow" url="../art/props/cassettes_glow.png" ath="63" atv="6" />
+	<!-- Poster wall (bricks above the bins) → Artists -->
+	<hotspot name="nav_posters" style="navspot" url="../art/props/posters_glow.png"
+		ath="-175" atv="-25" width="830" height="prop"
+		tooltip="poster wall — artists" zoomfov="60" panel="artists" />
 
-	<!-- Poster wall → Artists -->
-	<hotspot name="nav_posters" style="navspot" url="../art/props/posters.png"
-		ath="132" atv="-8" scale="1.0" tooltip="poster wall — artists"
-		onclick="hs_go(132, -8, 60, artists);" />
-	<hotspot name="glow_nav_posters" style="navglow" url="../art/props/posters_glow.png" ath="132" atv="-8" />
+	<!-- Desk buried in demo tapes (lamp + #1 CUSTOMER mug) → About -->
+	<hotspot name="nav_desk" style="navspot" url="../art/props/desk_glow.png"
+		ath="95" atv="15" width="1000" height="prop"
+		tooltip="the desk — about us" zoomfov="60" panel="about" />
 
-	<!-- Desk → About -->
-	<hotspot name="nav_desk" style="navspot" url="../art/props/desk.png"
-		ath="-118" atv="12" scale="1.0" tooltip="the desk — about us"
-		onclick="hs_go(-118, 12, 55, about);" />
-	<hotspot name="glow_nav_desk" style="navglow" url="../art/props/desk_glow.png" ath="-118" atv="12" />
+	<!-- Front glass door (OPEN sign) → Enter Store -->
+	<hotspot name="nav_door" style="navspot" url="../art/props/door_glow.png"
+		ath="44" atv="-3" width="389" height="prop"
+		tooltip="come on in — store" zoomfov="60" panel="store" />
 
-	<!-- Mail slot → Contact -->
-	<hotspot name="nav_mailslot" style="navspot" url="../art/props/mailslot.png"
-		ath="-172" atv="8" scale="1.0" tooltip="drop us a note"
-		onclick="hs_go(-172, 8, 50, contact);" />
-	<hotspot name="glow_nav_mailslot" style="navglow" url="../art/props/mailslot_glow.png" ath="-172" atv="8" />
+	<!-- Listening station (LISTEN HERE, headphones + turntable) → Music player -->
+	<hotspot name="nav_listen" style="navspot" url="../art/props/listen_glow.png"
+		ath="-88" atv="-6" width="728" height="prop"
+		tooltip="put the headphones on" zoomfov="50" panel="player" />
 
-	<!-- Door → Enter Store -->
-	<hotspot name="nav_door" style="navspot" url="../art/props/door.png"
-		ath="-180" atv="2" scale="1.0" tooltip="come on in — store"
-		onclick="hs_go(-180, 2, 60, store);" />
-	<hotspot name="glow_nav_door" style="navglow" url="../art/props/door_glow.png" ath="-180" atv="2" />
-
-	<!-- Listening station → Music player -->
-	<hotspot name="nav_listen" style="navspot" url="../art/props/listen.png"
-		ath="-58" atv="10" scale="1.0" tooltip="put the headphones on"
-		onclick="hs_go(-58, 10, 50, player);" />
-	<hotspot name="glow_nav_listen" style="navglow" url="../art/props/listen_glow.png" ath="-58" atv="10" />
+	<!--
+		Mail slot → Contact. Visible additive prop on the door's lower
+		panel; declared after nav_door plus higher zorder so it wins the
+		overlapping hover/click zone.
+	-->
+	<hotspot name="glow_nav_mailslot" type="image" keep="true" group="nav"
+		url="../art/props/mailslot_glow.png" distorted="true"
+		ath="43" atv="13" width="200" height="prop"
+		alpha="0.0" enabled="false" zorder="11" />
+	<hotspot name="nav_mailslot" type="image" keep="true" group="nav"
+		url="../art/props/mailslot.png" distorted="true"
+		ath="43" atv="13" width="140" height="prop" zorder="12"
+		onover="prop_over();" onout="prop_out();" onclick="nav_go();"
+		handcursor="true"
+		tooltip="drop us a note" zoomfov="45" panel="contact" />
 
 </krpano>

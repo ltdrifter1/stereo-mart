@@ -21,25 +21,54 @@ v20/
     props/              transparent overlay props / hotspot art
     refs/               generated style + logo references
   krpano/
-    index.html          embed page
+    index.html          embed page (expects licensed krpano.js beside it)
+    preview.html        DEV ONLY — pannellum viewer for coordinate tuning
     tour.xml            entry point (scene, includes)
     include/            view.xml, actions.xml, hotspots-nav.xml,
-                        hotspots-life.xml, audio.xml
+                        hotspots-life.xml, panels.xml, audio.xml
+    js/discoveries.js   hidden-find tracking (localStorage bridge)
+    audio/              synthesized placeholder ambience loops (ogg)
     panos/              multires tile output (generated, not committed)
   scripts/
-    make-equirect.py    plate → 2:1 equirect master (8192×4096)
+    make-equirect.py    plate → seam-safe 2:1 masters (8192 / mobile / LQIP)
+    cut-props.py        props sheet → transparent overlays + glow sprites
+    make-patches.py     plate crops for in-place animation + light sprites
+    gen-ambience.py     numpy/ffmpeg placeholder ambience synth
+    shoot-preview.mjs   headless screenshots of preview.html (playwright)
 ```
 
 ## Pipeline
 
 1. Paint / regenerate plates into `art/plates/` (2:1-ish, seam-aware).
-2. `python3 v20/scripts/make-equirect.py` → `art/plates/pano-equirect-master.png`.
-   Current master is baked at 4096×2048 from the 1536px concept plate — good
-   enough to block out hotspots and camera; the 8192 final bake needs a
-   repainted hi-res plate.
-3. Run the krpano tools (`krpanotools makepano`) on the master to fill
-   `krpano/panos/` (multires cube tiles — krpano license lives outside repo).
-4. Open `krpano/index.html` via any static server.
+2. Bake + derive assets:
+
+```bash
+python3 v20/scripts/make-equirect.py    # seam-safe 8192 master + mobile + LQIP
+python3 v20/scripts/cut-props.py        # props sheet → transparent overlays + glows
+python3 v20/scripts/make-patches.py     # in-place animation patches + light sprites
+python3 v20/scripts/gen-ambience.py     # placeholder ambience loops (needs ffmpeg)
+```
+
+3. The tour loads the baked master directly as a `<sphere>` image, so it
+   runs without tiling. For launch, run the licensed krpano tools
+   (`krpanotools makepano`) on the master and swap the multires cube tiles
+   into `tour.xml` (commented block) for faster first paint.
+4. Open `krpano/index.html` via any static server (needs `krpano.js` from
+   the licensed tools next to it).
+
+### Dev preview without a krpano license
+
+```bash
+cd v20 && python3 -m http.server 8123
+# open http://localhost:8123/krpano/preview.html
+```
+
+`preview.html` renders the master with open-source pannellum, mirrors all
+hotspot coordinates as labeled markers, and click-copies `ath/atv` for the
+XML. `scripts/shoot-preview.mjs` (playwright + system Chrome) screenshots
+the four walls headlessly for review. The current master is upscaled from
+the 1536px concept plate — sharp enough to tune hotspots and feel; the
+final 8192 bake needs a repainted hi-res plate.
 
 ## Ground rules
 
