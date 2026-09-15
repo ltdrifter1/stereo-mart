@@ -1,36 +1,35 @@
 :root {
   /*
-   * PNW warehouse editorial: charcoal field, oxidized silver chrome,
-   * moss + muted blue accents — cool underground record shop atmosphere.
+   * PNW cartoon shop: cream field, ink-navy outlines, moss / dusty-blue /
+   * warm-yellow practicals — v20/ART_DIRECTION.md.
    */
-  --bg: #0d0e10;
-  --ink: #1a1c1e;
-  --ink-dim: rgba(255, 255, 255, 0.68);
-  --charcoal: #1a1c1e;
-  --cool-grey: #8a9199;
-  --oxidized-silver: #9aabb8;
-  --muted-blue: #6b8a9e;
-  --concrete-beige: #c4bdb4;
-  --moss: #6b8f72;
-  --moss-deep: #4a6b52;
+  --bg: #ece4d2;
+  --ink: #232840;
+  --ink-dim: rgba(35, 40, 64, 0.68);
+  --charcoal: #232840;
+  --cool-grey: #9a9b94;
+  --oxidized-silver: #7d93a6;
+  --muted-blue: #7d93a6;
+  --concrete-beige: #ece4d2;
+  --moss: #6f7d5a;
+  --moss-deep: #4a3a2c;
   --moss-mist: #8fa89a;
-  --silver-cream: #e8f0f4;
-  --silver-fog: #c8d4dc;
-  --pnw-deep: #121416;
-  --pnw-mid: #2a2e32;
-  --pnw-mist: #8a9baa;
-  --pnw-fog: #c8d4dc;
-  --cel-mint: #6b8f72;
-  --cel-butter: #a8b8c4;
-  --cel-cream: #e8f0f4;
-  --paper: #d4cdc4;
-  --line: #2a2e32;
-  --amber: #9aabb8;
-  --amber-deep: #6b8a9e;
-  --gold: #a8b8c4;
+  --silver-cream: #ece4d2;
+  --silver-fog: #d4cdc4;
+  --pnw-deep: #232840;
+  --pnw-mid: #4a3a2c;
+  --pnw-mist: #7d93a6;
+  --pnw-fog: #ece4d2;
+  --cel-mint: #6f7d5a;
+  --cel-butter: #e0b64f;
+  --cel-cream: #ece4d2;
+  --paper: #ece4d2;
+  --line: #232840;
+  --amber: #e0b64f;
+  --amber-deep: #c97f4e;
+  --gold: #e0b64f;
   --gap: clamp(16px, 4vw, 48px);
 
-  /* Enter → settle sensory contract — slightly slower / cinematic */
   --motion-fast: 160ms;
   --motion-med: 520ms;
   --motion-slow: 920ms;
@@ -131,11 +130,11 @@ html.has-custom-cursor * {
   position: fixed;
   top: 0;
   left: 0;
-  width: 48px;
-  height: 48px;
+  width: 64px;
+  height: 64px;
   z-index: 80;
   pointer-events: none;
-  transform: translate3d(-100px, -100px, 0);
+  transform: translate3d(-100px, -100px, 0) translate(-18px, -8px);
   will-change: transform;
   opacity: 0;
   transition: opacity var(--motion-enter) var(--motion-ease-out);
@@ -147,15 +146,16 @@ html.has-custom-cursor * {
   position: absolute;
   top: 0;
   left: 0;
-  width: 48px;
-  height: 48px;
+  width: 64px;
+  height: 64px;
   pointer-events: none;
   user-select: none;
+  filter: drop-shadow(1px 2px 0 rgba(35, 40, 64, 0.35));
   transition:
     opacity var(--motion-fast) ease,
     transform var(--motion-fast) var(--motion-ease);
   transform: scale(1);
-  transform-origin: 12px 10px;
+  transform-origin: 18px 8px;
 }
 .custom-cursors.is-press img {
   transform: scale(0.86);
@@ -172,7 +172,7 @@ html.has-custom-cursor * {
 .custom-cursors.is-click .custom-cursor-click {
   opacity: 1;
 }
-@media (pointer: coarse), (max-width: 570px) {
+@media (max-width: 570px) {
   .custom-cursors {
     display: none !important;
   }
@@ -206,33 +206,37 @@ html.has-custom-cursor * {
   font-weight: 700;
   font-size: 11px;
   letter-spacing: 0.14em;
-  color: #fff;
+  color: var(--ink);
 }
 /* Shared frosted plate — oxidized silver over busy panorama */
 .chrome-fab {
   width: 44px;
   height: 44px;
   border-radius: 999px;
-  background: rgba(18, 20, 22, 0.52);
-  border: 1px solid rgba(154, 171, 184, 0.28);
+  background: rgba(236, 228, 210, 0.72);
+  border: 1px solid rgba(35, 40, 64, 0.22);
   box-shadow:
-    0 1px 0 rgba(232, 240, 244, 0.1) inset,
-    0 8px 24px rgba(0, 0, 0, 0.42);
-  backdrop-filter: blur(16px) saturate(120%);
-  -webkit-backdrop-filter: blur(16px) saturate(120%);
-  color: var(--silver-cream);
+    0 1px 0 rgba(255, 255, 255, 0.45) inset,
+    0 8px 24px rgba(35, 40, 64, 0.18);
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  color: var(--ink);
 }
 .mute-control {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: transparent;
   right: max(16px, var(--sat-right));
   left: auto;
   bottom: max(20px, calc(12px + var(--sat-bottom)));
-  transition:
-    opacity 0.3s ease,
-    transform 0.15s ease,
-    background 0.2s ease,
-    box-shadow 0.2s ease,
-    pointer-events 0s;
   animation: chrome-in 0.7s 0.1s var(--motion-ease-out) both;
+}
+.mute-control-img {
+  width: 28px;
+  height: 28px;
+  display: block;
+  filter: drop-shadow(0 1px 2px rgba(236, 228, 210, 0.9));
 }
 .mute-control.is-faded {
   opacity: 0;
@@ -434,17 +438,15 @@ html.has-custom-cursor * {
   right: max(var(--nav-gutter), var(--sat-right));
   width: auto;
   z-index: 50;
-  padding: 6px 4px;
+  padding: 4px 0;
   pointer-events: auto;
   animation: chrome-in 0.9s var(--motion-ease-out) both;
-  background: rgba(18, 20, 22, 0.28);
-  border: 1px solid rgba(154, 171, 184, 0.14);
-  border-radius: 14px;
-  backdrop-filter: blur(20px) saturate(130%);
-  -webkit-backdrop-filter: blur(20px) saturate(130%);
-  box-shadow:
-    0 1px 0 rgba(232, 240, 244, 0.06) inset,
-    0 12px 32px rgba(0, 0, 0, 0.28);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
 }
 @keyframes chrome-in {
   from {
@@ -475,14 +477,14 @@ html.has-custom-cursor * {
   display: block;
   width: 100%;
   position: relative;
-  color: var(--silver-cream);
+  color: #fff;
   font-family: var(--font-body), system-ui, sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   font-size: clamp(14px, 2.1vw, 20px);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   padding: 14px 6px 16px;
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+  text-shadow: 1px 1px 3px rgba(35, 40, 64, 0.75);
   user-select: none;
   text-align: center;
   text-decoration: none;
@@ -512,9 +514,9 @@ html.has-custom-cursor * {
   right: 12%;
   bottom: 8px;
   height: 1px;
-  background: var(--oxidized-silver);
-  box-shadow: 0 0 8px rgba(154, 171, 184, 0.35);
-  opacity: 0.85;
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(35, 40, 64, 0.35);
+  opacity: 0.9;
   pointer-events: none;
 }
 .top-nav-close {
@@ -547,27 +549,48 @@ html.has-custom-cursor * {
 }
 @media (max-width: 570px) {
   .top-nav-wrap {
-    --nav-gutter: 10px;
-    --buttonspacing: 8px;
-    top: auto;
-    bottom: 0;
-    left: max(var(--nav-gutter), var(--sat-left));
-    right: max(var(--nav-gutter), var(--sat-right));
-    padding: 4px 2px calc(6px + var(--sat-bottom));
-    border-radius: 16px 16px 0 0;
-    border-bottom: 0;
-  }
-  .top-nav-item {
-    font-size: 11px;
-    padding: 12px 2px calc(14px + 2px);
-    /* Larger hit target on iOS */
-    min-height: 44px;
-  }
-  .top-nav-line {
     display: none;
   }
-  .top-nav-close {
-    display: none;
+}
+
+.mobile-menu {
+  display: none;
+}
+
+@media (max-width: 570px) {
+  .mobile-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    position: fixed;
+    z-index: 50;
+    top: max(16px, calc(8px + var(--sat-top)));
+    left: max(14px, var(--sat-left));
+    pointer-events: auto;
+    animation: chrome-in 0.9s var(--motion-ease-out) both;
+  }
+  .mob-menu-button {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    font-family: var(--font-body), system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 3px rgba(35, 40, 64, 0.8);
+    padding: 8px 4px;
+    min-height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .mob-menu-close {
+    font-size: 20px;
+    line-height: 1;
   }
 }
 
@@ -631,7 +654,7 @@ html.has-custom-cursor * {
   opacity: 0.9;
 }
 
-/* ---------- loading gate (Stereo-Mart — dark industrial editorial warehouse) ---------- */
+/* ---------- loading gate (BT overlay — logo, LOADING n%, click to enter) ---------- */
 .gate {
   position: fixed;
   inset: 0;
@@ -639,11 +662,7 @@ html.has-custom-cursor * {
   display: flex;
   align-items: center;
   justify-content: center;
-  background:
-    radial-gradient(90% 60% at 50% 0%, rgba(107, 138, 158, 0.12), transparent 55%),
-    radial-gradient(65% 50% at 0% 100%, rgba(26, 28, 30, 0.85), transparent 58%),
-    radial-gradient(55% 45% at 100% 20%, rgba(107, 143, 114, 0.08), transparent 50%),
-    linear-gradient(168deg, #0d0e10 0%, #1a1c1e 38%, #121416 100%);
+  background: rgba(35, 40, 64, 0.28);
   color: var(--silver-cream);
   overflow: hidden;
 }
@@ -665,7 +684,7 @@ html.has-custom-cursor * {
   width: 112%;
   height: 112%;
   object-fit: cover;
-  object-position: 50% 38%;
+  object-position: 50% 50%;
   filter: saturate(0.92) contrast(1.08) brightness(0.88);
   transform: scale(1.04);
   animation: gate-lqip-drift 32s ease-in-out infinite alternate;
@@ -676,12 +695,78 @@ html.has-custom-cursor * {
   background:
     linear-gradient(
       180deg,
-      rgba(13, 14, 16, 0.82) 0%,
-      rgba(18, 20, 22, 0.42) 36%,
-      rgba(22, 24, 26, 0.28) 52%,
-      rgba(13, 14, 16, 0.88) 100%
-    ),
-    radial-gradient(58% 52% at 50% 44%, transparent 0%, rgba(10, 12, 14, 0.55) 100%);
+      rgba(35, 40, 64, 0.45) 0%,
+      rgba(35, 40, 64, 0.18) 42%,
+      rgba(35, 40, 64, 0.55) 100%
+    );
+}
+.gate-inner {
+  position: relative;
+  width: min(520px, 92vw);
+  text-align: center;
+  z-index: 2;
+  animation: gate-inner-in 1.1s var(--motion-ease-out) both;
+}
+.gate-logo {
+  width: min(220px, 52vw);
+  height: auto;
+  margin: 0 auto 28px;
+  display: block;
+  filter: drop-shadow(0 8px 24px rgba(35, 40, 64, 0.35));
+}
+.gate-copy {
+  min-height: 4.6em;
+}
+.gate-loading {
+  margin: 0;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(13px, 2.4vw, 16px);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 1px 1px 3px rgba(35, 40, 64, 0.7);
+  line-height: 1.55;
+}
+.gate-loading.is-done {
+  letter-spacing: 0.06em;
+  text-transform: none;
+  font-weight: 500;
+}
+.gate-loading strong {
+  display: inline-block;
+  margin-top: 8px;
+  letter-spacing: 0.22em;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.gate-pct {
+  display: inline-block;
+  min-width: 3.2em;
+}
+.gate-enter {
+  margin-top: 28px;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: transparent;
+  font-size: 0;
+  padding: 0;
+  width: min(240px, 70vw);
+  height: 64px;
+  cursor: pointer;
+  opacity: 0;
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  transform: translate(-50%, 12px);
+}
+.gate-enter:enabled {
+  /* Invisible hit over CLICK TO ENTER copy */
+  color: transparent;
+}
+.gate-enter:disabled {
+  cursor: default;
 }
 .gate-atmosphere {
   position: absolute;
@@ -2874,3 +2959,131 @@ html.has-custom-cursor * {
   outline: 2px solid var(--amber);
   outline-offset: 3px;
 }
+
+/* ---------- BT-room chrome overrides (cream/ink over leftover warehouse CSS) ---------- */
+.gate-enter {
+  position: static !important;
+  left: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 28px auto 0 !important;
+  padding: 0 !important;
+  font-size: 14px !important;
+  letter-spacing: 0.22em !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  color: #fff !important;
+  text-shadow: 1px 1px 3px rgba(35, 40, 64, 0.75) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  border-radius: 0 !important;
+}
+.gate-enter:enabled:hover,
+.gate-enter:enabled:active {
+  background: transparent !important;
+  transform: none !important;
+  color: var(--gold) !important;
+}
+.mute-control:hover:not(.is-faded),
+.gyro-control:hover {
+  background: rgba(236, 228, 210, 0.88);
+  border-color: rgba(35, 40, 64, 0.35);
+}
+@media (max-width: 570px) {
+  .panel {
+    left: max(10px, var(--sat-left));
+    right: max(10px, var(--sat-right));
+    bottom: max(12px, var(--sat-bottom));
+  }
+  .mute-control,
+  .gyro-control {
+    top: max(12px, calc(6px + var(--sat-top)));
+  }
+  .gyro-control {
+    right: calc(12px + 44px + 8px + var(--sat-right));
+  }
+}
+
+/* Cream paper gate — BT flat-field clickIntro, Stereo-Mart globe (not vinyl HUD) */
+.gate.gate-poster {
+  background: var(--paper);
+  color: var(--ink);
+}
+.gate-poster .gate-paper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 16% 18%, rgba(224, 182, 79, 0.14), transparent 44%),
+    radial-gradient(circle at 84% 82%, rgba(111, 125, 90, 0.1), transparent 50%),
+    var(--paper);
+}
+.gate-poster .gate-paper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.1;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+.gate-poster .gate-inner {
+  z-index: 2;
+}
+.gate-poster .gate-logo {
+  width: min(248px, 58vw);
+  margin-bottom: 32px;
+  filter: none;
+}
+.gate-poster .gate-loading {
+  color: var(--ink);
+  text-shadow: none;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+}
+.gate-poster .gate-loading.is-done {
+  letter-spacing: 0.02em;
+  text-transform: none;
+  font-weight: 600;
+  font-size: clamp(13px, 2.2vw, 15px);
+}
+.gate-poster .gate-enter {
+  position: static !important;
+  left: auto !important;
+  bottom: auto !important;
+  display: inline-block !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 32px auto 0 !important;
+  padding: 11px 26px !important;
+  font-size: 13px !important;
+  letter-spacing: 0.16em !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  color: var(--ink) !important;
+  text-shadow: none !important;
+  background: transparent !important;
+  border: 2.5px solid var(--ink) !important;
+  border-radius: 3px !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.gate-poster .gate-enter:enabled:hover,
+.gate-poster .gate-enter:enabled:active {
+  background: var(--ink) !important;
+  color: var(--paper) !important;
+  transform: none !important;
+  border-color: var(--ink) !important;
+}
+.gate-poster .gate-enter:disabled {
+  color: transparent !important;
+  border-color: transparent !important;
+  background: transparent !important;
+}
+

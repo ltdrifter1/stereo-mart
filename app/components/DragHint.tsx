@@ -125,7 +125,7 @@ export default function DragHint({ active, controls, reduceMotion = false }: Pro
           {touchCopy ? 'Swipe to look around' : 'Drag to look around'}
         </span>
         <span className="drag-hint-sub">
-          {touchCopy ? 'Tap a glow to step in' : 'Click a glow to step in'}
+          {touchCopy ? 'Tap something in the shop' : 'Click something in the shop'}
         </span>
       </span>
     </div>

@@ -1,3 +1,5 @@
+import { BANDCAMP_URL } from '@/lib/brand';
+
 /**
  * ─────────────────────────────────────────────────────────────────────────
  *  STEREO-MART IN-ROOM CONTENT CATALOG — edit this file to change what the store
@@ -187,7 +189,21 @@ export const ARTISTS: SectionItem[] = [
   },
 ];
 
-/* ── SHOP — New Releases counter ───────────────────────────────────────── */
+/* ── ABOUT — desk buried in demo tapes ─────────────────────────────────── */
+
+export const ABOUT_ITEMS: SectionItem[] = [
+  {
+    label: 'Stereo-Mart Records',
+    meta: 'Independent label shop',
+    detail: 'About',
+    cta: 'Visit',
+    thumbSrc: ART.classic,
+    body: 'An independent label run from a desk buried in demo tapes. Underground sound, musical discovery, coffee permanently going cold.',
+    href: BANDCAMP_URL,
+  },
+];
+
+/** ── SHOP — New Releases counter ───────────────────────────────────────── */
 
 export const SHOP_ITEMS: SectionItem[] = [
   {

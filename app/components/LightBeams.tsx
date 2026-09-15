@@ -5,6 +5,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { makeBeamTexture } from '@/lib/sprites';
 import { SPHERE_RADIUS, uvToSpherical } from '@/lib/pano';
+import { LAMP_UV } from '@/app/data/hotspots';
 import { useSceneEnv } from './sceneContext';
 
 const origin = new THREE.Vector3(0, 0, 0);
@@ -83,12 +84,8 @@ export default function LightBeams() {
   const beam = useMemo(() => makeBeamTexture(), []);
   return (
     <group>
-      {/* Pendant lamps over the aisle (file ≈ y 200–280) */}
-      <AdditiveQuad u={0.5} v={0.24} w={5.5} h={14} tex={beam} base={0.06} flickerSpeed={0.7} flickerAmount={0.04} color="#d4c4a0" />
-      <AdditiveQuad u={0.62} v={0.26} w={6} h={15} tex={beam} base={0.055} flickerSpeed={0.5} flickerAmount={0.03} color="#c8b8a4" />
-      <AdditiveQuad u={0.38} v={0.26} w={5} h={12} tex={beam} base={0.06} flickerSpeed={0.9} flickerAmount={0.04} color="#d4c4a0" />
-      {/* Soft spill from the dock windows */}
-      <AdditiveQuad u={0.78} v={0.4} w={5.5} h={13} tex={beam} base={0.05} flickerSpeed={0.6} flickerAmount={0.03} color="#a8b8c4" />
+      <AdditiveQuad u={LAMP_UV.u} v={LAMP_UV.v} w={6} h={8} tex={beam} base={0.08} flickerSpeed={0.55} flickerAmount={0.12} spike color="#e0b64f" />
+      <AdditiveQuad u={0.5} v={0.42} w={8} h={10} tex={beam} base={0.04} flickerSpeed={0.4} flickerAmount={0.03} color="#ece4d2" />
     </group>
   );
 }

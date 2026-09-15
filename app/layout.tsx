@@ -21,7 +21,7 @@ const body = Sora({
 
 const siteTitle = BRAND_FULL;
 const siteDescription =
-  'Step inside Stereo-Mart Records — an immersive 360° underground warehouse record shop. Look around, explore, and discover.';
+  'Step inside Stereo-Mart Records — an illustrated 360° record shop. Look around, explore, and discover.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#1a1c1e',
+  themeColor: '#ece4d2',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,

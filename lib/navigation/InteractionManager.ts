@@ -20,9 +20,9 @@ import {
   mfovToVerticalFov,
 } from '@/lib/pano';
 
-/** Desktop: tight. Touch: tolerate finger jitter so taps still count as clicks. */
-const DRAG_THRESHOLD_MOUSE = 5;
-const DRAG_THRESHOLD_TOUCH = 14;
+/** Desktop + touch: generous so a slightly shaky click still opens a hotspot. */
+const DRAG_THRESHOLD_MOUSE = 28;
+const DRAG_THRESHOLD_TOUCH = 28;
 const TWO_PI = Math.PI * 2;
 const DEG = Math.PI / 180;
 /** Pinch → MFOV degrees scale (touch zoom parity with wheel). */
@@ -126,7 +126,7 @@ export function useInteractionManager(
       if (e.pointerType === 'mouse' && e.button !== 0) return;
       // UI chrome (nav / panel / mute) stops propagation — never start a pan.
       if (e.target instanceof Element) {
-        if (e.target.closest('.top-nav-wrap, .top-nav-item, .panel, .mute-control, .gyro-control, .gate')) {
+        if (e.target.closest('.top-nav-wrap, .top-nav-item, .mobile-menu, .mob-menu-button, .panel, .mute-control, .gyro-control, .gate')) {
           return;
         }
       }

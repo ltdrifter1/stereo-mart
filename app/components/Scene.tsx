@@ -27,7 +27,7 @@ import {
 } from '@/lib/pano';
 import { playEnterIntro } from '@/lib/intro';
 import type { GyroHandle } from '@/lib/gyro';
-import { SECTIONS } from '@/app/data/sections';
+import { ROOM_HOTSPOTS } from '@/app/data/hotspots';
 import { SceneContext, type SceneEnv, type Controls } from './sceneContext';
 import DustField from './DustField';
 import LightBeams from './LightBeams';
@@ -77,13 +77,11 @@ type Props = {
 };
 
 /**
- * Camera rig — balmingtiger / krpano parity + cinematic enter:
- * - Enter: ceiling little-planet → soft yaw pan → aisle middle
- *   while MFOV 160→124 (device-agnostic) + fisheye 1→0.3, then ease to explore
- * - Look locked during intro; usercontrol=all on complete
+ * Camera rig — balmingtiger / krpano parity:
+ * - Enter: storefront fisheye 1 / fov 160 → 0.3 / 120 (clickIntro)
+ * - Look locked during intro; usercontrol on complete
  * - Click-and-drag with instant tracking + draginertia/dragfriction
  * - followmousecontrol lean on desktop (view.rx / view.ry)
- * - No artificial camera breath/position wobble
  */
 function Rig({
   controls,
@@ -119,8 +117,7 @@ function Rig({
     cam.far = SPHERE_RADIUS * 3;
     cam.position.set(0, 0, 0);
     cam.rotation.order = 'YXZ';
-    // Pre-enter: aimed near the ceiling so CLICK TO ENTER reveals the
-    // little-planet drop before tilting into the aisle middle.
+    // Pre-enter: storefront, fisheye 1 / fov 160 — look locked until enter.
     controls.lookTarget.x = settleYaw;
     controls.lookTarget.y = dropPitch;
     controls.velocity.x = 0;
@@ -149,7 +146,7 @@ function Rig({
     const aspect = size.width / Math.max(1, size.height);
     const dt = Math.min(0.05, delta);
 
-    // —— Intro: ceiling → pan → settle aisle middle ——
+    // —— Intro: fov 160→120 / fisheye 1→0.3 while facing the storefront ——
     if (enteredRef.value && !wasEntered.current) {
       wasEntered.current = true;
       introTween.current?.kill();
@@ -415,7 +412,7 @@ export default function Scene({
       <color attach="background" args={['#000000']} />
 
       {/* Progressive base — sharp enough to enter before 4K lands */}
-      <mesh>
+      <mesh raycast={() => null}>
         <sphereGeometry args={[SPHERE_RADIUS + 0.04, 64, 48]} />
         <meshBasicMaterial
           ref={matLqip}
@@ -430,7 +427,7 @@ export default function Scene({
       </mesh>
 
       {/* Lights-on sphere (fades in when full texture ready) */}
-      <mesh>
+      <mesh raycast={() => null}>
         <sphereGeometry args={[SPHERE_RADIUS, 96, 64]} />
         <meshBasicMaterial
           ref={matOn}
@@ -445,7 +442,7 @@ export default function Scene({
       </mesh>
 
       {/* Lights-off sphere (crossfades) */}
-      <mesh>
+      <mesh raycast={() => null}>
         <sphereGeometry args={[SPHERE_RADIUS - 0.02, 96, 64]} />
         <meshBasicMaterial
           ref={matOff}
@@ -467,10 +464,10 @@ export default function Scene({
           reduceMotion={reduceMotion}
         />
         <AmbientHits controls={controls} debug={debug} />
-        {SECTIONS.map((s) => (
+        {ROOM_HOTSPOTS.map((s) => (
           <Hotspot
             key={s.id}
-            section={s}
+            spot={s}
             onOpen={onOpen}
             controls={controls}
             focusedId={focusedId}

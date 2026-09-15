@@ -1,4 +1,5 @@
 import {
+  ABOUT_ITEMS,
   ART,
   ARTISTS,
   CRT_CHANNELS,
@@ -12,6 +13,7 @@ import {
   INSTAGRAM_HANDLE,
   INSTAGRAM_URL,
 } from '@/lib/brand';
+import { athAtvToUv } from '@/lib/pano';
 
 /**
  * Content (releases, CRT channels, artists, shop rows) lives in ./catalog.ts —
@@ -93,6 +95,18 @@ export type Section = {
  * (BackSide U-flip convention in lib/pano.ts).
  * Append ?debug=1 to tint hit areas while tuning (u,v).
  */
+const listenUv = athAtvToUv(-88, -6);
+const listenLook = athAtvToUv(-88, -10);
+const crtUv = athAtvToUv(-78, 22);
+const crtLook = athAtvToUv(-78, 14);
+const posterUv = athAtvToUv(-175, -25);
+const posterLook = athAtvToUv(-175, -18);
+const crateUv = athAtvToUv(172, 5);
+const crateLook = athAtvToUv(172, 0);
+const mailUv = athAtvToUv(43, 13);
+const deskUv = athAtvToUv(95, 15);
+const deskLook = athAtvToUv(95, 8);
+
 export const SECTIONS: Section[] = [
   {
     id: 'listening-booth',
@@ -102,17 +116,17 @@ export const SECTIONS: Section[] = [
     title: '',
     kicker: 'Music',
     intro: '',
-    accent: '#8a9baa',
+    accent: '#7d93a6',
     // v20: LISTEN HERE headphones + turntable (ath -88, atv -6)
-    u: 0.744,
-    v: 0.467,
-    lookU: 0.744,
-    lookV: 0.45,
+    u: listenUv.u,
+    v: listenUv.v,
+    lookU: listenLook.u,
+    lookV: listenLook.v,
     w: 16,
     h: 18,
     glowW: 16,
     glowH: 18,
-    lookFov: 72,
+    lookFov: 50,
     walkDolly: 6,
     sfx: 'music',
     goldEdge: true,
@@ -127,17 +141,17 @@ export const SECTIONS: Section[] = [
     title: '',
     kicker: 'Videos',
     intro: '',
-    accent: '#6b8a9e',
-    // v20: CRT on the red milk crate under the listening bench (ath -78, atv 22)
-    u: 0.717,
-    v: 0.622,
-    lookU: 0.717,
-    lookV: 0.58,
-    w: 14,
-    h: 12,
-    glowW: 16,
-    glowH: 14,
-    lookFov: 56,
+    accent: '#7d93a6',
+    // v20: CRT on the red milk crate (ath -78, atv 22)
+    u: crtUv.u,
+    v: crtUv.v,
+    lookU: crtLook.u,
+    lookV: crtLook.v,
+    w: 10,
+    h: 9,
+    glowW: 12,
+    glowH: 11,
+    lookFov: 50,
     walkDolly: 8,
     sfx: 'video',
     glowLatches: true,
@@ -147,23 +161,23 @@ export const SECTIONS: Section[] = [
   },
   {
     id: 'record-bins',
-    object: 'Record Crates',
+    object: 'Poster Wall',
     nav: 'Artists',
     hint: '',
     title: '',
     kicker: 'Artists',
     intro: '',
-    accent: '#8a7a82',
-    // v20: ROCK/INDIE + NEW ARRIVALS crates on the back wall (ath 172, atv 5)
-    u: 0.022,
-    v: 0.528,
-    lookU: 0.022,
-    lookV: 0.48,
+    accent: '#c97f4e',
+    // v20: poster wall above the bins (ath -175, atv -25)
+    u: posterUv.u,
+    v: posterUv.v,
+    lookU: posterLook.u,
+    lookV: posterLook.v,
     w: 22,
     h: 16,
     glowW: 22,
     glowH: 16,
-    lookFov: 90,
+    lookFov: 60,
     walkDolly: 4,
     sfx: 'artists',
     goldEdge: true,
@@ -172,26 +186,49 @@ export const SECTIONS: Section[] = [
   },
   {
     id: 'cash-register',
-    object: 'Front Door',
+    object: 'Record Crates',
     nav: 'Shop',
     hint: '',
     title: '',
     kicker: 'New Releases',
     intro: '',
-    accent: '#6b8f72',
-    // v20: glass door with OPEN sign (ath 44, atv -3) — enter the store
-    u: 0.378,
-    v: 0.483,
-    lookU: 0.378,
-    lookV: 0.47,
-    w: 12,
-    h: 18,
+    accent: '#6f7d5a',
+    // v20: NEW ARRIVALS crates (ath 172, atv 5)
+    u: crateUv.u,
+    v: crateUv.v,
+    lookU: crateLook.u,
+    lookV: crateLook.v,
+    w: 22,
+    h: 16,
     lookFov: 55,
-    walkDolly: 6,
+    walkDolly: 4,
     sfx: 'shop',
     goldEdge: true,
     hideHint: true,
     items: SHOP_ITEMS,
+  },
+  {
+    id: 'desk',
+    object: 'Desk',
+    nav: 'About',
+    hint: '',
+    title: '',
+    kicker: 'About',
+    intro: '',
+    accent: '#e0b64f',
+    // v20: desk buried in demo tapes (ath 95, atv 15)
+    u: deskUv.u,
+    v: deskUv.v,
+    lookU: deskLook.u,
+    lookV: deskLook.v,
+    w: 14,
+    h: 11,
+    lookFov: 60,
+    walkDolly: 6,
+    sfx: 'focus',
+    goldEdge: true,
+    hideHint: true,
+    items: ABOUT_ITEMS,
   },
   {
     id: 'phone-booth',
@@ -203,10 +240,10 @@ export const SECTIONS: Section[] = [
     intro: '',
     accent: '#9aabb8',
     // v20: mail slot on the door lower panel (ath 43, atv 13)
-    u: 0.381,
-    v: 0.572,
-    lookU: 0.381,
-    lookV: 0.55,
+    u: mailUv.u,
+    v: mailUv.v,
+    lookU: mailUv.u,
+    lookV: mailUv.v,
     w: 8,
     h: 6,
     lookFov: 45,

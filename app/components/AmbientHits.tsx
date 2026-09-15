@@ -1,208 +1,84 @@
 'use client';
 
-import { BANDCAMP_URL, BRAND_NAME, INSTAGRAM_URL } from '@/lib/brand';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { type ThreeEvent } from '@react-three/fiber';
+import { useFrame, type ThreeEvent } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import gsap from 'gsap';
 import * as THREE from 'three';
 
 import { SPHERE_RADIUS, uvToSpherical } from '@/lib/pano';
 import { playSfx } from '@/lib/audio';
+import { emitFind } from '@/lib/discoveries';
+import { LIFE_HITS, type LifeHit } from '@/app/data/hotspots';
 import { useSceneEnv, type Controls } from './sceneContext';
-
-/** Visible click reaction — alpha-cut billboard of the painted object
- * (baked by scripts/build-v12-pano.py as /hotspots/toy_<id>.webp). */
-type ToyPlane = {
-  u: number;
-  v: number;
-  w: number;
-  h: number;
-};
-
-type AmbientHit = {
-  id: string;
-  u: number;
-  v: number;
-  w: number;
-  h: number;
-  sfx: string;
-  /** When set, clicking wiggles the painted object (BT toy micro-reaction). */
-  toy?: ToyPlane;
-  /**
-   * balmingtiger globe class — click opens a random wonder link
-   * after a short confirm toast (not a silent eject).
-   */
-  wonder?: boolean;
-};
-
-type WonderLink = { href: string; label: string };
-
-/** Outbound “globe” destinations — Bandcamp / IG / maps rabbit holes. */
-const WONDER_LINKS: WonderLink[] = [
-  { href: BANDCAMP_URL, label: `${BRAND_NAME} on Bandcamp` },
-  { href: INSTAGRAM_URL, label: `${BRAND_NAME} on Instagram` },
-  { href: 'https://ltdrifta.bandcamp.com', label: 'LT Drifta on Bandcamp' },
-  { href: 'https://inletknight.bandcamp.com', label: 'Inlet Knight on Bandcamp' },
-  { href: 'https://drifta.bandcamp.com', label: 'Drifta on Bandcamp' },
-  {
-    href: 'https://www.google.com/maps/@49.2827,-123.1207,3a,75y,90t/data=!3m1!1e3',
-    label: 'Street view — Vancouver',
-  },
-  {
-    href: 'https://www.google.com/maps/@45.5231,-122.6765,3a,75y,120t/data=!3m1!1e3',
-    label: 'Street view — Portland',
-  },
-];
-
-export const WONDER_EVENT = 'stereo-mart-wonder';
-
-/**
- * Non-nav diegetic toys — balmingtiger cushion / owl / fire / globe class.
- * Invisible click meshes + visible sprite wiggles; wonder opens outbound
- * after a confirm toast.
- */
-const HITS: AmbientHit[] = [
-  // Headphones on the back-wall LISTEN station
-  {
-    id: 'stool',
-    u: 0.53,
-    v: 0.36,
-    w: 2.4,
-    h: 2.2,
-    sfx: 'stool',
-    toy: { u: 0.53, v: 0.36, w: 10, h: 12 },
-  },
-  // Plant / gear beside CRT cabinet
-  {
-    id: 'crate',
-    u: 0.72,
-    v: 0.52,
-    w: 3.5,
-    h: 3.2,
-    sfx: 'crate',
-    toy: { u: 0.72, v: 0.52, w: 14, h: 14 },
-  },
-  // Sign band above LISTEN
-  {
-    id: 'poster',
-    u: 0.5,
-    v: 0.28,
-    w: 2.8,
-    h: 2.8,
-    sfx: 'poster',
-    toy: { u: 0.5, v: 0.28, w: 10, h: 10 },
-  },
-  // Floor crates in front of the island
-  {
-    id: 'cushion',
-    u: 0.5,
-    v: 0.74,
-    w: 3.5,
-    h: 2.2,
-    sfx: 'cushion',
-    toy: { u: 0.5, v: 0.74, w: 22, h: 10 },
-  },
-  // Tall plant by the LISTEN wall
-  {
-    id: 'owl',
-    u: 0.44,
-    v: 0.42,
-    w: 2.6,
-    h: 2.8,
-    sfx: 'owl',
-    toy: { u: 0.44, v: 0.42, w: 14, h: 20 },
-  },
-  // Floor pool under the island
-  {
-    id: 'fire',
-    u: 0.5,
-    v: 0.72,
-    w: 3.2,
-    h: 2.6,
-    sfx: 'fire',
-    toy: { u: 0.5, v: 0.72, w: 20, h: 12 },
-  },
-  // Night dock windows
-  {
-    id: 'wonder',
-    u: 0.78,
-    v: 0.45,
-    w: 3.2,
-    h: 3.2,
-    sfx: 'wonder',
-    wonder: true,
-    toy: { u: 0.78, v: 0.45, w: 16, h: 20 },
-  },
-];
+import { isTap, tapOrigin, type TapOrigin } from '@/lib/pointerTap';
 
 const origin = new THREE.Vector3(0, 0, 0);
 
-function ToySprite({
-  id,
-  toy,
+export const WONDER_EVENT = 'stereo-mart-wonder';
+
+function LifeSprite({
+  hit,
   pulse,
 }: {
-  id: string;
-  toy: ToyPlane;
+  hit: LifeHit;
   pulse: number;
 }) {
   const mesh = useRef<THREE.Mesh>(null);
   const mat = useRef<THREE.MeshBasicMaterial>(null);
   const env = useSceneEnv();
-  const map = useTexture(`/hotspots/toy_${id}.webp`);
-  const [x, y, z] = uvToSpherical(toy.u, toy.v, SPHERE_RADIUS - 0.6);
+  const map = useTexture(hit.src!);
+  const [x, y, z] = uvToSpherical(hit.u, hit.v, SPHERE_RADIUS - 0.85);
 
   useLayoutEffect(() => {
     map.colorSpace = THREE.SRGBColorSpace;
     mesh.current?.lookAt(origin);
   }, [map, x, y, z]);
 
-  useEffect(() => {
+  useFrame(() => {
     const m = mesh.current;
     const material = mat.current;
-    if (!pulse || !m || !material) return;
-    if (env.reduceMotion) {
-      material.opacity = 0.85;
-      const id = window.setTimeout(() => {
-        material.opacity = 0;
-      }, 220);
-      return () => window.clearTimeout(id);
+    if (!m || !material) return;
+    m.lookAt(origin);
+    if (hit.kind === 'steam' && !env.reduceMotion) {
+      const t = env.time;
+      material.opacity = 0.45 + Math.sin(t * 1.1) * 0.18;
+      m.position.y = y + Math.sin(t * 0.9) * 0.18;
     }
+  });
 
-    gsap.killTweensOf([m.rotation, m.scale, material]);
+  useEffect(() => {
+    if (hit.kind !== 'find' || !pulse) return;
+    const m = mesh.current;
+    if (!m) return;
     const baseZ = m.rotation.z;
-    const tl = gsap.timeline({
-      onComplete: () => {
-        m.rotation.z = baseZ;
-        m.scale.setScalar(1);
-      },
-    });
-    tl.set(material, { opacity: 1 })
-      .to(m.rotation, { z: baseZ + 0.06, duration: 0.07, ease: 'power1.inOut' })
-      .to(m.rotation, { z: baseZ - 0.05, duration: 0.11, ease: 'power1.inOut' })
-      .to(m.rotation, { z: baseZ + 0.025, duration: 0.1, ease: 'power1.inOut' })
-      .to(m.rotation, { z: baseZ, duration: 0.1, ease: 'power1.inOut' })
-      .to(material, { opacity: 0, duration: 0.16 }, '>-0.04')
+    const tl = gsap.timeline();
+    tl.to(m.rotation, { z: baseZ + 0.08, duration: 0.1, ease: 'power1.inOut' })
+      .to(m.rotation, { z: baseZ - 0.06, duration: 0.12, ease: 'power1.inOut' })
+      .to(m.rotation, { z: baseZ, duration: 0.14, ease: 'power1.out' })
       .fromTo(
         m.scale,
         { x: 1, y: 1, z: 1 },
-        { x: 1.06, y: 1.06, z: 1.06, duration: 0.15, yoyo: true, repeat: 1, ease: 'power1.inOut' },
+        { x: 1.12, y: 1.12, z: 1.12, duration: 0.16, yoyo: true, repeat: 1, ease: 'power1.inOut' },
         0,
       );
     return () => {
       tl.kill();
     };
-  }, [pulse, env.reduceMotion]);
+  }, [pulse, hit.kind]);
+
+  const visible = hit.kind !== 'find' || Boolean(hit.src);
+
+  if (!visible) return null;
 
   return (
     <mesh ref={mesh} position={[x, y, z]} renderOrder={2} raycast={() => null}>
-      <planeGeometry args={[toy.w, toy.h]} />
+      <planeGeometry args={[hit.w, hit.h]} />
       <meshBasicMaterial
         ref={mat}
         map={map}
         transparent
-        opacity={0}
+        opacity={hit.kind === 'steam' ? 0.55 : hit.id === 'ghost' ? 0 : 1}
         depthWrite={false}
         depthTest={false}
         side={THREE.DoubleSide}
@@ -212,37 +88,131 @@ function ToySprite({
   );
 }
 
-function AmbientMesh({
+function GhostHaunt({
   hit,
-  controls,
+  controls: _controls,
   debug,
 }: {
-  hit: AmbientHit;
+  hit: LifeHit;
+  controls: Controls;
+  debug?: boolean;
+}) {
+  const mesh = useRef<THREE.Mesh>(null);
+  const mat = useRef<THREE.MeshBasicMaterial>(null);
+  const env = useSceneEnv();
+  const [enabled, setEnabled] = useState(false);
+  const map = useTexture(hit.src!);
+  const press = useRef<TapOrigin | null>(null);
+  const [x, y, z] = uvToSpherical(hit.u, hit.v, SPHERE_RADIUS - 0.85);
+
+  useLayoutEffect(() => {
+    map.colorSpace = THREE.SRGBColorSpace;
+    mesh.current?.lookAt(origin);
+  }, [map, x, y, z]);
+
+  useEffect(() => {
+    if (env.reduceMotion) return;
+    let cancelled = false;
+    const loop = () => {
+      const wait = 8000 + Math.random() * 18000;
+      window.setTimeout(() => {
+        if (cancelled) return;
+        setEnabled(true);
+        if (mat.current) {
+          gsap.to(mat.current, { opacity: 0.85, duration: 0.35 });
+        }
+        window.setTimeout(() => {
+          if (cancelled) return;
+          if (mat.current) gsap.to(mat.current, { opacity: 0, duration: 0.4 });
+          setEnabled(false);
+          loop();
+        }, 1600);
+      }, wait);
+    };
+    const id = window.setTimeout(loop, 4000);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(id);
+    };
+  }, [env.reduceMotion]);
+
+  const onPointerDown = (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    press.current = tapOrigin(e);
+  };
+
+  const onPointerUp = (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    const start = press.current;
+    press.current = null;
+    if (!env.live.value || !isTap(e, start) || !enabled) return;
+    playSfx(hit.sfx);
+    if (hit.label) emitFind(hit.id, hit.label);
+  };
+
+  return (
+    <group>
+      <mesh
+        ref={mesh}
+        position={[x, y, z]}
+        renderOrder={2}
+        onPointerDown={onPointerDown}
+        onPointerUp={onPointerUp}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          if (!env.live.value || !enabled) return;
+          document.documentElement.classList.add('cursor-hot');
+        }}
+        onPointerOut={() => document.documentElement.classList.remove('cursor-hot')}
+      >
+        <planeGeometry args={[hit.w, hit.h]} />
+        <meshBasicMaterial
+          ref={mat}
+          map={map}
+          transparent
+          opacity={debug ? 0.3 : 0}
+          depthWrite={false}
+          depthTest={false}
+          side={THREE.DoubleSide}
+          toneMapped={false}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+function LifeMesh({
+  hit,
+  controls: _controls,
+  debug,
+}: {
+  hit: LifeHit;
   controls: Controls;
   debug?: boolean;
 }) {
   const mesh = useRef<THREE.Mesh>(null);
   const env = useSceneEnv();
   const [pulse, setPulse] = useState(0);
-  const [x, y, z] = uvToSpherical(hit.u, hit.v, SPHERE_RADIUS - 0.55);
+  const press = useRef<TapOrigin | null>(null);
+  const [x, y, z] = uvToSpherical(hit.u, hit.v, SPHERE_RADIUS - 0.85);
 
   useLayoutEffect(() => {
     mesh.current?.lookAt(origin);
   }, [x, y, z]);
 
-  const onClick = (e: ThreeEvent<MouseEvent>) => {
+  const onPointerDown = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
-    if (!env.live.value || controls.dragged) return;
+    press.current = tapOrigin(e);
+  };
+
+  const onPointerUp = (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    const start = press.current;
+    press.current = null;
+    if (!env.live.value || !isTap(e, start)) return;
     playSfx(hit.sfx);
-    if (hit.toy) setPulse((p) => p + 1);
-    if (hit.wonder) {
-      const pick = WONDER_LINKS[Math.floor(Math.random() * WONDER_LINKS.length)];
-      window.dispatchEvent(
-        new CustomEvent(WONDER_EVENT, {
-          detail: pick,
-        }),
-      );
-    }
+    setPulse((p) => p + 1);
+    if (hit.kind === 'find' && hit.label) emitFind(hit.id, hit.label);
   };
 
   return (
@@ -251,27 +221,26 @@ function AmbientMesh({
         ref={mesh}
         position={[x, y, z]}
         renderOrder={1}
-        onClick={onClick}
+        onPointerDown={hit.kind === 'steam' ? undefined : onPointerDown}
+        onPointerUp={hit.kind === 'steam' ? undefined : onPointerUp}
         onPointerOver={(e) => {
           e.stopPropagation();
-          if (!env.live.value) return;
+          if (!env.live.value || hit.kind === 'steam') return;
           document.documentElement.classList.add('cursor-hot');
         }}
-        onPointerOut={() => {
-          document.documentElement.classList.remove('cursor-hot');
-        }}
+        onPointerOut={() => document.documentElement.classList.remove('cursor-hot')}
         userData={{ ambientId: hit.id }}
       >
         <planeGeometry args={[hit.w, hit.h]} />
         <meshBasicMaterial
           transparent
           opacity={debug ? 0.22 : 0}
-          color={debug ? (hit.wonder ? '#ffe66d' : '#7dffb3') : '#ffffff'}
+          color={debug ? '#e0b64f' : '#ffffff'}
           depthWrite={false}
           side={THREE.DoubleSide}
         />
       </mesh>
-      {hit.toy && <ToySprite id={hit.id} toy={hit.toy} pulse={pulse} />}
+      {hit.src && hit.id !== 'ghost' && <LifeSprite hit={hit} pulse={pulse} />}
     </group>
   );
 }
@@ -285,9 +254,13 @@ export default function AmbientHits({
 }) {
   return (
     <group>
-      {HITS.map((hit) => (
-        <AmbientMesh key={hit.id} hit={hit} controls={controls} debug={debug} />
-      ))}
+      {LIFE_HITS.map((hit) =>
+        hit.id === 'ghost' ? (
+          <GhostHaunt key={hit.id} hit={hit} controls={controls} debug={debug} />
+        ) : (
+          <LifeMesh key={hit.id} hit={hit} controls={controls} debug={debug} />
+        ),
+      )}
     </group>
   );
 }

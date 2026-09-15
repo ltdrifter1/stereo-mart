@@ -109,7 +109,6 @@ function DetailBody({
           aria-hidden
         >
           <div className="panel-detail-art-ring" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={detail.thumbSrc} alt="" width={168} height={168} />
         </div>
       )}
@@ -556,7 +555,6 @@ export default function SectionPanel({
                           aria-hidden
                         >
                           {it.thumbSrc ? (
-                            // eslint-disable-next-line @next/next/no-img-element
                             <img
                               src={it.thumbSrc}
                               alt=""
