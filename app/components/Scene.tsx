@@ -422,7 +422,7 @@ export default function Scene({
           depthWrite={false}
           transparent
           opacity={1}
-          color="#ffffff"
+          color="#fff3dc"
         />
       </mesh>
 
@@ -437,7 +437,7 @@ export default function Scene({
           depthWrite={false}
           transparent
           opacity={0}
-          color="#ffffff"
+          color="#fff3dc"
         />
       </mesh>
 
@@ -452,7 +452,7 @@ export default function Scene({
           depthWrite={false}
           transparent
           opacity={0}
-          color="#ffffff"
+          color="#fff3dc"
         />
       </mesh>
 

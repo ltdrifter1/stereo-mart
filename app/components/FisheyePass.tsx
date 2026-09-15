@@ -62,12 +62,8 @@ export default function FisheyePass({
             vec2 uv = q * 0.5 + 0.5;
 
             vec4 col = texture2D(tDiffuse, uv);
-            vec3 c = max(col.rgb, 0.0);
-            float luma = dot(c, vec3(0.2126, 0.7152, 0.0722));
-            c = mix(vec3(luma), c, 1.22);
-            c *= vec3(1.08, 1.03, 0.92);
-            c = pow(c, vec3(0.90));
-            col.rgb = mix(col.rgb, clamp(c, 0.0, 1.0), 0.85);
+            col.rgb = pow(max(col.rgb, 0.0), vec3(0.94));
+            col.rgb = mix(col.rgb, smoothstep(0.04, 0.96, col.rgb), 0.1);
             gl_FragColor = col;
           }
         `,
@@ -117,7 +113,10 @@ export default function FisheyePass({
     const k = Math.max(0, amountSmooth.current);
     fisheyeView.amount = k;
 
-    if (k < 0.008) {
+    // Explore fisheye is 0.3 — composite through an FBO. Weak/software GL in
+    // some environments returns an empty target; skip the warp unless intro
+    // is actually punching (k well above explore).
+    if (k < 0.42) {
       gl.setRenderTarget(null);
       gl.render(scene, camera);
       return;
