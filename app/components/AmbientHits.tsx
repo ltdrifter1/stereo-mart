@@ -11,6 +11,7 @@ import { playSfx } from '@/lib/audio';
 import { emitFind } from '@/lib/discoveries';
 import { LIFE_HITS, type LifeHit } from '@/app/data/hotspots';
 import { useSceneEnv, type Controls } from './sceneContext';
+import { isTap, tapOrigin, type TapOrigin } from '@/lib/pointerTap';
 
 const origin = new THREE.Vector3(0, 0, 0);
 
@@ -89,7 +90,7 @@ function LifeSprite({
 
 function GhostHaunt({
   hit,
-  controls,
+  controls: _controls,
   debug,
 }: {
   hit: LifeHit;
@@ -101,6 +102,7 @@ function GhostHaunt({
   const env = useSceneEnv();
   const [enabled, setEnabled] = useState(false);
   const map = useTexture(hit.src!);
+  const press = useRef<TapOrigin | null>(null);
   const [x, y, z] = uvToSpherical(hit.u, hit.v, SPHERE_RADIUS - 0.85);
 
   useLayoutEffect(() => {
@@ -134,9 +136,16 @@ function GhostHaunt({
     };
   }, [env.reduceMotion]);
 
-  const onClick = (e: ThreeEvent<MouseEvent>) => {
+  const onPointerDown = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
-    if (!env.live.value || controls.dragged || !enabled) return;
+    press.current = tapOrigin(e);
+  };
+
+  const onPointerUp = (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    const start = press.current;
+    press.current = null;
+    if (!env.live.value || !isTap(e, start) || !enabled) return;
     playSfx(hit.sfx);
     if (hit.label) emitFind(hit.id, hit.label);
   };
@@ -147,7 +156,8 @@ function GhostHaunt({
         ref={mesh}
         position={[x, y, z]}
         renderOrder={2}
-        onClick={onClick}
+        onPointerDown={onPointerDown}
+        onPointerUp={onPointerUp}
         onPointerOver={(e) => {
           e.stopPropagation();
           if (!env.live.value || !enabled) return;
@@ -173,7 +183,7 @@ function GhostHaunt({
 
 function LifeMesh({
   hit,
-  controls,
+  controls: _controls,
   debug,
 }: {
   hit: LifeHit;
@@ -183,15 +193,23 @@ function LifeMesh({
   const mesh = useRef<THREE.Mesh>(null);
   const env = useSceneEnv();
   const [pulse, setPulse] = useState(0);
+  const press = useRef<TapOrigin | null>(null);
   const [x, y, z] = uvToSpherical(hit.u, hit.v, SPHERE_RADIUS - 0.85);
 
   useLayoutEffect(() => {
     mesh.current?.lookAt(origin);
   }, [x, y, z]);
 
-  const onClick = (e: ThreeEvent<MouseEvent>) => {
+  const onPointerDown = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
-    if (!env.live.value || controls.dragged) return;
+    press.current = tapOrigin(e);
+  };
+
+  const onPointerUp = (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    const start = press.current;
+    press.current = null;
+    if (!env.live.value || !isTap(e, start)) return;
     playSfx(hit.sfx);
     setPulse((p) => p + 1);
     if (hit.kind === 'find' && hit.label) emitFind(hit.id, hit.label);
@@ -203,7 +221,8 @@ function LifeMesh({
         ref={mesh}
         position={[x, y, z]}
         renderOrder={1}
-        onClick={hit.kind === 'steam' ? undefined : onClick}
+        onPointerDown={hit.kind === 'steam' ? undefined : onPointerDown}
+        onPointerUp={hit.kind === 'steam' ? undefined : onPointerUp}
         onPointerOver={(e) => {
           e.stopPropagation();
           if (!env.live.value || hit.kind === 'steam') return;

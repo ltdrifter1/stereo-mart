@@ -75,7 +75,7 @@ export default function CustomCursor({ active }: { active: boolean }) {
         const target = Math.max(-0.9, Math.min(0.9, pos.current.vx * 18));
         pos.current.rot += (target - pos.current.rot) * 0.18;
         pos.current.vx *= 0.86;
-        el.style.transform = `translate3d(${pos.current.x}px, ${pos.current.y}px, 0) rotate(${pos.current.rot * 55}deg)`;
+        el.style.transform = `translate3d(${pos.current.x}px, ${pos.current.y}px, 0) translate(-50%, -50%) rotate(${pos.current.rot * 55}deg)`;
       }
       raf.current = requestAnimationFrame(tick);
     };

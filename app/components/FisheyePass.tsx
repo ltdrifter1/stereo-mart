@@ -113,29 +113,17 @@ export default function FisheyePass({
 
     amountSmooth.current += (amountRef.current - amountSmooth.current) * 0.45;
     const k = Math.max(0, amountSmooth.current);
-    const cam = camera as THREE.PerspectiveCamera;
-    const baseFov = cam.fov;
-    const intro = Math.max(0, Math.min(1, (k - 0.28) / 0.72));
 
-    // Keep the live camera FOV for raycasting. Extra FBO FOV expand is intro-only
-    // so explore clicks (k≈0.3) land on the painted objects.
-    const expand = intro > 0.15 ? 1 + k * (0.28 + intro * 0.32) : 1;
-
-    if (k < 0.008) {
+    if (k < 0.4) {
+      // Explore (k≈0.3) and idle: skip the warp pass so picking matches the plate.
       gl.setRenderTarget(null);
       gl.render(scene, camera);
       return;
     }
 
-    cam.fov = Math.min(170, baseFov * expand);
-    cam.updateProjectionMatrix();
-
     gl.setRenderTarget(fbo);
     gl.clear();
     gl.render(scene, camera);
-
-    cam.fov = baseFov;
-    cam.updateProjectionMatrix();
 
     material.uniforms.tDiffuse.value = fbo.texture;
     material.uniforms.uAmount.value = k;

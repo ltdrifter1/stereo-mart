@@ -67,6 +67,7 @@ export default function LoadingGate({
   const enter = async () => {
     if (!ready || entering) return;
     setEntering(true);
+    if (root.current) root.current.style.pointerEvents = 'none';
     try {
       await onEntered();
     } catch {

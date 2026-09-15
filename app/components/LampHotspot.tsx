@@ -8,6 +8,7 @@ import * as THREE from 'three';
 import { SPHERE_RADIUS, uvToSpherical } from '@/lib/pano';
 import { LAMP_UV } from '@/app/data/hotspots';
 import { useSceneEnv, type Controls } from './sceneContext';
+import { isTap, tapOrigin, type TapOrigin } from '@/lib/pointerTap';
 
 const origin = new THREE.Vector3(0, 0, 0);
 
@@ -34,7 +35,7 @@ function makeLampGlow() {
 }
 
 export default function LampHotspot({
-  controls,
+  controls: _controls,
   lightsOn,
   onToggle,
 }: {
@@ -48,6 +49,7 @@ export default function LampHotspot({
   const glow = useRef({ a: lightsOn ? 0.55 : 0.15 });
   const [hovered, setHovered] = useState(false);
   const env = useSceneEnv();
+  const press = useRef<TapOrigin | null>(null);
   const [x, y, z] = useMemo(
     () => uvToSpherical(LAMP_U, LAMP_V, SPHERE_RADIUS - 1.6),
     [],
@@ -73,10 +75,16 @@ export default function LampHotspot({
     if (glowMat.current) glowMat.current.opacity = glow.current.a;
   });
 
-  const handleClick = (e: ThreeEvent<MouseEvent>) => {
+  const handlePointerDown = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
-    // BT hotspots stay clickable during lookto (capture=false); only suppress drag slips.
-    if (controls.dragged || !env.live.value) return;
+    press.current = tapOrigin(e);
+  };
+
+  const handlePointerUp = (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    const start = press.current;
+    press.current = null;
+    if (!env.live.value || !isTap(e, start)) return;
     onToggle();
   };
 
@@ -108,7 +116,8 @@ export default function LampHotspot({
           setHovered(false);
           document.documentElement.classList.remove('cursor-hot');
         }}
-        onClick={handleClick}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
         renderOrder={7}
         userData={{ hotspotId: 'lamp', nav: 'Lights' }}
       >

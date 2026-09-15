@@ -10,6 +10,7 @@ import { uvToSpherical, SPHERE_RADIUS } from '@/lib/pano';
 import { GLOW } from '@/lib/glow';
 import type { RoomHotspot } from '@/app/data/hotspots';
 import { useSceneEnv, type Controls } from './sceneContext';
+import { isTap, tapOrigin, type TapOrigin } from '@/lib/pointerTap';
 
 export { GLOW } from '@/lib/glow';
 
@@ -129,7 +130,7 @@ function prepGlowMap(map: THREE.Texture, flipX?: boolean) {
 export default function Hotspot({
   spot,
   onOpen,
-  controls,
+  controls: _controls,
   focusedId = null,
   debug = false,
 }: {
@@ -150,6 +151,7 @@ export default function Hotspot({
   const [hovered, setHovered] = useState(false);
   const env = useSceneEnv();
   const [x, y, z] = uvToSpherical(spot.u, spot.v, SPHERE_RADIUS - 0.5);
+  const press = useRef<TapOrigin | null>(null);
 
   const canLatch = spot.glowLatches !== false;
   const isFocused = canLatch && focusedId === spot.id;
@@ -262,9 +264,16 @@ export default function Hotspot({
     }
   });
 
-  const handleClick = (e: ThreeEvent<MouseEvent>) => {
+  const handlePointerDown = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
-    if (!env.live.value || controls.dragged) return;
+    press.current = tapOrigin(e);
+  };
+
+  const handlePointerUp = (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    const start = press.current;
+    press.current = null;
+    if (!env.live.value || !isTap(e, start)) return;
     if (!canLatch) {
       gsap.fromTo(
         glow.current,
@@ -327,8 +336,9 @@ export default function Hotspot({
           setHovered(false);
           document.documentElement.classList.remove('cursor-hot');
         }}
-        onClick={handleClick}
-          userData={{ hotspotId: spot.id, nav: spot.object }}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        userData={{ hotspotId: spot.id, nav: spot.object }}
       >
         <planeGeometry args={[spot.w, spot.h]} />
         <meshBasicMaterial

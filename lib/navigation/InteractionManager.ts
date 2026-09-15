@@ -20,9 +20,9 @@ import {
   mfovToVerticalFov,
 } from '@/lib/pano';
 
-/** Desktop: tight. Touch: tolerate finger jitter so taps still count as clicks. */
-const DRAG_THRESHOLD_MOUSE = 5;
-const DRAG_THRESHOLD_TOUCH = 14;
+/** Desktop + touch: generous so a slightly shaky click still opens a hotspot. */
+const DRAG_THRESHOLD_MOUSE = 28;
+const DRAG_THRESHOLD_TOUCH = 28;
 const TWO_PI = Math.PI * 2;
 const DEG = Math.PI / 180;
 /** Pinch → MFOV degrees scale (touch zoom parity with wheel). */

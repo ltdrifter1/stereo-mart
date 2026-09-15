@@ -69,8 +69,8 @@ export const INTRO_REDUCED_DUR = 0.65;
  */
 /** Storefront after BackSide U-flip (texture u ↔ 1−u). */
 export const START_LOOK_U = 0.5;
-/** Level with the OPEN door / window mid-band. */
-export const START_LOOK_V = 0.48;
+/** Level with the OPEN door / window mid-band (slightly below equator). */
+export const START_LOOK_V = 0.5;
 /**
  * Pre-enter pose matches the storefront so fisheye 1.0 reads as a room,
  * not a zenith smear. BT clickIntro does not drop from the ceiling.
