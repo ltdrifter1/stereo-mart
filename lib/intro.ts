@@ -42,11 +42,10 @@ const smoothstep = (t: number) => {
 };
 
 /**
- * Enter choreography — balmingtiger clickIntro parity (mobile-safe zoom):
- *   1. Pre-enter: near-ceiling little-planet (fisheye 1 / fov 160)
- *   2. Soft yaw pan + tilt down into aisle middle while fov → MFOV_INTRO_SETTLE
- *      (device-agnostic — not portrait-adapted explore, which kills zoom on iPhone)
- *   3. Unlock look, then ease FOV into portrait-aware explore for free-look
+ * Enter choreography — balmingtiger clickIntro:
+ *   1. Pre-enter: storefront, fisheye 1 / fov 160 (look locked)
+ *   2. Gate fade, then fov → 120 and fisheye → 0.3 over ~2s
+ *   3. Unlock look, then ease FOV into portrait-aware explore
  */
 export function playEnterIntro(
   controls: Controls,

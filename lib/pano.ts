@@ -28,18 +28,16 @@ export const SPHERE_RADIUS = 48;
 export const MFOV_RATIO = 4 / 3;
 
 /**
- * Explore MFOV — widened for STEREO-MART's denser room so architecture reads larger
- * and more of the ceiling / floor sightline remains visible.
+ * Explore MFOV — balmingtiger.com view.fov="120" (fisheye 0.3).
+ * Portrait still remaps via adaptMfovToViewport so HFOV stays honest.
  */
-export const MFOV_EXPLORE = 132;
+export const MFOV_EXPLORE = 120;
 export const MFOV_INTRO = 160;
 /**
- * Device-agnostic cinematic settle FOV for enter (not portrait-adapted).
- * Portrait explore can land ~157° — only ~3° of zoom — so intro must
- * settle here first, then ease into resolveExploreMfov for free-look.
+ * clickIntro settle — BT eases fov 160 → 120 with the explore value.
+ * Portrait then eases into resolveExploreMfov for free-look.
  */
-/** Slightly wider settle so the empty shop reads as a room on enter. */
-export const MFOV_INTRO_SETTLE = 128;
+export const MFOV_INTRO_SETTLE = 120;
 /**
  * Free-look wheel clamp (krpano fovmin/fovmax).
  * lookto may punch below this (video ~20) — wheel/keys stay in this range.
@@ -55,25 +53,24 @@ export const FISHEYE_EXPLORE = 0.3;
 export const FISHEYE_INTRO = 1.0;
 
 /**
- * Enter tween — ceiling drop → soft yaw pan → aisle middle.
- * INTRO_DELAY aligned so the FOV/planet beat starts as the gate clears (~0.4s).
+ * Enter tween — BT clickIntro: gate fade, then fov 160→120 / fisheye 1→0.3
+ * while looking at the storefront (hlookat 0). INTRO_DELAY matches the 0.4s
+ * overlay fade so the swirl starts as CLICK TO ENTER clears.
  */
 export const GATE_FADE_DUR = 0.4;
-export const INTRO_DELAY = 0.5;
-export const INTRO_DUR = 3.4;
+export const INTRO_DELAY = 0.4;
+export const INTRO_DUR = 2.0;
 /** Post-settle ease from cinematic FOV → portrait-aware explore. */
 export const INTRO_EXPLORE_EASE_DUR = 0.85;
-/** Short path when prefers-reduced-motion (tilt only, still readable). */
+/** Short path when prefers-reduced-motion (still a readable tilt). */
 export const INTRO_REDUCED_DUR = 0.65;
 /**
- * Pre-enter / drop pose: looking almost straight UP at the ceiling so
- * CLICK TO ENTER reveals a little-planet swirl, then tilts down into
- * the middle of the aisle (BT clickIntro ceiling → settle).
- * Kept just off the exact zenith to avoid equirect pole smearing.
+ * Pre-enter pose: a little above the storefront mid-band so the fisheye
+ * 1.0 frame reads as a room, not a zenith smear.
  */
-export const INTRO_DROP_V = 0.1;
-/** Soft yaw sweep (degrees) during the tilt — room reads as a place, not a still. */
-export const INTRO_PAN_DEG = 38;
+export const INTRO_DROP_V = 0.38;
+/** Soft yaw sweep (degrees) during the settle. */
+export const INTRO_PAN_DEG = 12;
 /**
  * Base view — storefront window (ath 0 on the v20 plate). Street, globe
  * decal, and record bins in the sill read as the first "you're here" beat.
@@ -197,6 +194,19 @@ export function uvToSpherical(
 
 export function uvToLocal(u: number, v: number): [number, number, number] {
   return uvToSpherical(u, v, SPHERE_RADIUS - 0.35);
+}
+
+/**
+ * v20 / krpano hotspot angles → authored UV (BackSide U-flip).
+ * u = 1 − (ath + 180) / 360 · v = (atv + 90) / 180
+ */
+export function athAtvToUv(ath: number, atv: number): { u: number; v: number } {
+  const u = 1 - (ath + 180) / 360;
+  const v = (atv + 90) / 180;
+  return {
+    u: ((u % 1) + 1) % 1,
+    v: Math.max(0, Math.min(1, v)),
+  };
 }
 
 /** v20 — hand-illustrated PNW/Seoul record shop (from v20/art/plates). */

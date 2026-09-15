@@ -102,79 +102,105 @@ export default function TopNav({
   };
 
   return (
-    <div
-      className="top-nav-wrap"
-      aria-label="Store sections"
-      // Keep stage pan from starting when interacting with the conveyor.
-      onPointerDown={(e) => e.stopPropagation()}
-    >
-      <Swiper
-        className="top-nav-swiper"
-        loop
-        // Five nav sections — span the full bar so labels aren’t bunched left.
-        slidesPerView={items.length}
-        spaceBetween={12}
-        speed={800}
-        allowTouchMove
-        slideToClickedSlide={false}
-        watchSlidesProgress
-        breakpoints={{
-          0: { slidesPerView: items.length, spaceBetween: 6 },
-          570: { slidesPerView: items.length, spaceBetween: 10 },
-          900: { slidesPerView: items.length, spaceBetween: 14 },
-          1200: { slidesPerView: items.length, spaceBetween: 18 },
-        }}
-        onSwiper={(sw) => {
-          swiperRef.current = sw;
-          setRealIndex(sw.realIndex);
-        }}
-        onSlideChange={(sw) => {
-          setRealIndex(sw.realIndex);
-        }}
-        onSlideChangeTransitionEnd={(sw) => {
-          transitioning.current = false;
-          if (transitionTimer.current) {
-            clearTimeout(transitionTimer.current);
-            transitionTimer.current = null;
-          }
-          setRealIndex(sw.realIndex);
-          if (sw.realIndex >= items.length) {
-            sw.slideToLoop(sw.realIndex % items.length, 0);
-          }
-        }}
-        onClick={(sw) => {
-          // Loop clones are outside React — Swiper's clickedRealIndex is authoritative.
-          const raw = (sw as SwiperType & { clickedRealIndex?: number }).clickedRealIndex;
-          const idx = typeof raw === 'number' ? raw : -1;
-          if (idx < 0) return;
-          activateIndex(idx);
-        }}
+    <>
+      <div
+        className="top-nav-wrap"
+        aria-label="Store sections"
+        onPointerDown={(e) => e.stopPropagation()}
       >
-        {items.map((s, i) => {
-          const open = activeId === s.id;
-          const isActiveSlot = realIndex === i;
+        <Swiper
+          className="top-nav-swiper"
+          loop
+          slidesPerView={items.length}
+          spaceBetween={12}
+          speed={800}
+          allowTouchMove
+          slideToClickedSlide={false}
+          watchSlidesProgress
+          breakpoints={{
+            0: { slidesPerView: items.length, spaceBetween: 6 },
+            570: { slidesPerView: items.length, spaceBetween: 10 },
+            900: { slidesPerView: items.length, spaceBetween: 14 },
+            1200: { slidesPerView: items.length, spaceBetween: 18 },
+          }}
+          onSwiper={(sw) => {
+            swiperRef.current = sw;
+            setRealIndex(sw.realIndex);
+          }}
+          onSlideChange={(sw) => {
+            setRealIndex(sw.realIndex);
+          }}
+          onSlideChangeTransitionEnd={(sw) => {
+            transitioning.current = false;
+            if (transitionTimer.current) {
+              clearTimeout(transitionTimer.current);
+              transitionTimer.current = null;
+            }
+            setRealIndex(sw.realIndex);
+            if (sw.realIndex >= items.length) {
+              sw.slideToLoop(sw.realIndex % items.length, 0);
+            }
+          }}
+          onClick={(sw) => {
+            const raw = (sw as SwiperType & { clickedRealIndex?: number }).clickedRealIndex;
+            const idx = typeof raw === 'number' ? raw : -1;
+            if (idx < 0) return;
+            activateIndex(idx);
+          }}
+        >
+          {items.map((s, i) => {
+            const open = activeId === s.id;
+            const isActiveSlot = realIndex === i;
 
+            return (
+              <SwiperSlide key={s.id} className={`top-nav-slide${open ? ' is-open' : ''}`}>
+                <button
+                  type="button"
+                  className={`top-nav-item${isActiveSlot ? ' is-active-slot' : ''}`}
+                  aria-label={open && isActiveSlot ? `Close ${s.nav}` : `Open ${s.nav}`}
+                  aria-current={open ? 'true' : undefined}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    activateIndex(i);
+                  }}
+                  onPointerDown={(e) => e.stopPropagation()}
+                >
+                  <span className="top-nav-label">{s.nav.toUpperCase()}</span>
+                  <span className="top-nav-line" aria-hidden />
+                  {open && <span className="top-nav-close">×</span>}
+                </button>
+              </SwiperSlide>
+            );
+          })}
+        </Swiper>
+      </div>
+
+      <nav
+        className="mobile-menu"
+        aria-label="Store sections"
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        {items.map((s) => {
+          const open = activeId === s.id;
           return (
-            <SwiperSlide key={s.id} className={`top-nav-slide${open ? ' is-open' : ''}`}>
-              <button
-                type="button"
-                className={`top-nav-item${isActiveSlot ? ' is-active-slot' : ''}`}
-                aria-label={open && isActiveSlot ? `Close ${s.nav}` : `Open ${s.nav}`}
-                aria-current={open ? 'true' : undefined}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  activateIndex(i);
-                }}
-                onPointerDown={(e) => e.stopPropagation()}
-              >
-                <span className="top-nav-label">{s.nav.toUpperCase()}</span>
-                <span className="top-nav-line" aria-hidden />
-                {open && <span className="top-nav-close">×</span>}
-              </button>
-            </SwiperSlide>
+            <button
+              key={s.id}
+              type="button"
+              className={`mob-menu-button${open ? ' is-open' : ''}`}
+              aria-current={open ? 'true' : undefined}
+              aria-label={open ? `Close ${s.nav}` : `Open ${s.nav}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpen(s.id);
+              }}
+              data-cursor="click"
+            >
+              <span>{s.nav.toUpperCase()}</span>
+              {open ? <span className="mob-menu-close">×</span> : null}
+            </button>
           );
         })}
-      </Swiper>
-    </div>
+      </nav>
+    </>
   );
 }

@@ -8,7 +8,7 @@ import * as THREE from 'three';
 
 import { uvToSpherical, SPHERE_RADIUS } from '@/lib/pano';
 import { GLOW } from '@/lib/glow';
-import type { Section } from '@/app/data/sections';
+import type { RoomHotspot } from '@/app/data/hotspots';
 import { useSceneEnv, type Controls } from './sceneContext';
 
 export { GLOW } from '@/lib/glow';
@@ -127,13 +127,13 @@ function prepGlowMap(map: THREE.Texture, flipX?: boolean) {
  * No proximity / label text over the glow (nav labels live in TopNav only).
  */
 export default function Hotspot({
-  section,
+  spot,
   onOpen,
   controls,
   focusedId = null,
   debug = false,
 }: {
-  section: Section;
+  spot: RoomHotspot;
   onOpen: (id: string) => void;
   controls: Controls;
   focusedId?: string | null;
@@ -142,31 +142,35 @@ export default function Hotspot({
   const mesh = useRef<THREE.Mesh>(null);
   const edgeMesh = useRef<THREE.Mesh>(null);
   const bloomMesh = useRef<THREE.Mesh>(null);
+  const overlayMesh = useRef<THREE.Mesh>(null);
   const edgeMat = useRef<THREE.MeshBasicMaterial>(null);
   const bloomMat = useRef<THREE.MeshBasicMaterial>(null);
   const glow = useRef({ a: 0 });
   const breath = useRef(0);
   const [hovered, setHovered] = useState(false);
   const env = useSceneEnv();
-  const [x, y, z] = uvToSpherical(section.u, section.v, SPHERE_RADIUS - 0.5);
+  const [x, y, z] = uvToSpherical(spot.u, spot.v, SPHERE_RADIUS - 0.5);
 
-  const canLatch = section.glowLatches !== false;
-  const isFocused = canLatch && focusedId === section.id;
+  const canLatch = spot.glowLatches !== false;
+  const isFocused = canLatch && focusedId === spot.id;
 
-  // Prefer authored *_edge.webp (silhouette rim). Fall back to glow map.
-  const edgeSrc = section.goldEdge
-    ? `/hotspots/${section.id}_edge.webp`
-    : `/hotspots/${section.id}_glow.webp`;
-  const edgeMap = useTexture(edgeSrc);
+  const edgeMap = useTexture(spot.glowSrc);
+  const overlayMap = useTexture(spot.overlaySrc ?? spot.glowSrc);
 
   useLayoutEffect(() => {
-    prepGlowMap(edgeMap, section.glowFlipX);
-  }, [edgeMap, section.glowFlipX]);
+    prepGlowMap(edgeMap, spot.glowFlipX);
+  }, [edgeMap, spot.glowFlipX]);
+
+  useLayoutEffect(() => {
+    if (!spot.overlaySrc) return;
+    overlayMap.colorSpace = THREE.SRGBColorSpace;
+  }, [overlayMap, spot.overlaySrc]);
 
   useLayoutEffect(() => {
     mesh.current?.lookAt(origin);
     edgeMesh.current?.lookAt(origin);
     bloomMesh.current?.lookAt(origin);
+    overlayMesh.current?.lookAt(origin);
   }, [x, y, z]);
 
   useLayoutEffect(() => {
@@ -186,6 +190,7 @@ export default function Hotspot({
     m.lookAt(origin);
     edgeMesh.current?.lookAt(origin);
     bloomMesh.current?.lookAt(origin);
+    overlayMesh.current?.lookAt(origin);
 
     const now = performance.now();
     const settleActive =
@@ -197,8 +202,8 @@ export default function Hotspot({
     // Diegetic “record on” — Music / Shop booth pulses while preview plays.
     const listeningHere =
       env.listening.value &&
-      (section.id === 'listening-booth' || section.id === 'cash-register') &&
-      (isFocused || env.focusedId.value === section.id);
+      (spot.opens === 'listening-booth' || spot.opens === 'cash-register') &&
+      (isFocused || env.focusedId.value === spot.id);
 
     // Always-on idle breath while the room is live — hover/focus ride above it.
     const hot = isFocused || hovered || listeningHere;
@@ -267,11 +272,11 @@ export default function Hotspot({
         { a: 1, duration: 0.18, yoyo: true, repeat: 1, ease: 'power1.inOut', overwrite: true },
       );
     }
-    onOpen(section.id);
+    onOpen(spot.id);
   };
 
-  const gw = section.glowW ?? section.w;
-  const gh = section.glowH ?? section.h;
+  const gw = spot.glowW ?? spot.w;
+  const gh = spot.glowH ?? spot.h;
 
   return (
     <group position={[x, y, z]}>
@@ -323,22 +328,35 @@ export default function Hotspot({
           document.documentElement.classList.remove('cursor-hot');
         }}
         onClick={handleClick}
-        userData={{ hotspotId: section.id, nav: section.nav }}
+          userData={{ hotspotId: spot.id, nav: spot.object }}
       >
-        <planeGeometry args={[section.w, section.h]} />
+        <planeGeometry args={[spot.w, spot.h]} />
         <meshBasicMaterial
           transparent
           opacity={debug ? 0.3 : 0}
-          color={debug ? section.accent : '#ffffff'}
+          color={debug ? '#e0b64f' : '#ffffff'}
           depthWrite={false}
           side={THREE.DoubleSide}
         />
       </mesh>
 
-      {/* BT-style hover label — one word, fades with the glow, never blocks */}
-      {hovered && !isFocused && (
+      {spot.overlaySrc && (
+        <mesh ref={overlayMesh} renderOrder={4} raycast={() => null} position={[0, 0, 0.08]}>
+          <planeGeometry args={[spot.overlayW ?? spot.w, spot.overlayH ?? spot.h]} />
+          <meshBasicMaterial
+            map={overlayMap}
+            transparent
+            depthWrite={false}
+            depthTest={false}
+            side={THREE.DoubleSide}
+            toneMapped={false}
+          />
+        </mesh>
+      )}
+
+      {hovered && !isFocused && !spot.hideHint && (
         <Html center zIndexRange={[30, 10]} style={{ pointerEvents: 'none' }}>
-          <span className="hotspot-pill">{section.nav}</span>
+          <span className="hotspot-pill">{spot.object}</span>
         </Html>
       )}
     </group>

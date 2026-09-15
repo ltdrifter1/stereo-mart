@@ -126,7 +126,7 @@ export function useInteractionManager(
       if (e.pointerType === 'mouse' && e.button !== 0) return;
       // UI chrome (nav / panel / mute) stops propagation — never start a pan.
       if (e.target instanceof Element) {
-        if (e.target.closest('.top-nav-wrap, .top-nav-item, .panel, .mute-control, .gyro-control, .gate')) {
+        if (e.target.closest('.top-nav-wrap, .top-nav-item, .mobile-menu, .mob-menu-button, .panel, .mute-control, .gyro-control, .gate')) {
           return;
         }
       }

@@ -26,6 +26,7 @@ import {
   SECTION_BY_ID,
   SECTION_ID_BY_HASH,
 } from '../app/data/sections';
+import { HOTSPOT_BY_ID, ROOM_HOTSPOTS, resolveOpenTarget } from '../app/data/hotspots';
 import { GLOW } from '../lib/glow';
 
 const phone = {
@@ -95,7 +96,7 @@ const desktop = {
 // 2) CRT framing: mid lookto (not watch punch-in); phone widens further
 {
   const crt = SECTION_BY_ID['crt-tv'];
-  assert.equal(crt.lookFov, 56, 'CRT lookFov should frame the set with room context');
+  assert.equal(crt.lookFov, 50, 'CRT lookFov should frame the painted tube');
   assert.ok(crt.glowLatches !== false, 'CRT glow should latch while Videos is focused');
   assert.ok(crt.hideHint, 'CRT glow should have no proximity text');
   assert.ok(
@@ -114,11 +115,10 @@ const desktop = {
   assert.equal(crt.items.length, 1, 'Videos keeps a single station for now');
   assert.equal(crt.items[0]?.label, 'STEREO-MART-TV');
   assert.equal(crt.items[0]?.videoSrc, '/videos/channel_b.mp4');
-  // CRT video plane must sit inside painted glass — not the old 0.7×0.58 overshoot.
-  assert.ok(crt.w === 20 && crt.h === 18, 'CRT hit plane matches v13 tube-set size');
+  assert.ok(crt.w <= 12 && crt.h <= 12, 'CRT hit plane hugs the painted tube');
   const desk = resolveLookMfov(crt, desktop);
   const mob = resolveLookMfov(crt, phone);
-  assert.equal(desk, 56, `desktop CRT should stay authored 56, got ${desk}`);
+  assert.equal(desk, 50, `desktop CRT should stay authored 50, got ${desk}`);
   assert.ok(mob > desk, `mobile CRT mfov ${mob} should be > desktop ${desk}`);
   console.log(`✓ CRT lookto desktop=${desk.toFixed(1)} mobile=${mob.toFixed(1)}`);
 }
@@ -165,24 +165,23 @@ const desktop = {
   assert.ok(mob > musicSec.lookFov, `mobile music mfov ${mob} should widen past ${musicSec.lookFov}`);
   assert.ok(musicSec.w <= 32 && musicSec.h <= 24, 'Music glow hugs headphones/turntable shelf, not whole tower');
   assert.ok(
-    Math.abs(musicSec.u - 0.5) < 0.05,
-    'Music / LISTEN sits on the far back wall',
+    Math.abs(musicSec.u - 0.744) < 0.03,
+    'Music / LISTEN sits left of the storefront (ath -88)',
   );
   assert.ok((musicSec.walkDolly ?? 0) >= 6, 'Music uses walk approach dolly');
   assert.ok(
-    SECTION_BY_ID['record-bins'].w <= 42 && SECTION_BY_ID['record-bins'].h <= 29,
-    'Artists glow hugs the bin wood, not the moss rug',
+    SECTION_BY_ID['record-bins'].w <= 28 && SECTION_BY_ID['record-bins'].h <= 22,
+    'Artists glow hugs the poster wall',
   );
   const shopSec = SECTION_BY_ID['cash-register'];
-  assert.ok(shopSec.w <= 12 && shopSec.h <= 11, 'Shop hitbox is the register body, not shelves behind');
-  assert.ok(shopSec.h <= 8, 'Shop height stays on the register, not wall shelves');
+  assert.ok(shopSec.w <= 24 && shopSec.h <= 20, 'Shop hitbox is the NEW ARRIVALS crates');
   assert.ok(
-    Math.abs((shopSec.lookU ?? shopSec.u) - shopSec.u) < 0.01,
-    'Shop lookto aims at the register, not the shelf wall',
+    Math.abs((shopSec.lookU ?? shopSec.u) - shopSec.u) < 0.02,
+    'Shop lookto aims at the crates',
   );
   assert.ok(
-    Math.abs(shopSec.u - 0.27) < 0.02 && Math.abs(shopSec.v - 0.5) < 0.02,
-    'Shop centers on the warehouse cash register',
+    Math.abs(shopSec.u - 0.022) < 0.03 && Math.abs(shopSec.v - 0.528) < 0.04,
+    'Shop centers on the v20 record crates (ath 172)',
   );
   const musicTarget = resolveLookTarget(musicSec, desktop);
   assert.ok(
@@ -540,6 +539,25 @@ const desktop = {
     'listening booth pulse should read faster than hover',
   );
   console.log('✓ idle hotspot glow policy');
+}
+
+// 14) v20 in-world objects → panels (NAVIGATION.md)
+{
+  assert.equal(MFOV_EXPLORE, 120, 'explore FOV matches BT view.fov 120');
+  const listen = HOTSPOT_BY_ID['listening-booth'];
+  assert.ok(listen && Math.abs(listen.ath - -88) < 0.01, 'listening station ath');
+  assert.equal(resolveOpenTarget('listening-booth')?.section.id, 'listening-booth');
+  assert.equal(resolveOpenTarget('cassette-rack')?.section.id, 'cash-register');
+  assert.equal(resolveOpenTarget('front-door')?.section.id, 'cash-register');
+  assert.equal(resolveOpenTarget('desk')?.section.id, 'desk');
+  assert.equal(resolveOpenTarget('record-bins')?.section.id, 'record-bins');
+  assert.ok(
+    ROOM_HOTSPOTS.some((h) => h.id === 'phone-booth' && h.overlaySrc),
+    'mail slot is the additive door prop',
+  );
+  assert.ok(SECTION_BY_ID.desk, 'desk about panel exists');
+  assert.ok(!(NAV_ORDER as readonly string[]).includes('desk'), 'about is in-world only');
+  console.log('✓ v20 hotspot → panel map');
 }
 
 console.log('\nAll nav camera checks passed.');

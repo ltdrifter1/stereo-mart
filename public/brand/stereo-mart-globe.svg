@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Stereo-Mart Records globe badge">
+	<!--
+		Vector redraw of the supplied Stereo-Mart globe badge.
+		Cream disc, ink-navy meridian grid, bold italic condensed wordmark
+		across the equator, RECORDS on a muted-red banner beneath.
+		Type is live text (condensed grotesque stack); convert to outlines
+		before print/export use.
+	-->
+	<defs>
+		<clipPath id="disc"><circle cx="256" cy="256" r="234" /></clipPath>
+		<style>
+			.grid { stroke:#232840; stroke-width:9; fill:none; }
+			.word { font-family:'Haettenschweiler','Archivo Black','Arial Narrow',sans-serif;
+			        font-style:italic; font-weight:900; letter-spacing:-2px; }
+		</style>
+	</defs>
+
+	<!-- outer ring + cream field -->
+	<circle cx="256" cy="256" r="244" fill="#232840" />
+	<circle cx="256" cy="256" r="234" fill="#ece4d2" />
+
+	<g clip-path="url(#disc)">
+		<!-- longitude meridians -->
+		<line class="grid" x1="256" y1="12" x2="256" y2="500" />
+		<ellipse class="grid" cx="256" cy="256" rx="78" ry="234" />
+		<ellipse class="grid" cx="256" cy="256" rx="152" ry="234" />
+		<ellipse class="grid" cx="256" cy="256" rx="215" ry="234" />
+
+		<!-- latitude arcs -->
+		<path class="grid" d="M 34 130 Q 256 92 478 130" />
+		<path class="grid" d="M 22 190 Q 256 162 490 190" />
+		<path class="grid" d="M 22 322 Q 256 350 490 322" />
+		<path class="grid" d="M 34 382 Q 256 420 478 382" />
+
+		<!-- equator band: cream field for the wordmark -->
+		<rect x="0" y="216" width="512" height="86" fill="#ece4d2" />
+		<text class="word" x="256" y="288" text-anchor="middle"
+			font-size="86" fill="#232840">STEREO-MART</text>
+
+		<!-- RECORDS banner -->
+		<rect x="0" y="306" width="512" height="52" fill="#a63a32" />
+		<text x="256" y="345" text-anchor="middle"
+			font-family="'Archivo Black','Arial Black',sans-serif" font-weight="800"
+			font-size="30" letter-spacing="14" fill="#ece4d2">RECORDS</text>
+	</g>
+
+	<!-- re-stroke the rim so the bands tuck under it -->
+	<circle cx="256" cy="256" r="234" fill="none" stroke="#232840" stroke-width="10" />
+</svg>

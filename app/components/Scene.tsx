@@ -27,7 +27,7 @@ import {
 } from '@/lib/pano';
 import { playEnterIntro } from '@/lib/intro';
 import type { GyroHandle } from '@/lib/gyro';
-import { SECTIONS } from '@/app/data/sections';
+import { ROOM_HOTSPOTS } from '@/app/data/hotspots';
 import { SceneContext, type SceneEnv, type Controls } from './sceneContext';
 import DustField from './DustField';
 import LightBeams from './LightBeams';
@@ -77,13 +77,11 @@ type Props = {
 };
 
 /**
- * Camera rig — balmingtiger / krpano parity + cinematic enter:
- * - Enter: ceiling little-planet → soft yaw pan → aisle middle
- *   while MFOV 160→124 (device-agnostic) + fisheye 1→0.3, then ease to explore
- * - Look locked during intro; usercontrol=all on complete
+ * Camera rig — balmingtiger / krpano parity:
+ * - Enter: storefront fisheye 1 / fov 160 → 0.3 / 120 (clickIntro)
+ * - Look locked during intro; usercontrol on complete
  * - Click-and-drag with instant tracking + draginertia/dragfriction
  * - followmousecontrol lean on desktop (view.rx / view.ry)
- * - No artificial camera breath/position wobble
  */
 function Rig({
   controls,
@@ -467,10 +465,10 @@ export default function Scene({
           reduceMotion={reduceMotion}
         />
         <AmbientHits controls={controls} debug={debug} />
-        {SECTIONS.map((s) => (
+        {ROOM_HOTSPOTS.map((s) => (
           <Hotspot
             key={s.id}
-            section={s}
+            spot={s}
             onOpen={onOpen}
             controls={controls}
             focusedId={focusedId}

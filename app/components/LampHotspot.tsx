@@ -6,13 +6,14 @@ import gsap from 'gsap';
 import * as THREE from 'three';
 
 import { SPHERE_RADIUS, uvToSpherical } from '@/lib/pano';
+import { LAMP_UV } from '@/app/data/hotspots';
 import { useSceneEnv, type Controls } from './sceneContext';
 
 const origin = new THREE.Vector3(0, 0, 0);
 
-/** Ceiling fan / lamp cluster in the v13 store — toggles lights on/off. */
-export const LAMP_U = 0.5;
-export const LAMP_V = 0.2;
+/** Desk lamp on the v20 plate — toggles lights_on / lights_off. */
+export const LAMP_U = LAMP_UV.u;
+export const LAMP_V = LAMP_UV.v;
 
 function makeLampGlow() {
   const c = document.createElement('canvas');
@@ -82,7 +83,7 @@ export default function LampHotspot({
   return (
     <group position={[x, y, z]}>
       <mesh ref={glowMesh} renderOrder={1} raycast={() => null}>
-        <planeGeometry args={[5.5, 7]} />
+        <planeGeometry args={[8, 8]} />
         <meshBasicMaterial
           ref={glowMat}
           map={tex}
@@ -110,7 +111,7 @@ export default function LampHotspot({
         onClick={handleClick}
         userData={{ hotspotId: 'lamp', nav: 'Lights' }}
       >
-        <planeGeometry args={[3.2, 4.5]} />
+        <planeGeometry args={[4.2, 5]} />
         <meshBasicMaterial transparent opacity={0} depthWrite={false} side={THREE.DoubleSide} />
       </mesh>
     </group>

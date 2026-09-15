@@ -1,6 +1,7 @@
 import gsap from 'gsap';
 import type { Section } from '@/app/data/sections';
 import { SECTION_BY_ID } from '@/app/data/sections';
+import { resolveOpenTarget } from '@/app/data/hotspots';
 import {
   FOLLOW_REENABLE_DELAY,
   FOLLOW_REENABLE_DUR,
@@ -176,11 +177,12 @@ export function createNavigationController(
     // closed-over `lookEnabled` boolean after controller recreation.
     if (!controls.userControl && !lookEnabled) return;
     lookEnabled = true;
-    const section = SECTION_BY_ID[id];
-    if (!section) return;
+    const resolved = resolveOpenTarget(id);
+    if (!resolved) return;
+    const { section, look, hotspotId } = resolved;
 
     // Toggle off if same focused feature re-clicked via nav / hotspot.
-    if (navState.focusedId === id) {
+    if (navState.focusedId === hotspotId) {
       close({ force: true });
       return;
     }
@@ -188,23 +190,23 @@ export function createNavigationController(
     openedAt = Date.now();
     cancelPanelReveal();
     cbs.onCrtArm?.(false);
-    if (id !== 'crt-tv') cbs.onCrtSrcReset?.();
+    if (section.id !== 'crt-tv') cbs.onCrtSrcReset?.();
     // Leaving Music/Shop stops any booth preview.
     stopPreview();
 
     const vp = viewport ?? measureViewport();
-    const target = resolveLookTarget(section, vp);
+    const target = resolveLookTarget(look, vp);
     const fromFree = !navState.focusedId;
 
     // Glow/focus latches immediately; HUD opens mid-lookto from free look.
     // Section→section swaps keep the glass up (no close flicker).
-    setFocused(navState, id, {
+    setFocused(navState, section.id, {
       panel: false,
       readyDelayMs:
         fromFree && !cbs.reduceMotion ? PANEL_REVEAL_DELAY * 1000 : 0,
     });
-    navState.focusedId = id;
-    cbs.onFocusedChange(id);
+    navState.focusedId = hotspotId;
+    cbs.onFocusedChange(hotspotId);
     playSfx(section.sfx || 'focus');
 
     // Keep follow-mouse lean off while focused so glow stays framed.
@@ -213,12 +215,12 @@ export function createNavigationController(
 
     // Videos — arm watch overlay when lookto lands (or immediately if reduced).
     const armCrt =
-      id === 'crt-tv' && (SECTION_BY_ID['crt-tv']?.items.length ?? 0) > 0;
+      section.id === 'crt-tv' && (SECTION_BY_ID['crt-tv']?.items.length ?? 0) > 0;
 
     if (cbs.reduceMotion) {
       interruptCameraAnimation(controls);
       writeCamera(controls, target);
-      revealPanel(id);
+      revealPanel(section.id);
       if (armCrt) cbs.onCrtArm?.(true);
       return;
     }
@@ -229,10 +231,10 @@ export function createNavigationController(
       cbs.onActiveChange(null);
       panelRevealCall = gsap.delayedCall(PANEL_REVEAL_DELAY, () => {
         panelRevealCall = null;
-        revealPanel(id);
+        revealPanel(section.id);
       });
     } else {
-      revealPanel(id);
+      revealPanel(section.id);
     }
 
     // Section→section: step into the aisle, turn, then approach the wall.
@@ -251,14 +253,14 @@ export function createNavigationController(
       animateCameraPath(controls, [mid, target], {
         segmentDurations: [LOOKTO_AISLE_DURATION, LOOKTO_APPROACH_DURATION],
         onComplete: () => {
-          if (armCrt && navState.focusedId === id) cbs.onCrtArm?.(true);
+          if (armCrt && navState.focusedId === hotspotId) cbs.onCrtArm?.(true);
         },
       });
     } else {
       animateCamera(controls, target, {
         duration: LOOKTO_DURATION,
         onComplete: () => {
-          if (armCrt && navState.focusedId === id) cbs.onCrtArm?.(true);
+          if (armCrt && navState.focusedId === hotspotId) cbs.onCrtArm?.(true);
         },
       });
     }
@@ -275,8 +277,8 @@ export function createNavigationController(
 
     const nextMfov = id
       ? (() => {
-          const section = SECTION_BY_ID[id];
-          return section ? resolveLookTarget(section, vp).mfov : null;
+          const resolved = resolveOpenTarget(id);
+          return resolved ? resolveLookTarget(resolved.look, vp).mfov : null;
         })()
       : resolveExploreMfov(vp);
     if (nextMfov == null) return;

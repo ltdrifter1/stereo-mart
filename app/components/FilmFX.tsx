@@ -7,11 +7,7 @@
 export default function FilmFX({ reduceMotion = false }: { reduceMotion?: boolean }) {
   return (
     <div className={`fx-layer${reduceMotion ? ' is-static' : ''}`} aria-hidden>
-      <div className="fx-glow fx-glow-a" />
-      <div className="fx-glow fx-glow-b" />
-      <div className="fx-glow fx-glow-c" />
       <div className="fx-edge" />
-      <div className="fx-scanlines" />
       <div className="fx-grain" />
     </div>
   );
