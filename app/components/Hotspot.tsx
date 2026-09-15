@@ -8,7 +8,7 @@ import * as THREE from 'three';
 
 import { uvToSpherical, SPHERE_RADIUS } from '@/lib/pano';
 import { GLOW } from '@/lib/glow';
-import { getSoftAuraTexture } from '@/lib/aura';
+import { setSilhouetteAmount, type SilhouetteName } from '@/lib/silhouetteGlow';
 import type { RoomHotspot } from '@/app/data/hotspots';
 import { useSceneEnv, type Controls } from './sceneContext';
 import { isTap, tapOrigin, type TapOrigin } from '@/lib/pointerTap';
@@ -51,7 +51,7 @@ function OverlayProp({
 
 /**
  * Hotspot — balmingtiger pattern:
- *   invisible hit plane + soft lamp-light aura (never a geometric ring)
+ *   generous invisible hit plane + object-shaped silhouette (sphere ID map)
  *   hoverIn  → glow alpha 0→hover, duration 0.4, ease power1.inOut
  *   hoverOut → glow alpha →0 — EXCEPT latched sections while focused
  */
@@ -69,22 +69,19 @@ export default function Hotspot({
   debug?: boolean;
 }) {
   const mesh = useRef<THREE.Mesh>(null);
-  const bloomMesh = useRef<THREE.Mesh>(null);
-  const bloomMat = useRef<THREE.MeshBasicMaterial>(null);
   const glow = useRef({ a: 0 });
   const breath = useRef(0);
   const [hovered, setHovered] = useState(false);
   const env = useSceneEnv();
   const [x, y, z] = uvToSpherical(spot.u, spot.v, SPHERE_RADIUS - 0.5);
   const press = useRef<TapOrigin | null>(null);
-  const auraMap = getSoftAuraTexture();
+  const maskName = spot.id as SilhouetteName;
 
   const canLatch = spot.glowLatches !== false;
   const isFocused = canLatch && focusedId === spot.id;
 
   useLayoutEffect(() => {
     mesh.current?.lookAt(origin);
-    bloomMesh.current?.lookAt(origin);
   }, [x, y, z]);
 
   useLayoutEffect(() => {
@@ -102,7 +99,6 @@ export default function Hotspot({
     if (!m) return;
 
     m.lookAt(origin);
-    bloomMesh.current?.lookAt(origin);
 
     const now = performance.now();
     const settleActive =
@@ -135,16 +131,8 @@ export default function Hotspot({
     }
 
     const a = Math.max(glow.current.a, idleA);
-    const bloomAmp = listeningHere ? GLOW.listeningBloomAmp : GLOW.bloomAmp;
-    const bloomSwell = listeningHere ? GLOW.listeningSwell : GLOW.bloomSwell;
-    const bloomMul = GLOW.bloomBase + wave * bloomAmp;
-    const bloomScale = GLOW.bloomScale * (1 + wave * bloomSwell * a);
-
-    if (bloomMesh.current) bloomMesh.current.scale.setScalar(bloomScale);
-    if (bloomMat.current) {
-      bloomMat.current.opacity = a * bloomMul;
-      bloomMat.current.visible = a > 0.02;
-    }
+    const pulse = hot ? 0.88 + 0.12 * wave : 1;
+    setSilhouetteAmount(maskName, a * pulse);
   });
 
   const handlePointerDown = (e: ThreeEvent<PointerEvent>) => {
@@ -160,27 +148,8 @@ export default function Hotspot({
     onOpen(spot.id);
   };
 
-  const gw = spot.glowW ?? spot.w;
-  const gh = spot.glowH ?? spot.h;
-
   return (
     <group position={[x, y, z]}>
-      <mesh ref={bloomMesh} renderOrder={1} raycast={() => null}>
-        <planeGeometry args={[gw, gh]} />
-        <meshBasicMaterial
-          ref={bloomMat}
-          map={auraMap}
-          color={GLOW.bloomTint}
-          transparent
-          depthWrite={false}
-          depthTest={false}
-          blending={THREE.AdditiveBlending}
-          opacity={0}
-          side={THREE.DoubleSide}
-          toneMapped={false}
-        />
-      </mesh>
-
       <mesh
         ref={mesh}
         renderOrder={3}

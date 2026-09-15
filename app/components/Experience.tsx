@@ -13,6 +13,7 @@ import GyroButton, { createGyro } from './GyroButton';
 import DragHint from './DragHint';
 import CustomCursor from './CustomCursor';
 import WonderToast from './WonderToast';
+import HotspotA11y from './HotspotA11y';
 import {
   createNavState,
   createNavigationController,
@@ -324,6 +325,11 @@ export default function Experience() {
       <TopNav visible={canLook} activeId={active} onOpen={open} />
       <DragHint active={canLook} controls={controls} reduceMotion={reduceMotion} />
       <WonderToast active={canLook} />
+      <HotspotA11y
+        visible={canLook}
+        onOpen={open}
+        onToggleLights={toggleLights}
+      />
 
       <SectionPanel
         activeId={active}

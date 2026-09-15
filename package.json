@@ -11,7 +11,9 @@
     "start": "next start",
     "lint": "eslint .",
     "test:nav": "npx tsx scripts/test-nav-camera.ts",
-    "verify:aim": "python3 scripts/verify-aim.py"
+    "verify:aim": "python3 scripts/verify-aim.py",
+    "bake:hires": "python3 v20/scripts/bake-hires-shop.py",
+    "test:hires": "python3 scripts/validate-hires-plate.py"
   },
   "dependencies": {
     "@react-three/drei": "10.7.6",

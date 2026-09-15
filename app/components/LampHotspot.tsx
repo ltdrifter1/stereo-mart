@@ -6,7 +6,7 @@ import gsap from 'gsap';
 import * as THREE from 'three';
 
 import { SPHERE_RADIUS, uvToSpherical } from '@/lib/pano';
-import { getSoftAuraTexture } from '@/lib/aura';
+import { setSilhouetteAmount } from '@/lib/silhouetteGlow';
 import { LAMP_UV } from '@/app/data/hotspots';
 import { useSceneEnv, type Controls } from './sceneContext';
 import { isTap, tapOrigin, type TapOrigin } from '@/lib/pointerTap';
@@ -19,7 +19,7 @@ export const LAMP_V = LAMP_UV.v;
 
 export default function LampHotspot({
   controls: _controls,
-  lightsOn,
+  lightsOn: _lightsOn,
   onToggle,
 }: {
   controls: Controls;
@@ -27,9 +27,7 @@ export default function LampHotspot({
   onToggle: () => void;
 }) {
   const mesh = useRef<THREE.Mesh>(null);
-  const glowMesh = useRef<THREE.Mesh>(null);
-  const glowMat = useRef<THREE.MeshBasicMaterial>(null);
-  const glow = useRef({ a: lightsOn ? 0.22 : 0 });
+  const glow = useRef({ a: 0 });
   const [hovered, setHovered] = useState(false);
   const env = useSceneEnv();
   const press = useRef<TapOrigin | null>(null);
@@ -37,24 +35,22 @@ export default function LampHotspot({
     () => uvToSpherical(LAMP_U, LAMP_V, SPHERE_RADIUS - 1.6),
     [],
   );
-  const tex = useMemo(() => getSoftAuraTexture(), []);
 
   useLayoutEffect(() => {
     mesh.current?.lookAt(origin);
-    glowMesh.current?.lookAt(origin);
   }, [x, y, z]);
 
   useLayoutEffect(() => {
     gsap.to(glow.current, {
-      a: lightsOn ? (hovered ? 0.48 : 0.2) : hovered ? 0.34 : 0,
+      a: hovered ? 0.4 : 0,
       duration: env.reduceMotion ? 0 : 0.4,
       ease: 'power1.inOut',
       overwrite: true,
     });
-  }, [lightsOn, hovered, env.reduceMotion]);
+  }, [hovered, env.reduceMotion]);
 
   useFrame(() => {
-    if (glowMat.current) glowMat.current.opacity = glow.current.a;
+    setSilhouetteAmount('lamp', glow.current.a);
   });
 
   const handlePointerDown = (e: ThreeEvent<PointerEvent>) => {
@@ -72,20 +68,6 @@ export default function LampHotspot({
 
   return (
     <group position={[x, y, z]}>
-      <mesh ref={glowMesh} renderOrder={6} raycast={() => null}>
-        <planeGeometry args={[6.2, 6.2]} />
-        <meshBasicMaterial
-          ref={glowMat}
-          map={tex}
-          color="#e0b64f"
-          transparent
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-          opacity={0}
-          side={THREE.DoubleSide}
-          toneMapped={false}
-        />
-      </mesh>
       <mesh
         ref={mesh}
         onPointerOver={(e) => {

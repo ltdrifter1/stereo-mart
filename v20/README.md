@@ -30,7 +30,8 @@ v20/
     audio/              synthesized placeholder ambience loops (ogg)
     panos/              multires tile output (generated, not committed)
   scripts/
-    make-equirect.py    plate → seam-safe 2:1 masters (8192 / mobile / LQIP)
+    make-equirect.py    plate → seam-safe 2:1 masters (legacy Lanczos path)
+    bake-hires-shop.py  native 8192 restroke + materials + object silhouettes
     cut-props.py        props sheet → transparent overlays + glow sprites
     make-patches.py     plate crops for in-place animation + light sprites
     gen-ambience.py     numpy/ffmpeg placeholder ambience synth
@@ -43,11 +44,14 @@ v20/
 2. Bake + derive assets:
 
 ```bash
-python3 v20/scripts/make-equirect.py    # seam-safe 8192 master + mobile + LQIP
+python3 v20/scripts/bake-hires-shop.py  # native 8192 master + 4k/2k/LQIP + silhouettes
 python3 v20/scripts/cut-props.py        # props sheet → transparent overlays + glows
 python3 v20/scripts/make-patches.py     # in-place animation patches + light sprites
 python3 v20/scripts/gen-ambience.py     # placeholder ambience loops (needs ffmpeg)
 ```
+
+See `HIRES_PLATE.md` for why this is not a Lanczos of the 1536 plate, the
+responsive loading path, and the object ID map.
 
 3. The tour loads the baked master directly as a `<sphere>` image, so it
    runs without tiling. For launch, run the licensed krpano tools
@@ -66,9 +70,8 @@ cd v20 && python3 -m http.server 8123
 `preview.html` renders the master with open-source pannellum, mirrors all
 hotspot coordinates as labeled markers, and click-copies `ath/atv` for the
 XML. `scripts/shoot-preview.mjs` (playwright + system Chrome) screenshots
-the four walls headlessly for review. The current master is upscaled from
-the 1536px concept plate — sharp enough to tune hotspots and feel; the
-final 8192 bake needs a repainted hi-res plate.
+the four walls headlessly for review. The live Next.js plate is the native
+8192 bake from `scripts/bake-hires-shop.py` (see `HIRES_PLATE.md`).
 
 ## Ground rules
 
