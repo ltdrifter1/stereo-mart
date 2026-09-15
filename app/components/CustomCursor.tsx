@@ -30,8 +30,7 @@ export default function CustomCursor({ active }: { active: boolean }) {
 
     const fine = window.matchMedia('(pointer: fine)').matches;
     const touch = window.matchMedia('(pointer: coarse)').matches;
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const ok = fine && !touch && !reduce;
+    const ok = fine && !touch;
     setEnabled(ok);
     document.documentElement.classList.toggle('has-custom-cursor', ok);
     return () => document.documentElement.classList.remove('has-custom-cursor');
@@ -72,10 +71,11 @@ export default function CustomCursor({ active }: { active: boolean }) {
     const tick = () => {
       const el = root.current;
       if (el) {
-        const target = Math.max(-0.9, Math.min(0.9, pos.current.vx * 18));
-        pos.current.rot += (target - pos.current.rot) * 0.18;
+        const target = Math.max(-0.35, Math.min(0.35, pos.current.vx * 8));
+        pos.current.rot += (target - pos.current.rot) * 0.16;
         pos.current.vx *= 0.86;
-        el.style.transform = `translate3d(${pos.current.x}px, ${pos.current.y}px, 0) translate(-50%, -50%) rotate(${pos.current.rot * 55}deg)`;
+        // Fingertip hotspot (~18, 8) on the 64×64 glove.
+        el.style.transform = `translate3d(${pos.current.x}px, ${pos.current.y}px, 0) translate(-18px, -8px) rotate(${pos.current.rot * 12}deg)`;
       }
       raf.current = requestAnimationFrame(tick);
     };

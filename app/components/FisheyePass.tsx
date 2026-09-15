@@ -5,12 +5,12 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useFBO } from '@react-three/drei';
 import * as THREE from 'three';
 
+import { fisheyeView } from '@/lib/fisheyeMap';
+
 /**
  * krpano-style view.fisheye (balmingtiger explore = 0.3).
- *
- * Explore stays mild so the packed store doesn't feel squeezed.
- * Intro (amount→1) ramps barrel + FOV expand for a readable little-planet
- * swirl on iPhone, where FOV alone used to be nearly a no-op.
+ * Mild barrel at explore; stronger on intro. Camera FOV is never expanded
+ * in this pass — pointer warp in Experience keeps picking on the plate.
  */
 export default function FisheyePass({
   amountRef,
@@ -106,6 +106,7 @@ export default function FisheyePass({
     // Skip FBO warp under reduced motion — render the scene straight through.
     if (reduceMotion) {
       amountSmooth.current = 0;
+      fisheyeView.amount = 0;
       gl.setRenderTarget(null);
       gl.render(scene, camera);
       return;
@@ -113,9 +114,9 @@ export default function FisheyePass({
 
     amountSmooth.current += (amountRef.current - amountSmooth.current) * 0.45;
     const k = Math.max(0, amountSmooth.current);
+    fisheyeView.amount = k;
 
-    if (k < 0.4) {
-      // Explore (k≈0.3) and idle: skip the warp pass so picking matches the plate.
+    if (k < 0.008) {
       gl.setRenderTarget(null);
       gl.render(scene, camera);
       return;

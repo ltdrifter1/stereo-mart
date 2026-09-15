@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, events as createPointerEvents } from '@react-three/fiber';
 
 import Scene from './Scene';
 import LoadingGate from './LoadingGate';
@@ -31,6 +31,7 @@ import {
   sectionIdFromHash,
 } from '@/lib/sectionHash';
 import { CRT_DEFAULT_SRC } from './CrtScreen';
+import { warpPointerNdc, fisheyeView } from '@/lib/fisheyeMap';
 
 /**
  * Root experience — virtual spherical camera, not page scroll.
@@ -269,6 +270,23 @@ export default function Experience() {
             preserveDrawingBuffer: false,
           }}
           camera={{ fov: 120, position: [0, 0, 0], near: 0.1, far: 200 }}
+          events={(store) => {
+            const manager = createPointerEvents(store);
+            return {
+              ...manager,
+              compute: (event, state) => {
+                const el = state.gl.domElement;
+                const rect = el.getBoundingClientRect();
+                const w = Math.max(1, rect.width);
+                const h = Math.max(1, rect.height);
+                const ndcX = ((event.clientX - rect.left) / w) * 2 - 1;
+                const ndcY = -((event.clientY - rect.top) / h) * 2 + 1;
+                const warped = warpPointerNdc(ndcX, ndcY, fisheyeView.amount, w / h);
+                state.pointer.set(warped.x, warped.y);
+                state.raycaster.setFromCamera(state.pointer, state.camera);
+              },
+            };
+          }}
           onCreated={({ gl, camera }) => {
             gl.setClearColor('#000000', 1);
             camera.rotation.order = 'YXZ';
@@ -300,7 +318,7 @@ export default function Experience() {
       </div>
 
       <FilmFX reduceMotion={reduceMotion} />
-      <CustomCursor active={entered} />
+      <CustomCursor active />
       <MuteControl visible={entered} faded={videoFocused} />
       <GyroButton visible={canLook} gyroRef={gyroRef} />
       <TopNav visible={canLook} activeId={active} onOpen={open} />

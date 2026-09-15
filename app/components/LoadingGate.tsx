@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useProgress } from '@react-three/drei';
 import gsap from 'gsap';
 
-import { GATE_FADE_DUR, LQIP_SRC } from '@/lib/pano';
+import { GATE_FADE_DUR } from '@/lib/pano';
 
 /**
  * Entry gate — BT clickIntro shape, Stereo-Mart globe:
@@ -22,20 +22,9 @@ export default function LoadingGate({
   const [ready, setReady] = useState(false);
   const [pct, setPct] = useState(0);
   const [entering, setEntering] = useState(false);
-  const [lqipOn, setLqipOn] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const enterBtn = useRef<HTMLButtonElement>(null);
   const mounted = useRef(Date.now());
-
-  useEffect(() => {
-    const img = new Image();
-    img.src = LQIP_SRC;
-    if (img.complete) {
-      setLqipOn(true);
-      return;
-    }
-    img.onload = () => setLqipOn(true);
-  }, []);
 
   useEffect(() => {
     const p = Math.round(progress);
@@ -98,11 +87,8 @@ export default function LoadingGate({
   };
 
   return (
-    <div className="gate" ref={root} role="dialog" aria-label={`Enter ${BRAND_FULL}`}>
-      <div className={`gate-lqip${lqipOn ? ' is-on' : ''}`} aria-hidden>
-        <img src={LQIP_SRC} alt="" draggable={false} />
-        <span className="gate-lqip-veil" />
-      </div>
+    <div className="gate gate-poster" ref={root} role="dialog" aria-label={`Enter ${BRAND_FULL}`}>
+      <div className="gate-paper" aria-hidden />
 
       <div className="gate-inner">
         <img

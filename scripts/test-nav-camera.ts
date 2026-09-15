@@ -37,6 +37,7 @@ import {
 } from '../app/data/sections';
 import { HOTSPOT_BY_ID, ROOM_HOTSPOTS, resolveOpenTarget } from '../app/data/hotspots';
 import { GLOW } from '../lib/glow';
+import { warpPointerNdc } from '../lib/fisheyeMap';
 
 const phone = {
   width: 390,
@@ -537,17 +538,25 @@ const desktop = {
   console.log('✓ lookto/hotspot yaw phase: file_u ≈ 1−authored_u (Music≠poster wall)');
 }
 
-// 13) Idle glow floor stays alive after settle (phone discoverability)
+// 13) Rest pose is painted — no idle HUD rings (BT room rest)
 {
-  assert.ok(GLOW.idleBase >= 0.18, 'idle glow floor must stay visible without hover');
-  assert.ok(GLOW.idleBase < GLOW.settleBoost, 'settle boost should read louder than idle');
-  assert.ok(GLOW.idlePanelMul > 0 && GLOW.idlePanelMul < 0.35, 'panel should dim — not kill — other glows');
+  assert.equal(GLOW.idleBase, 0, 'idle glow must be off — painted objects, not HUD rings');
+  assert.ok(GLOW.settleBoost > 0 && GLOW.settleBoost < 0.25, 'brief post-enter whisper only');
+  assert.ok(GLOW.hoverAlpha < 0.45, 'hover aura stays a wash, not a bright ring');
   assert.ok(GLOW.idleBreathSpeed < GLOW.breathSpeed, 'idle breath should be calmer than hover');
   assert.ok(
     GLOW.listeningBreathSpeed > GLOW.breathSpeed,
     'listening booth pulse should read faster than hover',
   );
-  console.log('✓ idle hotspot glow policy');
+  const identity = warpPointerNdc(0.25, -0.1, 0, 16 / 9);
+  assert.equal(identity.x, 0.25);
+  assert.equal(identity.y, -0.1);
+  const warped = warpPointerNdc(0.85, 0.7, 0.3, 16 / 9);
+  assert.ok(
+    Math.abs(warped.x - 0.85) > 0.005 || Math.abs(warped.y - 0.7) > 0.005,
+    'explore fisheye should barrel screen-space pointer',
+  );
+  console.log('✓ painted rest glow + fisheye pointer warp');
 }
 
 // 14) v20 in-world objects → panels (NAVIGATION.md)
