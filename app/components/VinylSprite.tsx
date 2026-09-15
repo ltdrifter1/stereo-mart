@@ -37,7 +37,7 @@ export default function VinylSprite() {
 
   return (
     <mesh ref={mesh} position={[x, y, z]} renderOrder={5} raycast={() => null}>
-      <circleGeometry args={[2.15, 48]} />
+      <circleGeometry args={[1.2, 48]} />
       <meshBasicMaterial
         map={map}
         transparent
