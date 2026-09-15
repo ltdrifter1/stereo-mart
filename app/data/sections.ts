@@ -10,8 +10,7 @@ import {
 import {
   CONTACT_EMAIL,
   CONTACT_MAILTO,
-  INSTAGRAM_HANDLE,
-  INSTAGRAM_URL,
+  WEB_URL,
 } from '@/lib/brand';
 import { athAtvToUv } from '@/lib/pano';
 
@@ -115,7 +114,7 @@ export const SECTIONS: Section[] = [
     hint: '',
     title: '',
     kicker: 'Music',
-    intro: 'DIG / DROP / PLAY',
+    intro: 'NIGHT SHIFT / LOOP',
     accent: '#7d93a6',
     // v20: LISTEN HERE headphones + turntable (ath -88, atv -6)
     u: listenUv.u,
@@ -191,7 +190,7 @@ export const SECTIONS: Section[] = [
     hint: '',
     title: '',
     kicker: 'New Releases',
-    intro: 'OPEN LATE / ALWAYS IN STOCK',
+    intro: 'LIBRARY / FLOOR',
     accent: '#6f7d5a',
     // v20: NEW ARRIVALS crates (ath 172, atv 5)
     u: crateUv.u,
@@ -253,22 +252,22 @@ export const SECTIONS: Section[] = [
     hideHint: true,
     items: [
       {
-        label: 'Charlie',
+        label: 'Club Copy',
         meta: CONTACT_EMAIL,
         detail: 'Email',
         cta: 'Email',
-        thumb: 'CH',
+        thumb: 'CC',
         thumbSrc: ART.charlie,
         href: CONTACT_MAILTO,
       },
       {
-        label: INSTAGRAM_HANDLE,
-        meta: 'Instagram',
-        detail: 'Follow',
-        cta: 'Follow',
+        label: 'clubcopy.ca',
+        meta: 'Hangout on the web',
+        detail: 'Visit',
+        cta: 'Visit',
         thumb: '@',
         thumbSrc: ART.ig,
-        href: INSTAGRAM_URL,
+        href: WEB_URL,
       },
     ],
   },
@@ -295,7 +294,7 @@ export const NAV_ORDER = [
 
 /**
  * URL hash slugs ↔ section ids (shareable deep links).
- * Example: https://www.stereo-mart.com/#shop
+ * Example: https://clubcopy.ca/#shop
  */
 export const HASH_BY_SECTION_ID: Record<string, string> = {
   'listening-booth': 'music',

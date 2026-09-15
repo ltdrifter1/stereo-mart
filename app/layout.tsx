@@ -1,27 +1,19 @@
 import type { Metadata, Viewport } from 'next';
-import { Fredoka, Sora } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import { BRAND_FULL, BRAND_NAME, SITE_URL } from '@/lib/brand';
 import './globals.css';
 
-/** Round cartoon display — sticker titles, gate, panel heroes. */
-const display = Fredoka({
+/** Single grotesque — balmingtiger Helvetica energy, hangout chrome. */
+const sans = Inter({
   subsets: ['latin'],
-  weight: ['500', '600', '700'],
-  variable: '--font-display',
-  display: 'swap',
-});
-
-/** Clean geometric sans — balmingtiger-style floating chrome. */
-const body = Sora({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '500', '600', '700', '800'],
   variable: '--font-body',
   display: 'swap',
 });
 
 const siteTitle = BRAND_FULL;
 const siteDescription =
-  'Step inside Stereo-Mart Records — an illustrated 360° record shop. Look around, explore, and discover.';
+  'Club Copy hangout — a digital virtual store. Look around, listen, and stay a while.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -30,11 +22,12 @@ export const metadata: Metadata = {
   keywords: [
     BRAND_FULL,
     BRAND_NAME,
-    'record store',
-    'vinyl',
-    'immersive',
-    'indie',
-    'crate digging',
+    'hangout',
+    'virtual store',
+    'house',
+    'jungle',
+    'instrumental hip-hop',
+    'pacific northwest',
   ],
   appleWebApp: {
     capable: true,
@@ -49,7 +42,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: siteTitle,
-    description: 'An interactive 360° record store. Look around, explore, discover.',
+    description: siteDescription,
     type: 'website',
     url: SITE_URL,
     siteName: siteTitle,
@@ -58,14 +51,14 @@ export const metadata: Metadata = {
         url: '/og.jpg',
         width: 1200,
         height: 630,
-        alt: `${siteTitle} — illustrated record store`,
+        alt: `${siteTitle} hangout`,
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
     title: siteTitle,
-    description: 'An interactive 360° record store. Look around, explore, discover.',
+    description: siteDescription,
     images: ['/og.jpg'],
   },
 };
@@ -85,7 +78,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${display.variable} ${body.variable}`}>
+    <html lang="en" className={sans.variable}>
       <body>
         <main>{children}</main>
       </body>

@@ -5,14 +5,13 @@ import { BRAND_FULL, BRAND_LINE, BRAND_NAME, SITE_URL } from '@/lib/brand';
 export const metadata: Metadata = {
   title: `Shop — ${BRAND_FULL}`,
   description:
-    `Browse New Releases inside the ${BRAND_FULL} 360° store. Listen, preview, and buy without leaving the room.`,
+    `Browse inside the ${BRAND_FULL} hangout. Listen, preview, and buy without leaving the room.`,
   alternates: { canonical: `${SITE_URL}/shop` },
 };
 
 /**
- * Thin brand bridge for legacy /shop URLs and SEO.
- * Primary commerce lives in the 360° room (#shop) — this page only
- * invites visitors back into that experience.
+ * Thin brand bridge for /shop URLs and SEO.
+ * Primary commerce lives in the hangout (#shop).
  */
 export default function ShopBridgePage() {
   return (
@@ -30,13 +29,13 @@ export default function ShopBridgePage() {
           <span className="shop-bridge-mark-line">{BRAND_LINE}</span>
         </h1>
         <p className="shop-bridge-lede">
-          The catalog lives inside the cartoon shop now. Step in, look around,
-          and drop the needle on New Releases.
+          The catalog lives inside the hangout. Step in, look around, and
+          open the library from the floor.
         </p>
 
         <div className="shop-bridge-actions">
           <Link href="/#shop" className="shop-bridge-cta" data-cursor="click">
-            Enter the store
+            Enter the hangout
           </Link>
           <Link href="/#music" className="shop-bridge-link" data-cursor="click">
             Music
@@ -45,36 +44,6 @@ export default function ShopBridgePage() {
             Contact
           </Link>
         </div>
-
-        <ul className="shop-bridge-list" aria-label="Quick links">
-          <li>
-            <a
-              href="https://inletknight.bandcamp.com/album/inlet-knight"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Inlet Knight — self-titled album
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://inletknight.bandcamp.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Inlet Knight on Bandcamp
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://ltdrifta.bandcamp.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              LT Drifta on Bandcamp
-            </a>
-          </li>
-        </ul>
       </main>
     </div>
   );

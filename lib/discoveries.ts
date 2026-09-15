@@ -2,10 +2,10 @@
  * Hidden-discovery tracking for the shop.
  * Finds persist per browser so returning visitors keep hunting.
  */
-const KEY = 'sm.discoveries.v1';
+const KEY = 'cc.discoveries.v1';
 const TOTAL = 5; // cat, ghost, rabbit, turtle, mushroom
 
-export const FIND_EVENT = 'stereo-mart-find';
+export const FIND_EVENT = 'club-copy-find';
 
 function load(): Record<string, number> {
   try {

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 280" role="img" aria-label="Club Copy">
+  <!-- Misregistered photocopy stamp  Club Copy hangout mark. -->
+  <rect x="48" y="36" width="400" height="208" fill="#ece4d2" stroke="#232840" stroke-width="10"/>
+  <rect x="62" y="50" width="400" height="208" fill="none" stroke="#a63a32" stroke-width="4" opacity="0.85"/>
+  <text x="256" y="128" text-anchor="middle"
+    font-family="Inter, Helvetica, Arial, sans-serif" font-weight="800"
+    font-size="72" letter-spacing="10" fill="#232840">CLUB</text>
+  <text x="256" y="196" text-anchor="middle"
+    font-family="Inter, Helvetica, Arial, sans-serif" font-weight="800"
+    font-size="72" letter-spacing="10" fill="#232840">COPY</text>
+  <text x="256" y="228" text-anchor="middle"
+    font-family="Inter, Helvetica, Arial, sans-serif" font-weight="700"
+    font-size="16" letter-spacing="12" fill="#a63a32">HANGOUT</text>
+</svg>

@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react';
 import { onPreviewProgress } from '@/lib/audio';
 
 const LOOP = [
-  'DIG THE CRATES',
-  'DROP THE NEEDLE',
-  'PLAY IT LOUD',
-  'OPEN LATE',
-  'STEREO-MART RECORDS',
-  'ALWAYS SPINNING',
+  'HANGOUT SPACE',
+  'NIGHT SHIFT',
+  'HOUSE',
+  'JUNGLE',
+  'INSTRUMENTAL HIP-HOP',
+  'CLUB COPY',
 ];
 
 /**
@@ -32,7 +32,7 @@ export default function ShopTicker({
   if (!visible) return null;
 
   const items = nowPlaying
-    ? ['NOW PLAYING', 'LISTENING STATION', 'DROP THE NEEDLE', 'NOW PLAYING']
+    ? ['NOW PLAYING', 'HANGOUT', 'NIGHT SHIFT', 'NOW PLAYING']
     : LOOP;
   const line = items.concat(items).join('  ·  ');
 

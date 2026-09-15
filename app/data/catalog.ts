@@ -2,7 +2,7 @@ import { BANDCAMP_URL } from '@/lib/brand';
 
 /**
  * ─────────────────────────────────────────────────────────────────────────
- *  STEREO-MART IN-ROOM CONTENT CATALOG — edit this file to change what the store
+ * Catalog for the Club Copy hangout (digital virtual store).
  *  plays and sells. No other file needs touching for content updates.
  *
  *  · MUSIC_RELEASES → shelf rows in the Music (listening booth) panel.
@@ -70,7 +70,7 @@ export const ART = {
   summer: '/panel-thumbs/summer.webp',
   lions: '/panel-thumbs/lions.webp',
   rack: '/panel-thumbs/rack.webp',
-  stereoMartTv: '/panel-thumbs/stereo-mart-tv.webp',
+  clubCopyTv: '/panel-thumbs/stereo-mart-tv.webp',
   charlie: '/panel-thumbs/charlie.webp',
   ltd: '/panel-thumbs/ltd.webp',
   classic: '/panel-thumbs/classic.webp',
@@ -168,9 +168,9 @@ export const MUSIC_RELEASES: SectionItem[] = [
 
 export const CRT_CHANNELS: SectionItem[] = [
   {
-    label: 'STEREO-MART-TV',
+    label: 'COPY-TV',
     cta: 'Tune',
-    thumbSrc: ART.stereoMartTv,
+    thumbSrc: ART.clubCopyTv,
     videoSrc: VIDEO.station,
   },
 ];
@@ -193,12 +193,12 @@ export const ARTISTS: SectionItem[] = [
 
 export const ABOUT_ITEMS: SectionItem[] = [
   {
-    label: 'Stereo-Mart Records',
-    meta: 'Independent label shop',
+    label: 'Club Copy',
+    meta: 'Hangout · digital store',
     detail: 'About',
     cta: 'Visit',
     thumbSrc: ART.classic,
-    body: 'An independent label run from a desk buried in demo tapes. Underground sound, musical discovery, coffee permanently going cold.',
+    body: 'Pacific Northwest hangout for house, jungle, and instrumental hip-hop. A digital virtual store — the floor, the fit, the afters, the ritual.',
     href: BANDCAMP_URL,
   },
 ];

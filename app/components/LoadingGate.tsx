@@ -9,9 +9,8 @@ import gsap from 'gsap';
 import { GATE_FADE_DUR } from '@/lib/pano';
 
 /**
- * Entry gate — BT clickIntro shape, Stereo-Mart globe:
- * logo, LOADING n%, then “best with audio / CLICK TO ENTER”.
- * Look-around stays locked until enter (Experience + Rig).
+ * Entry gate — BT clickIntro: wordmark, LOADING n%, then
+ * “best with audio / CLICK TO ENTER”. Look-around stays locked until enter.
  */
 export default function LoadingGate({
   onEntered,
@@ -91,12 +90,11 @@ export default function LoadingGate({
       <div className="gate-paper" aria-hidden />
 
       <div className="gate-inner">
-          <img
-            className="gate-logo gate-logo-bounce"
-            src="/brand/stereo-mart-globe.svg"
-            alt={BRAND_FULL}
-            draggable={false}
-          />
+        <p className="gate-word" aria-hidden>
+          <span className="gate-word-club">CLUB</span>
+          <span className="gate-word-copy">COPY</span>
+        </p>
+        <p className="gate-word-line">HANGOUT</p>
 
         <div className="gate-copy">
           <p className={`gate-loading${ready ? ' is-done' : ''}`} aria-live="polite">

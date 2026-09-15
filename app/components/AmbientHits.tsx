@@ -15,7 +15,7 @@ import { isTap, tapOrigin, type TapOrigin } from '@/lib/pointerTap';
 
 const origin = new THREE.Vector3(0, 0, 0);
 
-export const WONDER_EVENT = 'stereo-mart-wonder';
+export const WONDER_EVENT = 'club-copy-wonder';
 
 function LifeSprite({
   hit,

@@ -123,7 +123,7 @@ const desktop = {
   );
   assert.equal(crt.intro.trim(), '', 'Videos intro cleared');
   assert.equal(crt.items.length, 1, 'Videos keeps a single station for now');
-  assert.equal(crt.items[0]?.label, 'STEREO-MART-TV');
+  assert.equal(crt.items[0]?.label, 'COPY-TV');
   assert.equal(crt.items[0]?.videoSrc, '/videos/channel_b.mp4');
   assert.ok(crt.w <= 12 && crt.h <= 12, 'CRT hit plane hugs the painted tube');
   const desk = resolveLookMfov(crt, desktop);
@@ -159,7 +159,7 @@ const desktop = {
   );
   assert.equal(musicSec.title.trim(), '', 'Music panel title cleared');
   assert.ok(musicSec.hideHint, 'Music glow must not show Slip on headphones text');
-  assert.equal(musicSec.intro.trim(), 'DIG / DROP / PLAY', 'Music panel uses BT-style loop kicker');
+  assert.equal(musicSec.intro.trim(), 'NIGHT SHIFT / LOOP', 'Music panel uses BT-style loop kicker');
   assert.ok(
     musicSec.items.every((i) => Array.isArray(i.tracks) && i.tracks.length >= 1),
     'Music shelf rows expose a track count',
@@ -347,7 +347,7 @@ const desktop = {
   assert.ok(controls.mfov < MFOV_EXPLORE, 'shop lookto should punch in from explore FOV');
   const shop = SECTION_BY_ID['cash-register'];
   assert.equal(shop.title.trim(), '', 'Shop title cleared (no The Counter)');
-  assert.equal(shop.intro.trim(), 'OPEN LATE / ALWAYS IN STOCK', 'Shop panel uses record-shop loop kicker');
+  assert.equal(shop.intro.trim(), 'LIBRARY / FLOOR', 'Shop panel uses hangout loop kicker');
   assert.equal(shop.kicker, 'New Releases', 'Shop panel kicker is New Releases');
   assert.equal(shop.items.length, 2, 'Shop lists Inlet Knight album + At Home');
   assert.match(shop.items[0].label, /Inlet Knight/i);
@@ -467,14 +467,14 @@ const desktop = {
   assert.equal(phone.title.trim(), '', 'Contact title should be empty (kicker only)');
   assert.equal(phone.intro.trim(), '', 'Contact intro cleared');
   assert.equal(phone.kicker, 'Contact', 'Contact keeps a compact kicker label');
-  assert.equal(phone.items.length, 2, 'Contact is Charlie + Instagram only');
+  assert.equal(phone.items.length, 2, 'Contact is email + site');
   assert.ok(
     phone.items.every((it) => !/info@|Booking/i.test(`${it.label}${it.meta ?? ''}`)),
     'Contact must not include info@ or Booking',
   );
   assert.ok(
-    phone.items.some((it) => /charlie/i.test(`${it.label}${it.meta ?? ''}`)),
-    'Contact must include Charlie',
+    phone.items.some((it) => /club copy/i.test(`${it.label}${it.meta ?? ''}`)),
+    'Contact must include Club Copy',
   );
   console.log('✓ Nav hash map + Archive removed + edge glows without labels');
 }

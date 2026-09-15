@@ -1,19 +1,20 @@
-/** Sitewide STEREO-MART branding — URLs, names, and social handles. */
-export const SITE_URL = 'https://www.stereo-mart.com';
+/** Sitewide Club Copy branding — hangout space + digital virtual store. */
+export const SITE_URL = 'https://clubcopy.ca';
 
 /** Compact mark used in chrome / short labels. */
-export const BRAND_NAME = 'STEREO-MART';
+export const BRAND_NAME = 'CLUB COPY';
 
-/** Full shop name — intro gate, metadata, share cards. */
-export const BRAND_FULL = 'Stereo-Mart Records';
+/** Full name — intro gate, metadata, share cards. */
+export const BRAND_FULL = 'Club Copy';
 
 /** Gate / display stack second line. */
-export const BRAND_LINE = 'Records';
+export const BRAND_LINE = 'Hangout';
 
-export const CONTACT_EMAIL = 'hello@stereo-mart.com';
+export const CONTACT_EMAIL = 'hello@clubcopy.ca';
 export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}`;
 
-export const INSTAGRAM_HANDLE = '@stereo_mart';
-export const INSTAGRAM_URL = 'https://www.instagram.com/stereo_mart';
+export const INSTAGRAM_HANDLE = '@clubcopy';
+export const INSTAGRAM_URL = 'https://www.instagram.com/clubcopy';
 
-export const BANDCAMP_URL = 'https://stereo-mart.bandcamp.com';
+export const BANDCAMP_URL = 'https://clubcopy.bandcamp.com';
+export const WEB_URL = 'https://clubcopy.ca';

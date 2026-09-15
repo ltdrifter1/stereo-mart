@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Controls } from './sceneContext';
 
-const STORAGE_KEY = 'stereo-mart-drag-hint-seen';
+const STORAGE_KEY = 'club-copy-drag-hint-seen';
 const FADE_MS = 560;
 const AUTO_HIDE_MS = 6200;
 

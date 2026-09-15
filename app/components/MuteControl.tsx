@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { isMuted, onMuteChange, setMuted } from '@/lib/audio';
 
 /**
- * Speaker mute toggle — BT corner control with Stereo-Mart SVGs.
+ * Speaker mute toggle — BT corner control.
  * Starts muted until CLICK TO ENTER unmutes the bus.
  */
 export default function MuteControl({

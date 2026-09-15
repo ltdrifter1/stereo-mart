@@ -665,7 +665,7 @@ export default function SectionPanel({
         )}
       </aside>
 
-      {/* Mobile nest sheet — BT level-2-mobile principle, STEREO-MART styling */}
+      {/* Mobile nest sheet — BT level-2-mobile principle */}
       {mobileNest && section && detail && (
         <div
           ref={nestSheet}

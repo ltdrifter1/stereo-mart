@@ -12,7 +12,7 @@ const FIND_HOLD_MS = 2800;
 
 /**
  * balmingtiger-style wonder confirm — brief toast before a rabbit-hole tab opens.
- * Listens for `stereo-mart-wonder` from AmbientHits (Canvas → DOM bridge).
+ * Listens for finds / rabbit-holes from AmbientHits (Canvas → DOM bridge).
  */
 export default function WonderToast({ active }: { active: boolean }) {
   const [tip, setTip] = useState<WonderDetail | null>(null);
