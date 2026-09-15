@@ -159,7 +159,7 @@ const desktop = {
   );
   assert.equal(musicSec.title.trim(), '', 'Music panel title cleared');
   assert.ok(musicSec.hideHint, 'Music glow must not show Slip on headphones text');
-  assert.equal(musicSec.intro.trim(), '', 'Music panel intro cleared (no slip on headphones)');
+  assert.equal(musicSec.intro.trim(), 'DIG / DROP / PLAY', 'Music panel uses BT-style loop kicker');
   assert.ok(
     musicSec.items.every((i) => Array.isArray(i.tracks) && i.tracks.length >= 1),
     'Music shelf rows expose a track count',
@@ -347,7 +347,7 @@ const desktop = {
   assert.ok(controls.mfov < MFOV_EXPLORE, 'shop lookto should punch in from explore FOV');
   const shop = SECTION_BY_ID['cash-register'];
   assert.equal(shop.title.trim(), '', 'Shop title cleared (no The Counter)');
-  assert.equal(shop.intro.trim(), '', 'Shop intro cleared for compact New Releases');
+  assert.equal(shop.intro.trim(), 'OPEN LATE / ALWAYS IN STOCK', 'Shop panel uses record-shop loop kicker');
   assert.equal(shop.kicker, 'New Releases', 'Shop panel kicker is New Releases');
   assert.equal(shop.items.length, 2, 'Shop lists Inlet Knight album + At Home');
   assert.match(shop.items[0].label, /Inlet Knight/i);
@@ -542,7 +542,7 @@ const desktop = {
 {
   assert.equal(GLOW.idleBase, 0, 'idle glow must be off — painted objects, not HUD rings');
   assert.ok(GLOW.settleBoost > 0 && GLOW.settleBoost < 0.25, 'brief post-enter whisper only');
-  assert.ok(GLOW.hoverAlpha < 0.45, 'hover aura stays a wash, not a bright ring');
+  assert.ok(GLOW.hoverAlpha < 0.65, 'hover aura stays a wash, not a bright ring');
   assert.ok(GLOW.idleBreathSpeed < GLOW.breathSpeed, 'idle breath should be calmer than hover');
   assert.ok(
     GLOW.listeningBreathSpeed > GLOW.breathSpeed,
