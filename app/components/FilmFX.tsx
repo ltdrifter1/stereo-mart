@@ -8,7 +8,7 @@ export default function FilmFX({ reduceMotion = false }: { reduceMotion?: boolea
   return (
     <div className={`fx-layer${reduceMotion ? ' is-static' : ''}`} aria-hidden>
       <div className="fx-edge" />
-      <div className="fx-grain" />
+      <div className="fx-sparkle" />
     </div>
   );
 }

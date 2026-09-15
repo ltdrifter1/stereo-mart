@@ -6,17 +6,17 @@ export const GLOW = {
   /** Warm cream wash over the painted object. */
   edgeTint: '#ece4d2',
   /** Soft yellow outer aura. */
-  bloomTint: '#e0b64f',
+  bloomTint: '#ffe566',
   /** Bloom quad vs hit plane — slight overspill, not a halo ring. */
-  bloomScale: 1.12,
+  bloomScale: 1.18,
   /** Hover fade in/out duration (s). */
-  hoverFade: 0.4,
+  hoverFade: 0.32,
   /** Breath speed (rad/s of the sine wave) while hovered / focused. */
-  breathSpeed: 1.15,
+  breathSpeed: 1.35,
   idleBreathSpeed: 0.7,
   /** Peak additive opacity on hover (keep low — rings start above ~0.6). */
-  hoverAlpha: 0.38,
-  focusedAlpha: 0.46,
+  hoverAlpha: 0.52,
+  focusedAlpha: 0.62,
   edgeBase: 0.55,
   edgeAmp: 0.18,
   bloomBase: 0.42,

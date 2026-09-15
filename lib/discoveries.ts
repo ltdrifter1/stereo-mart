@@ -28,6 +28,11 @@ export function discoveryCount() {
   return Object.keys(load()).length;
 }
 
+export function foundIds(): string[] {
+  if (typeof window === 'undefined') return [];
+  return Object.keys(load());
+}
+
 export function markDiscovery(id: string): boolean {
   const d = load();
   const first = !d[id];

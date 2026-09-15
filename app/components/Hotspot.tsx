@@ -78,6 +78,7 @@ export default function Hotspot({
   const [x, y, z] = uvToSpherical(spot.u, spot.v, SPHERE_RADIUS - 0.5);
   const press = useRef<TapOrigin | null>(null);
   const auraMap = getSoftAuraTexture();
+  const group = useRef<THREE.Group>(null);
 
   const canLatch = spot.glowLatches !== false;
   const isFocused = canLatch && focusedId === spot.id;
@@ -95,6 +96,16 @@ export default function Hotspot({
       ease: 'power1.inOut',
       overwrite: true,
     });
+    if (group.current && !env.reduceMotion) {
+      gsap.to(group.current.scale, {
+        x: hovered && !isFocused ? 1.05 : 1,
+        y: hovered && !isFocused ? 1.05 : 1,
+        z: 1,
+        duration: 0.22,
+        ease: 'back.out(2.4)',
+        overwrite: true,
+      });
+    }
   }, [isFocused, hovered, env.reduceMotion]);
 
   useFrame((_state, delta) => {
@@ -164,7 +175,7 @@ export default function Hotspot({
   const gh = spot.glowH ?? spot.h;
 
   return (
-    <group position={[x, y, z]}>
+    <group ref={group} position={[x, y, z]}>
       <mesh ref={bloomMesh} renderOrder={1} raycast={() => null}>
         <planeGeometry args={[gw, gh]} />
         <meshBasicMaterial
@@ -218,7 +229,7 @@ export default function Hotspot({
 
       {hovered && !isFocused && !spot.hideHint && (
         <Html center zIndexRange={[30, 10]} style={{ pointerEvents: 'none' }}>
-          <span className="hotspot-pill">{spot.object}</span>
+          <span className="hotspot-pill">{spot.object.toUpperCase()}</span>
         </Html>
       )}
     </group>

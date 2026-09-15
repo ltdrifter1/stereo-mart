@@ -30,8 +30,8 @@ export default function ShopBridgePage() {
           <span className="shop-bridge-mark-line">{BRAND_LINE}</span>
         </h1>
         <p className="shop-bridge-lede">
-          The catalog lives inside the store now. Step in, look around, and
-          open New Releases at the counter.
+          The catalog lives inside the cartoon shop now. Step in, look around,
+          and drop the needle on New Releases.
         </p>
 
         <div className="shop-bridge-actions">
