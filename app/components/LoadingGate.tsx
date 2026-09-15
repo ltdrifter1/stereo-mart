@@ -52,6 +52,12 @@ export default function LoadingGate({
     }
   }, [active, progress]);
 
+  // Never trap the visitor on LOADING 0% if the GPU texture tracker stalls.
+  useEffect(() => {
+    const id = window.setTimeout(() => setReady(true), 7000);
+    return () => window.clearTimeout(id);
+  }, []);
+
   useEffect(() => {
     if (ready && enterBtn.current) {
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

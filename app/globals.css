@@ -683,7 +683,7 @@ html.has-custom-cursor * {
   width: 112%;
   height: 112%;
   object-fit: cover;
-  object-position: 50% 38%;
+  object-position: 50% 50%;
   filter: saturate(0.92) contrast(1.08) brightness(0.88);
   transform: scale(1.04);
   animation: gate-lqip-drift 32s ease-in-out infinite alternate;
