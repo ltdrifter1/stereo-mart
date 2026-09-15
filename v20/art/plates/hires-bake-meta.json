@@ -27,7 +27,7 @@
       "atv": -6,
       "u": 0.25556,
       "v": 0.46667,
-      "coverage": 0.564
+      "coverage": 0.4673
     },
     {
       "id": "crt-tv",
@@ -36,7 +36,7 @@
       "atv": 22,
       "u": 0.28333,
       "v": 0.62222,
-      "coverage": 0.5129
+      "coverage": 0.5415
     },
     {
       "id": "record-bins",
@@ -45,7 +45,7 @@
       "atv": -25,
       "u": 0.01389,
       "v": 0.36111,
-      "coverage": 0.454
+      "coverage": 0.2649
     },
     {
       "id": "cash-register",
@@ -54,7 +54,7 @@
       "atv": 5,
       "u": 0.97778,
       "v": 0.52778,
-      "coverage": 0.6481
+      "coverage": 0.5298
     },
     {
       "id": "cassette-rack",
@@ -63,7 +63,7 @@
       "atv": -12,
       "u": 0.88333,
       "v": 0.43333,
-      "coverage": 0.5635
+      "coverage": 0.5338
     },
     {
       "id": "front-door",
@@ -72,7 +72,7 @@
       "atv": -3,
       "u": 0.62222,
       "v": 0.48333,
-      "coverage": 0.6599
+      "coverage": 0.3681
     },
     {
       "id": "desk",
@@ -81,7 +81,7 @@
       "atv": 15,
       "u": 0.76389,
       "v": 0.58333,
-      "coverage": 0.5366
+      "coverage": 0.3972
     },
     {
       "id": "phone-booth",
@@ -90,7 +90,7 @@
       "atv": 13,
       "u": 0.61944,
       "v": 0.57222,
-      "coverage": 0.5597
+      "coverage": 0.0941
     },
     {
       "id": "lamp",
@@ -99,7 +99,7 @@
       "atv": 5,
       "u": 0.74444,
       "v": 0.52778,
-      "coverage": 0.4364
+      "coverage": 0.2754
     }
   ],
   "note": "Ink restroked from 1536 line art; materials painted at native master resolution."

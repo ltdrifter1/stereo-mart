@@ -71,12 +71,12 @@ Primary objects (`v20/NAVIGATION.md` + CRT + lamp):
 | Mail Slot / contact | `phone-booth` | 8 |
 | Desk lamp | `lamp` | 9 |
 
-Masks are color-distance floods around the painted cell plus prop-sheet
-alpha as a *shape prior* (props are not composited onto the plate — no
-double-draw). Cassette rack and glass door read as honest rectangles
-because those objects are rectangular. Invisible hit planes stay generous
-and separate from the silhouette. Rest: invisible. Hover/focus: subtle.
-Lookto/click: stronger. Keyboard: `.hotspot-a11y` buttons.
+Masks are tight superellipses / frames in the painted cell, snapped to
+plate color (cassette grid, door frame + OPEN sign, CRT tube, lamp, etc.).
+Alternate v20 prop sheets are **not** pasted on — they are different
+drawings. Invisible hit planes stay generous and separate from the
+silhouette. Rest: invisible. Hover/focus: subtle. Lookto/click: stronger.
+Keyboard: `.hotspot-a11y` buttons.
 
 ## Regenerate
 

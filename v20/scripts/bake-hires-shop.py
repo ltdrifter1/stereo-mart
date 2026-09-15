@@ -56,17 +56,18 @@ CREAM = np.array([236.0, 228.0, 210.0], dtype=np.float32)
 YELLOW = np.array([224.0, 182.0, 79.0], dtype=np.float32)
 
 # Primary objects — NAVIGATION.md ath/atv. half extents in UV.
-# id -> (ath, atv, du, dv, prop_prior or None)
-OBJECTS: dict[str, tuple[float, float, float, float, str | None]] = {
-    "listening-booth": (-88, -6, 0.055, 0.12, "listen"),
-    "crt-tv": (-78, 22, 0.045, 0.07, "crt"),
-    "record-bins": (-175, -25, 0.075, 0.10, "posters"),
-    "cash-register": (172, 5, 0.075, 0.095, "crate"),
-    "cassette-rack": (138, -12, 0.048, 0.12, "cassettes"),
-    "front-door": (44, -3, 0.042, 0.13, "door"),
-    "desk": (95, 15, 0.065, 0.095, "desk"),
-    "phone-booth": (43, 13, 0.028, 0.035, "mailslot"),
-    "lamp": (88, 5, 0.035, 0.09, None),
+# id -> (ath, atv, du, dv, extract mode)
+# Modes flood the *painted plate* (not the alternate prop sheets).
+OBJECTS: dict[str, tuple[float, float, float, float, str]] = {
+    "listening-booth": (-88, -6, 0.052, 0.105, "listen"),
+    "crt-tv": (-78, 22, 0.042, 0.065, "crt"),
+    "record-bins": (-175, -25, 0.078, 0.11, "posters"),
+    "cash-register": (172, 5, 0.078, 0.09, "crates"),
+    "cassette-rack": (138, -12, 0.046, 0.115, "cassettes"),
+    "front-door": (44, -3, 0.048, 0.145, "door"),
+    "desk": (95, 15, 0.062, 0.09, "desk"),
+    "phone-booth": (43, 13, 0.038, 0.07, "mail"),
+    "lamp": (88, 5, 0.038, 0.085, "lamp"),
 }
 
 OBJECT_IDS = {
@@ -121,12 +122,21 @@ def place_wrap(dest: np.ndarray, src: np.ndarray, u0: float, v0: float, roll: in
     ch, cw = src.shape[:2]
     x0 = (int(round(u0 * w)) - roll) % w
     y0 = int(np.clip(round(v0 * h), 0, h - ch))
+
+    def stamp(dst: np.ndarray, piece: np.ndarray, x: int) -> None:
+        # IDs (R) must not blend — later object wins only on empty pixels
+        on = piece[..., 0] > 0
+        sl = dst[:, x : x + piece.shape[1]]
+        sl[..., 0] = np.where(on, piece[..., 0], sl[..., 0])
+        sl[..., 1] = np.maximum(sl[..., 1], piece[..., 1])
+        sl[..., 2] = np.maximum(sl[..., 2], piece[..., 2])
+
     if x0 + cw <= w:
-        dest[y0 : y0 + ch, x0 : x0 + cw] = np.maximum(dest[y0 : y0 + ch, x0 : x0 + cw], src)
+        stamp(dest[y0 : y0 + ch], src, x0)
     else:
         left = w - x0
-        dest[y0 : y0 + ch, x0:] = np.maximum(dest[y0 : y0 + ch, x0:], src[:, :left])
-        dest[y0 : y0 + ch, : cw - left] = np.maximum(dest[y0 : y0 + ch, : cw - left], src[:, left:])
+        stamp(dest[y0 : y0 + ch], src[:, :left], x0)
+        stamp(dest[y0 : y0 + ch], src[:, left:], 0)
 
 
 def native_ink_stroke(plate_rgb: np.ndarray, w: int, h: int) -> np.ndarray:
@@ -280,75 +290,86 @@ def lights_off(rgb: np.ndarray) -> np.ndarray:
     return (out * 255.0).astype(np.uint8)
 
 
-def load_prop_alpha(name: str | None) -> np.ndarray | None:
-    if not name:
-        return None
-    for path in (PROPS / f"{name}.png", ROOT / "art" / "props" / f"{name}.png"):
-        if path.exists():
-            im = Image.open(path).convert("RGBA")
-            return np.asarray(im)[..., 3]
-    return None
-
-
 def extract_cell(
     rgb: np.ndarray,
     u: float,
     v: float,
     du: float,
     dv: float,
-    prior: np.ndarray | None,
+    mode: str,
 ) -> np.ndarray:
-    """Color-distance cell around the object + optional painted prop alpha."""
-    u0, u1 = u - du, u + du
+    """Tight object hull in the crop, snapped to painted color/ink — not a UV slab."""
     v0, v1 = max(0.0, v - dv), min(1.0, v + dv)
-    crop, _roll = wrap_crop(rgb, u0, v0, u1, v1)
+    crop, _roll = wrap_crop(rgb, u - du, v0, u + du, v1)
     ch, cw = crop.shape[:2]
     cy, cx = ch // 2, cw // 2
-    seed = np.median(crop[max(0, cy - 3) : cy + 4, max(0, cx - 3) : cx + 4].reshape(-1, 3), axis=0)
-    dist = np.sqrt(((crop.astype(np.float32) - seed) ** 2).sum(axis=2))
-    # pick a threshold that keeps a mid-size object, not the whole crop
-    cell = None
-    for pct in (18, 24, 32, 40, 52, 64):
-        t = float(np.percentile(dist, pct))
-        cand = dist <= max(t, 12.0)
-        lab, _n = ndimage.label(cand)
-        sl = lab[cy, cx]
-        if sl == 0:
-            continue
-        blob = lab == sl
-        blob = ndimage.binary_fill_holes(blob)
-        cov = float(blob.mean())
-        if 0.08 <= cov <= 0.72:
-            cell = blob
-            break
-        if cell is None or abs(cov - 0.35) < abs(float(cell.mean()) - 0.35):
-            cell = blob
-    if cell is None:
-        cell = np.zeros((ch, cw), dtype=bool)
-        cell[cy - 6 : cy + 7, cx - 6 : cx + 7] = True
+    rgb_f = crop.astype(np.float32)
+    red, grn, blu = rgb_f[..., 0], rgb_f[..., 1], rgb_f[..., 2]
+    lum = luma(rgb_f)
+    yy, xx = np.ogrid[:ch, :cw]
 
-    if prior is not None and prior.size:
-        # fit prior (trim empty bounds) into the crop, centered
-        ys, xs = np.nonzero(prior > 40)
-        if ys.size > 20:
-            pr = prior[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1]
-            scale = min(cw / pr.shape[1], ch / pr.shape[0]) * 0.88
-            nw, nh = max(8, int(pr.shape[1] * scale)), max(8, int(pr.shape[0] * scale))
-            fitted = np.array(
-                Image.fromarray(pr).resize((nw, nh), Image.Resampling.BILINEAR)
-            )
-            canvas = np.zeros((ch, cw), dtype=np.uint8)
-            y0 = max(0, cy - nh // 2)
-            x0 = max(0, cx - nw // 2)
-            y1, x1 = min(ch, y0 + nh), min(cw, x0 + nw)
-            canvas[y0:y1, x0:x1] = fitted[: y1 - y0, : x1 - x0]
-            prior_m = canvas > 48
-            # prefer the painted prop silhouette when the color cell is a slab
-            if cell.mean() > 0.55 or float((prior_m & cell).sum()) > 80:
-                cell = prior_m | ndimage.binary_erosion(cell, iterations=1)
+    def ellipse(rx: float, ry: float, ox: float = 0.0, oy: float = 0.0) -> np.ndarray:
+        return ((yy - (cy + oy * ch)) / (ch * ry)) ** 2 + (
+            (xx - (cx + ox * cw)) / (cw * rx)
+        ) ** 2 <= 1.0
 
-    cell = ndimage.binary_opening(cell, iterations=1)
+    def round_rect(rx: float, ry: float, ox: float = 0.0, oy: float = 0.0) -> np.ndarray:
+        # superellipse — follows cabinets/doors without a hard HUD box
+        px = np.abs((xx - (cx + ox * cw)) / (cw * rx))
+        py = np.abs((yy - (cy + oy * ch)) / (ch * ry))
+        return px**3 + py**3 <= 1.0
+
+    if mode == "listen":
+        hull = ellipse(0.42, 0.48, oy=-0.06)
+        paint = (lum > 40) & (red + grn > blu * 1.4)
+        cell = hull & paint
+        cell[int(ch * 0.80) :] = False
+    elif mode == "crt":
+        hull = ellipse(0.48, 0.42, oy=-0.04)
+        paint = (lum > 35) & (lum < 175)
+        cell = hull & paint
+        cell[int(ch * 0.86) :] = False
+    elif mode == "posters":
+        hull = round_rect(0.55, 0.52, oy=-0.04)
+        paper = (lum > 70) & (lum < 210)
+        cell = hull & paper
+        cell[int(ch * 0.76) :] = False
+    elif mode == "crates":
+        hull = round_rect(0.62, 0.42, oy=-0.02)
+        wood = (red > 55) & (lum > 40) & (lum < 175)
+        cell = hull & wood
+    elif mode == "cassettes":
+        hull = round_rect(0.48, 0.55, oy=-0.08)
+        body = (lum > 40) & (lum < 175)
+        cell = hull & body
+        cell[int(ch * 0.82) :] = False
+    elif mode == "door":
+        outer = round_rect(0.42, 0.58, ox=0.04, oy=-0.02)
+        inner = round_rect(0.28, 0.42, ox=0.04, oy=-0.04)
+        open_sign = (red > 145) & (grn > 100) & (blu < 125) & (red > blu + 20)
+        cell = (outer & ~inner) | (open_sign & outer)
+    elif mode == "desk":
+        hull = round_rect(0.55, 0.38, oy=0.12)
+        wood = (red > 50) & (lum > 40) & (lum < 175) & (red >= grn - 8)
+        cell = hull & wood
+    elif mode == "mail":
+        hull = round_rect(0.28, 0.14, oy=0.28)
+        brass = (lum > 45) & (lum < 170)
+        cell = hull & brass
+    elif mode == "lamp":
+        shade = ellipse(0.28, 0.22, oy=-0.12)
+        arm = ellipse(0.38, 0.16, ox=0.12, oy=0.02)
+        base = ellipse(0.18, 0.12, oy=0.28)
+        green = (grn > red - 6) & (lum > 30) & (lum < 170)
+        cell = (shade | arm | base) & green
+        cell |= ellipse(0.12, 0.10, oy=-0.06) & (red > 140)  # bulb
+    else:
+        cell = ellipse(0.35, 0.35)
+
     cell = ndimage.binary_closing(cell, iterations=2)
+    cell = ndimage.binary_opening(cell, iterations=1)
+    if float(cell.mean()) < 0.02:
+        cell = ellipse(0.28, 0.28)
     return cell.astype(np.uint8)
 
 
@@ -458,11 +479,10 @@ def main() -> None:
     gsmall = ndimage.zoom(grain, (id_h / grain.shape[0], id_w / grain.shape[1]), order=1)
 
     meta = []
-    for name, (ath, atv, du, dv, prop) in OBJECTS.items():
+    for name, (ath, atv, du, dv, mode) in OBJECTS.items():
         u, v = ath_atv_to_file_uv(ath, atv)
         oid = OBJECT_IDS[name]
-        prior = load_prop_alpha(prop)
-        cell = extract_cell(work, u, v, du, dv, prior)
+        cell = extract_cell(work, u, v, du, dv, mode)
         u0, v0 = u - du, max(0.0, v - dv)
         crop, roll = wrap_crop(work, u0, v0, u + du, min(1.0, v + dv))
         # cell is in crop space — rebuild if extract used same crop
