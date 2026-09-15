@@ -16,6 +16,7 @@ import ClickSpark from './ClickSpark';
 import StickerAlbum from './StickerAlbum';
 import ShopTicker from './ShopTicker';
 import WonderToast from './WonderToast';
+import HotspotA11y from './HotspotA11y';
 import {
   createNavState,
   createNavigationController,
@@ -330,6 +331,11 @@ export default function Experience() {
       <StickerAlbum active={canLook} />
       <DragHint active={canLook} controls={controls} reduceMotion={reduceMotion} />
       <WonderToast active={canLook} />
+      <HotspotA11y
+        visible={canLook}
+        onOpen={open}
+        onToggleLights={toggleLights}
+      />
 
       <SectionPanel
         activeId={active}

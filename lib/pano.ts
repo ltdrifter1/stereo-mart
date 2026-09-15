@@ -16,9 +16,9 @@
  *   face the storefront, fisheye 1→0.3 and fov 160→120 over ~2s,
  *   then ease to portrait-aware explore for free-look.
  */
-/** Equirect source — upscaled 4K for cleaner lookto FOV~20 punch-ins. */
-export const PANO_WIDTH = 4096;
-export const PANO_HEIGHT = 2048;
+/** Equirect master — native 8192×4096; production viewer picks 2k/4k/8k. */
+export const PANO_WIDTH = 8192;
+export const PANO_HEIGHT = 4096;
 export const PANO_ASPECT = PANO_WIDTH / PANO_HEIGHT;
 
 export const SPHERE_RADIUS = 48;
@@ -208,8 +208,30 @@ export function athAtvToUv(ath: number, atv: number): { u: number; v: number } {
   };
 }
 
-/** v20 — hand-illustrated PNW/Seoul record shop (from v20/art/plates). */
+/** v20 — hand-illustrated PNW/Seoul record shop (native-detail bake). */
 export const TEXTURE_SRC = '/textures/store_pano_v20.webp';
+export const TEXTURE_SRC_8K = '/textures/store_pano_v20_8k.webp';
+export const TEXTURE_SRC_2K = '/textures/store_pano_v20_2k.webp';
+
+/**
+ * Progressive plate pick: LQIP is already on the sphere.
+ * Mobile stays on 2k. Desktop fades 4k then upgrades to 8k when the GPU
+ * can sample 8192 (keeps first paint off the 2.8MB master).
+ */
+export function pickPanoSrc(opts: {
+  maxTextureSize: number;
+  coarsePointer: boolean;
+  width: number;
+}): { fast: string; upgrade: string | null } {
+  const mobile = opts.coarsePointer || opts.width < 768;
+  if (mobile || opts.maxTextureSize < 4096) {
+    return { fast: TEXTURE_SRC_2K, upgrade: null };
+  }
+  if (opts.maxTextureSize >= 8192) {
+    return { fast: TEXTURE_SRC, upgrade: TEXTURE_SRC_8K };
+  }
+  return { fast: TEXTURE_SRC, upgrade: null };
+}
 /** Darkened twin of the store — lights_off scene. */
 export const TEXTURE_OFF_SRC = '/textures/store_pano_off_v20.webp';
 export const LQIP_SRC = '/textures/store_pano_lqip_v20.webp';

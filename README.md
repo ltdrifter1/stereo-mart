@@ -2,11 +2,10 @@
 
 `stereo-mart.com` — immersive **360° illustrated record shop**.
 
-> **v20 is live on `/`.** The Next.js sphere now loads
-> `public/textures/store_pano_v20.webp` (baked from
-> [`v20/`](v20/README.md)). The KRPano skeleton + full art pipeline also
-> live under `v20/` for the eventual viewer swap. Legacy v17–v19 textures
-> remain in `public/textures/` unused.
+> **v20 is live on `/`.** The Next.js sphere loads the native-detail
+> 8192 plate (`store_pano_v20_8k.webp` on capable GPUs, 4k/2k otherwise;
+> see [`v20/HIRES_PLATE.md`](v20/HIRES_PLATE.md)). The KRPano skeleton +
+> art pipeline also live under `v20/` for the eventual viewer swap.
 
 ## Routes
 
@@ -34,12 +33,12 @@ npm run dev
 
 ## Panorama bake
 
-Live texture is **v20** (`public/textures/store_pano_v20.webp`), baked from
-the illustrated plate in [`v20/`](v20/README.md):
+Live texture is the native-detail v20 plate (LQIP → 2k/4k, 8k on capable
+GPUs). See [`v20/HIRES_PLATE.md`](v20/HIRES_PLATE.md).
 
 ```bash
-python3 v20/scripts/make-equirect.py              # 8192 master + mobile + LQIP
-# then copy mobile → public/textures/store_pano_v20.webp (see last commit)
+npm run bake:hires     # 8192 master + 4k/2k/LQIP + object silhouettes
+npm run test:hires
 ```
 
 KRPano tour (full rebuild target) lives under `v20/krpano/`. The Next.js

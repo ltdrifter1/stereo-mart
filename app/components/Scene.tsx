@@ -18,7 +18,7 @@ import {
   SPHERE_RADIUS,
   START_LOOK_U,
   TEXTURE_OFF_SRC,
-  TEXTURE_SRC,
+  pickPanoSrc,
   autoPitchLimit,
   followZoomScale,
   mfovToVerticalFov,
@@ -37,6 +37,7 @@ import FisheyePass from './FisheyePass';
 import CrtScreen, { CRT_DEFAULT_SRC } from './CrtScreen';
 import AmbientHits from './AmbientHits';
 import VinylSprite from './VinylSprite';
+import SilhouetteGlow from './SilhouetteGlow';
 
 const TWO_PI = Math.PI * 2;
 const DEG = Math.PI / 180;
@@ -308,7 +309,7 @@ export default function Scene({
   crtSrc = CRT_DEFAULT_SRC,
   gyroRef,
 }: Props) {
-  // Gate Suspense resolves on tiny LQIP — full 4K pans load in the background.
+  // Gate Suspense resolves on tiny LQIP — 2k/4k then optional 8k load behind it.
   const texLqip = useTexture(LQIP_SRC);
   const [texOn, setTexOn] = useState<THREE.Texture | null>(null);
   const [texOff, setTexOff] = useState<THREE.Texture | null>(null);
@@ -329,8 +330,18 @@ export default function Scene({
     const loader = new THREE.TextureLoader();
     let onTex: THREE.Texture | null = null;
     let offTex: THREE.Texture | null = null;
-    Promise.all([loader.loadAsync(TEXTURE_SRC), loader.loadAsync(TEXTURE_OFF_SRC)])
-      .then(([on, off]) => {
+    const coarse =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(pointer: coarse)').matches;
+    const width = typeof window !== 'undefined' ? window.innerWidth : 1440;
+    const { fast, upgrade } = pickPanoSrc({
+      maxTextureSize: gl.capabilities.maxTextureSize,
+      coarsePointer: coarse,
+      width,
+    });
+
+    Promise.all([loader.loadAsync(fast), loader.loadAsync(TEXTURE_OFF_SRC)])
+      .then(async ([on, off]) => {
         if (cancelled) {
           on.dispose();
           off.dispose();
@@ -342,6 +353,25 @@ export default function Scene({
         offTex = off;
         setTexOn(on);
         setTexOff(off);
+
+        if (!upgrade) return;
+        try {
+          const hi = await loader.loadAsync(upgrade);
+          if (cancelled) {
+            hi.dispose();
+            return;
+          }
+          prepTex(hi, gl);
+          const prev = onTex;
+          onTex = hi;
+          setTexOn(hi);
+          // Drop the 4k after the 8k is bound so we don't flash LQIP.
+          queueMicrotask(() => {
+            if (prev && prev !== hi) prev.dispose();
+          });
+        } catch {
+          /* stay on 4k if the 8k master fails */
+        }
       })
       .catch(() => {
         /* keep LQIP if full pans fail */
@@ -355,6 +385,7 @@ export default function Scene({
 
   useEffect(() => {
     if (!texOn || !texOff) return;
+    if (hiBlend.current.v > 0.99) return;
     gsap.to(hiBlend.current, {
       v: 1,
       duration: reduceMotion ? 0 : 0.85,
@@ -411,7 +442,7 @@ export default function Scene({
 
       <color attach="background" args={['#f2e6c8']} />
 
-      {/* Progressive base — sharp enough to enter before 4K lands */}
+      {/* Progressive base — sharp enough to enter before 2k/4k/8k lands */}
       <mesh raycast={() => null}>
         <sphereGeometry args={[SPHERE_RADIUS + 0.04, 64, 48]} />
         <meshBasicMaterial
@@ -455,6 +486,8 @@ export default function Scene({
           color="#fff3dc"
         />
       </mesh>
+
+      <SilhouetteGlow />
 
       <group>
         <CrtScreen
