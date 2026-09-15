@@ -40,7 +40,7 @@ export default function ParallaxLayers({ enabled = true }: { enabled?: boolean }
 
   return (
     <group>
-      <mesh>
+      <mesh raycast={() => null}>
         <sphereGeometry args={[SPHERE_RADIUS - 1.8, 64, 48]} />
         <meshBasicMaterial
           map={mg}
@@ -51,7 +51,7 @@ export default function ParallaxLayers({ enabled = true }: { enabled?: boolean }
           opacity={0.62}
         />
       </mesh>
-      <mesh>
+      <mesh raycast={() => null}>
         <sphereGeometry args={[SPHERE_RADIUS - 4.2, 64, 48]} />
         <meshBasicMaterial
           map={fg}

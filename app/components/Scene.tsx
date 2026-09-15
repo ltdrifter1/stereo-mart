@@ -117,8 +117,7 @@ function Rig({
     cam.far = SPHERE_RADIUS * 3;
     cam.position.set(0, 0, 0);
     cam.rotation.order = 'YXZ';
-    // Pre-enter: aimed near the ceiling so CLICK TO ENTER reveals the
-    // little-planet drop before tilting into the aisle middle.
+    // Pre-enter: storefront, fisheye 1 / fov 160 — look locked until enter.
     controls.lookTarget.x = settleYaw;
     controls.lookTarget.y = dropPitch;
     controls.velocity.x = 0;
@@ -147,7 +146,7 @@ function Rig({
     const aspect = size.width / Math.max(1, size.height);
     const dt = Math.min(0.05, delta);
 
-    // —— Intro: ceiling → pan → settle aisle middle ——
+    // —— Intro: fov 160→120 / fisheye 1→0.3 while facing the storefront ——
     if (enteredRef.value && !wasEntered.current) {
       wasEntered.current = true;
       introTween.current?.kill();
@@ -413,7 +412,7 @@ export default function Scene({
       <color attach="background" args={['#000000']} />
 
       {/* Progressive base — sharp enough to enter before 4K lands */}
-      <mesh>
+      <mesh raycast={() => null}>
         <sphereGeometry args={[SPHERE_RADIUS + 0.04, 64, 48]} />
         <meshBasicMaterial
           ref={matLqip}
@@ -428,7 +427,7 @@ export default function Scene({
       </mesh>
 
       {/* Lights-on sphere (fades in when full texture ready) */}
-      <mesh>
+      <mesh raycast={() => null}>
         <sphereGeometry args={[SPHERE_RADIUS, 96, 64]} />
         <meshBasicMaterial
           ref={matOn}
@@ -443,7 +442,7 @@ export default function Scene({
       </mesh>
 
       {/* Lights-off sphere (crossfades) */}
-      <mesh>
+      <mesh raycast={() => null}>
         <sphereGeometry args={[SPHERE_RADIUS - 0.02, 96, 64]} />
         <meshBasicMaterial
           ref={matOff}

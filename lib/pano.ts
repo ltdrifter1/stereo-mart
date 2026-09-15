@@ -12,9 +12,8 @@
  *   skin_settings followmousecontrol="true"
  *     → followrange=10, followspeed=0.05
  *
- * Enter (site_scripts.js clickIntro + little-planet-style settle):
- *   start near ceiling → soft yaw pan → land on LISTEN wall (headphones)
- *   while fisheye 1→0.3 and fov 160→intro-settle (~128) over ~3s,
+ * Enter (site_scripts.js clickIntro):
+ *   face the storefront, fisheye 1→0.3 and fov 160→120 over ~2s,
  *   then ease to portrait-aware explore for free-look.
  */
 /** Equirect source — upscaled 4K for cleaner lookto FOV~20 punch-ins. */
@@ -65,13 +64,6 @@ export const INTRO_EXPLORE_EASE_DUR = 0.85;
 /** Short path when prefers-reduced-motion (still a readable tilt). */
 export const INTRO_REDUCED_DUR = 0.65;
 /**
- * Pre-enter pose: a little above the storefront mid-band so the fisheye
- * 1.0 frame reads as a room, not a zenith smear.
- */
-export const INTRO_DROP_V = 0.38;
-/** Soft yaw sweep (degrees) during the settle. */
-export const INTRO_PAN_DEG = 12;
-/**
  * Base view — storefront window (ath 0 on the v20 plate). Street, globe
  * decal, and record bins in the sill read as the first "you're here" beat.
  */
@@ -79,6 +71,13 @@ export const INTRO_PAN_DEG = 12;
 export const START_LOOK_U = 0.5;
 /** Level with the OPEN door / window mid-band. */
 export const START_LOOK_V = 0.48;
+/**
+ * Pre-enter pose matches the storefront so fisheye 1.0 reads as a room,
+ * not a zenith smear. BT clickIntro does not drop from the ceiling.
+ */
+export const INTRO_DROP_V = START_LOOK_V;
+/** No yaw swirl — BT clickIntro only eases fov/fisheye while facing the room. */
+export const INTRO_PAN_DEG = 0;
 
 /**
  * krpano vtourskin defaults:

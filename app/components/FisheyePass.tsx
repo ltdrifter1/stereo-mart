@@ -115,10 +115,11 @@ export default function FisheyePass({
     const k = Math.max(0, amountSmooth.current);
     const cam = camera as THREE.PerspectiveCamera;
     const baseFov = cam.fov;
-
-    // Explore k=0.3 → ~8% wider; intro k=1 → ~55% for little-planet presence.
     const intro = Math.max(0, Math.min(1, (k - 0.28) / 0.72));
-    const expand = 1 + k * (0.28 + intro * 0.32);
+
+    // Keep the live camera FOV for raycasting. Extra FBO FOV expand is intro-only
+    // so explore clicks (k≈0.3) land on the painted objects.
+    const expand = intro > 0.15 ? 1 + k * (0.28 + intro * 0.32) : 1;
 
     if (k < 0.008) {
       gl.setRenderTarget(null);

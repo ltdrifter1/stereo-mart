@@ -122,7 +122,7 @@ export function playEnterIntro(
         ease: 'power3.inOut',
         onUpdate: () => {
           const u = smoothstep(proxy.t);
-          // Ceiling → aisle middle with soft yaw pan (BT clickIntro language).
+          // Face the room while fov/fisheye ease (BT clickIntro — no yaw swirl).
           const yaw = startYaw + (settleYaw - startYaw) * u;
           const pitch = dropPitch + (settlePitch - dropPitch) * u;
           applyLook(yaw, pitch, proxy.mfov, proxy.fisheye);

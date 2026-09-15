@@ -49,7 +49,7 @@ export default function LampHotspot({
   const [hovered, setHovered] = useState(false);
   const env = useSceneEnv();
   const [x, y, z] = useMemo(
-    () => uvToSpherical(LAMP_U, LAMP_V, SPHERE_RADIUS - 0.55),
+    () => uvToSpherical(LAMP_U, LAMP_V, SPHERE_RADIUS - 1.6),
     [],
   );
   const tex = useMemo(() => makeLampGlow(), []);
@@ -82,7 +82,7 @@ export default function LampHotspot({
 
   return (
     <group position={[x, y, z]}>
-      <mesh ref={glowMesh} renderOrder={1} raycast={() => null}>
+      <mesh ref={glowMesh} renderOrder={6} raycast={() => null}>
         <planeGeometry args={[8, 8]} />
         <meshBasicMaterial
           ref={glowMat}
@@ -109,9 +109,10 @@ export default function LampHotspot({
           document.documentElement.classList.remove('cursor-hot');
         }}
         onClick={handleClick}
+        renderOrder={7}
         userData={{ hotspotId: 'lamp', nav: 'Lights' }}
       >
-        <planeGeometry args={[4.2, 5]} />
+        <planeGeometry args={[6.5, 8]} />
         <meshBasicMaterial transparent opacity={0} depthWrite={false} side={THREE.DoubleSide} />
       </mesh>
     </group>

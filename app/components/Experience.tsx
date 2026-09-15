@@ -240,13 +240,8 @@ export default function Experience() {
     window.history.pushState(active ? { sectionId: active } : {}, '', url);
   }, [active]);
 
-  // Inert the WebGL surface while a panel is open (keyboard trap lives in SectionPanel).
-  useEffect(() => {
-    const wrap = canvasWrapRef.current;
-    if (!wrap) return;
-    if (active) wrap.setAttribute('inert', '');
-    else wrap.removeAttribute('inert');
-  }, [active]);
+  // Keyboard trap lives in SectionPanel. Do NOT inert the canvas — BT
+  // hotspots stay clickable while a glass panel is open (capture=false).
 
   const playCrt = useCallback((src: string) => {
     setCrtSrc(src || CRT_DEFAULT_SRC);

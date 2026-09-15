@@ -27,7 +27,7 @@ function LifeSprite({
   const mat = useRef<THREE.MeshBasicMaterial>(null);
   const env = useSceneEnv();
   const map = useTexture(hit.src!);
-  const [x, y, z] = uvToSpherical(hit.u, hit.v, SPHERE_RADIUS - 0.55);
+  const [x, y, z] = uvToSpherical(hit.u, hit.v, SPHERE_RADIUS - 0.85);
 
   useLayoutEffect(() => {
     map.colorSpace = THREE.SRGBColorSpace;
@@ -101,7 +101,7 @@ function GhostHaunt({
   const env = useSceneEnv();
   const [enabled, setEnabled] = useState(false);
   const map = useTexture(hit.src!);
-  const [x, y, z] = uvToSpherical(hit.u, hit.v, SPHERE_RADIUS - 0.55);
+  const [x, y, z] = uvToSpherical(hit.u, hit.v, SPHERE_RADIUS - 0.85);
 
   useLayoutEffect(() => {
     map.colorSpace = THREE.SRGBColorSpace;
@@ -183,7 +183,7 @@ function LifeMesh({
   const mesh = useRef<THREE.Mesh>(null);
   const env = useSceneEnv();
   const [pulse, setPulse] = useState(0);
-  const [x, y, z] = uvToSpherical(hit.u, hit.v, SPHERE_RADIUS - 0.55);
+  const [x, y, z] = uvToSpherical(hit.u, hit.v, SPHERE_RADIUS - 0.85);
 
   useLayoutEffect(() => {
     mesh.current?.lookAt(origin);

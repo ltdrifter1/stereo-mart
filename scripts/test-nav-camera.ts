@@ -19,7 +19,16 @@ import {
   resolveLookTarget,
   yawDelta,
 } from '../lib/navigation';
-import { MFOV_EXPLORE, mfovToHorizontalFov, uToYaw, uvToSpherical, vToPitch } from '../lib/pano';
+import {
+  INTRO_DROP_V,
+  INTRO_PAN_DEG,
+  MFOV_EXPLORE,
+  START_LOOK_V,
+  mfovToHorizontalFov,
+  uToYaw,
+  uvToSpherical,
+  vToPitch,
+} from '../lib/pano';
 import {
   HASH_BY_SECTION_ID,
   NAV_ORDER,
@@ -557,6 +566,8 @@ const desktop = {
   );
   assert.ok(SECTION_BY_ID.desk, 'desk about panel exists');
   assert.ok(!(NAV_ORDER as readonly string[]).includes('desk'), 'about is in-world only');
+  assert.equal(INTRO_PAN_DEG, 0, 'clickIntro has no yaw swirl');
+  assert.equal(INTRO_DROP_V, START_LOOK_V, 'pre-enter pitch matches storefront, not zenith');
   console.log('✓ v20 hotspot → panel map');
 }
 
