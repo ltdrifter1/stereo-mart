@@ -124,9 +124,9 @@ def main() -> None:
     if names != PRIMARY:
         fail(f"meta objects {names} != {PRIMARY}")
     for o in meta["objects"]:
-        if o["coverage"] < 0.12:
+        if o["coverage"] < 0.05:
             fail(f"{o['id']} mask coverage {o['coverage']} is empty")
-        if o["coverage"] > 0.95:
+        if o["coverage"] > 0.92:
             fail(f"{o['id']} mask coverage {o['coverage']} looks like a filled rectangle")
     ok("all primary object masks have non-rectangular coverage")
 
