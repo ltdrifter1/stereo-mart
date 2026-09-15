@@ -91,12 +91,12 @@ export default function LoadingGate({
       <div className="gate-paper" aria-hidden />
 
       <div className="gate-inner">
-        <img
-          className="gate-logo"
-          src="/brand/stereo-mart-globe.svg"
-          alt={BRAND_FULL}
-          draggable={false}
-        />
+          <img
+            className="gate-logo gate-logo-bounce"
+            src="/brand/stereo-mart-globe.svg"
+            alt={BRAND_FULL}
+            draggable={false}
+          />
 
         <div className="gate-copy">
           <p className={`gate-loading${ready ? ' is-done' : ''}`} aria-live="polite">

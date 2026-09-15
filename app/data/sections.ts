@@ -115,7 +115,7 @@ export const SECTIONS: Section[] = [
     hint: '',
     title: '',
     kicker: 'Music',
-    intro: '',
+    intro: 'DIG / DROP / PLAY',
     accent: '#7d93a6',
     // v20: LISTEN HERE headphones + turntable (ath -88, atv -6)
     u: listenUv.u,
@@ -191,7 +191,7 @@ export const SECTIONS: Section[] = [
     hint: '',
     title: '',
     kicker: 'New Releases',
-    intro: '',
+    intro: 'OPEN LATE / ALWAYS IN STOCK',
     accent: '#6f7d5a',
     // v20: NEW ARRIVALS crates (ath 172, atv 5)
     u: crateUv.u,

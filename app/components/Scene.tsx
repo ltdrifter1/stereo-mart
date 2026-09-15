@@ -36,7 +36,7 @@ import LampHotspot from './LampHotspot';
 import FisheyePass from './FisheyePass';
 import CrtScreen, { CRT_DEFAULT_SRC } from './CrtScreen';
 import AmbientHits from './AmbientHits';
-import ParallaxLayers from './ParallaxLayers';
+import VinylSprite from './VinylSprite';
 
 const TWO_PI = Math.PI * 2;
 const DEG = Math.PI / 180;
@@ -409,7 +409,7 @@ export default function Scene({
         gyroRef={gyroRef}
       />
 
-      <color attach="background" args={['#000000']} />
+      <color attach="background" args={['#f2e6c8']} />
 
       {/* Progressive base — sharp enough to enter before 4K lands */}
       <mesh raycast={() => null}>
@@ -422,7 +422,7 @@ export default function Scene({
           depthWrite={false}
           transparent
           opacity={1}
-          color="#ffffff"
+          color="#fff4d8"
         />
       </mesh>
 
@@ -437,7 +437,7 @@ export default function Scene({
           depthWrite={false}
           transparent
           opacity={0}
-          color="#ffffff"
+          color="#fff4d8"
         />
       </mesh>
 
@@ -452,7 +452,7 @@ export default function Scene({
           depthWrite={false}
           transparent
           opacity={0}
-          color="#ffffff"
+          color="#fff4d8"
         />
       </mesh>
 
@@ -464,6 +464,7 @@ export default function Scene({
           reduceMotion={reduceMotion}
         />
         <AmbientHits controls={controls} debug={debug} />
+        <VinylSprite />
         {ROOM_HOTSPOTS.map((s) => (
           <Hotspot
             key={s.id}
@@ -479,10 +480,8 @@ export default function Scene({
         )}
       </group>
 
-      {/* Soft warehouse lamp shafts when lights are on */}
       {lightsOn && <LightBeams />}
-      <DustField count={reduceMotion ? 0 : 64} />
-      {!reduceMotion && <ParallaxLayers />}
+      <DustField count={reduceMotion ? 0 : 48} />
 
       <FisheyePass amountRef={fisheyeRef} reduceMotion={reduceMotion} />
     </SceneContext.Provider>

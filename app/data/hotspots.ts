@@ -49,7 +49,7 @@ function spot(
     lookU: look?.u ?? u,
     lookV: look?.v ?? v,
     goldEdge: partial.goldEdge ?? true,
-    hideHint: partial.hideHint ?? true,
+    hideHint: partial.hideHint ?? false,
   };
 }
 

@@ -12,6 +12,9 @@ import MuteControl from './MuteControl';
 import GyroButton, { createGyro } from './GyroButton';
 import DragHint from './DragHint';
 import CustomCursor from './CustomCursor';
+import ClickSpark from './ClickSpark';
+import StickerAlbum from './StickerAlbum';
+import ShopTicker from './ShopTicker';
 import WonderToast from './WonderToast';
 import {
   createNavState,
@@ -288,7 +291,7 @@ export default function Experience() {
             };
           }}
           onCreated={({ gl, camera }) => {
-            gl.setClearColor('#000000', 1);
+            gl.setClearColor('#f2e6c8', 1);
             camera.rotation.order = 'YXZ';
           }}
         >
@@ -319,9 +322,12 @@ export default function Experience() {
 
       <FilmFX reduceMotion={reduceMotion} />
       <CustomCursor active />
+      <ClickSpark active={canLook} />
       <MuteControl visible={entered} faded={videoFocused} />
       <GyroButton visible={canLook} gyroRef={gyroRef} />
       <TopNav visible={canLook} activeId={active} onOpen={open} />
+      <ShopTicker visible={canLook} panelOpen={Boolean(active)} />
+      <StickerAlbum active={canLook} />
       <DragHint active={canLook} controls={controls} reduceMotion={reduceMotion} />
       <WonderToast active={canLook} />
 

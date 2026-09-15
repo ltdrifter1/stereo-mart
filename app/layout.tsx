@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from 'next';
-import { Syne, Sora } from 'next/font/google';
+import { Fredoka, Sora } from 'next/font/google';
 import { BRAND_FULL, BRAND_NAME, SITE_URL } from '@/lib/brand';
 import './globals.css';
 
-/** Expressive editorial display — brand mark (gate / panel titles). */
-const display = Syne({
+/** Round cartoon display — sticker titles, gate, panel heroes. */
+const display = Fredoka({
   subsets: ['latin'],
-  weight: ['700', '800'],
+  weight: ['500', '600', '700'],
   variable: '--font-display',
   display: 'swap',
 });

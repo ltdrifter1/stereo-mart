@@ -30,6 +30,7 @@ export default function FisheyePass({
           tDiffuse: { value: null as THREE.Texture | null },
           uAmount: { value: 0.3 },
           uAspect: { value: 1 },
+          uCartoon: { value: 1 },
         },
         vertexShader: /* glsl */ `
           varying vec2 vUv;
@@ -42,6 +43,7 @@ export default function FisheyePass({
           uniform sampler2D tDiffuse;
           uniform float uAmount;
           uniform float uAspect;
+          uniform float uCartoon;
           varying vec2 vUv;
 
           void main() {
@@ -63,9 +65,15 @@ export default function FisheyePass({
             vec2 uv = q * 0.5 + 0.5;
 
             vec4 col = texture2D(tDiffuse, uv);
-            // Light grade — avoid crushing midtones into a "crowded" look.
-            col.rgb = pow(max(col.rgb, 0.0), vec3(0.94));
-            col.rgb = mix(col.rgb, smoothstep(0.04, 0.96, col.rgb), 0.1);
+            // Bright cartoon grade — BT cream/mustard lift over the PNW plate.
+            float g = clamp(uCartoon, 0.0, 1.0);
+            vec3 c = max(col.rgb, 0.0);
+            float luma = dot(c, vec3(0.2126, 0.7152, 0.0722));
+            c = mix(vec3(luma), c, 1.42);
+            c *= vec3(1.14, 1.05, 0.88);
+            c = (c - 0.42) * 1.16 + 0.50;
+            c = pow(c, vec3(0.90));
+            col.rgb = mix(col.rgb, clamp(c, 0.0, 1.0), g);
             gl_FragColor = col;
           }
         `,
@@ -103,31 +111,24 @@ export default function FisheyePass({
   );
 
   useFrame(() => {
-    // Skip FBO warp under reduced motion — render the scene straight through.
     if (reduceMotion) {
       amountSmooth.current = 0;
       fisheyeView.amount = 0;
-      gl.setRenderTarget(null);
-      gl.render(scene, camera);
-      return;
+    } else {
+      amountSmooth.current += (amountRef.current - amountSmooth.current) * 0.45;
+      fisheyeView.amount = Math.max(0, amountSmooth.current);
     }
 
-    amountSmooth.current += (amountRef.current - amountSmooth.current) * 0.45;
-    const k = Math.max(0, amountSmooth.current);
-    fisheyeView.amount = k;
+    const k = reduceMotion ? 0 : Math.max(0, amountSmooth.current);
 
-    if (k < 0.008) {
-      gl.setRenderTarget(null);
-      gl.render(scene, camera);
-      return;
-    }
-
+    // Always grade through the FBO so the cartoon look holds when fisheye is 0.
     gl.setRenderTarget(fbo);
     gl.clear();
     gl.render(scene, camera);
 
     material.uniforms.tDiffuse.value = fbo.texture;
     material.uniforms.uAmount.value = k;
+    material.uniforms.uCartoon.value = 1;
 
     gl.setRenderTarget(null);
     gl.render(outScene, outCam);
