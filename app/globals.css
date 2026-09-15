@@ -150,6 +150,7 @@ html.has-custom-cursor * {
   height: 64px;
   pointer-events: none;
   user-select: none;
+  filter: drop-shadow(1px 2px 0 rgba(35, 40, 64, 0.35));
   transition:
     opacity var(--motion-fast) ease,
     transform var(--motion-fast) var(--motion-ease);
@@ -171,7 +172,7 @@ html.has-custom-cursor * {
 .custom-cursors.is-click .custom-cursor-click {
   opacity: 1;
 }
-@media (pointer: coarse), (max-width: 570px) {
+@media (max-width: 570px) {
   .custom-cursors {
     display: none !important;
   }
@@ -2991,39 +2992,6 @@ html.has-custom-cursor * {
 .gyro-control:hover {
   background: rgba(236, 228, 210, 0.88);
   border-color: rgba(35, 40, 64, 0.35);
-}
-.panel {
-  background:
-    linear-gradient(
-      165deg,
-      rgba(236, 228, 210, 0.88) 0%,
-      rgba(236, 228, 210, 0.72) 100%
-    ) !important;
-  color: #232840;
-  border: 2px solid rgba(35, 40, 64, 0.55) !important;
-  box-shadow:
-    4px 6px 0 rgba(35, 40, 64, 0.12),
-    0 24px 48px rgba(35, 40, 64, 0.22) !important;
-  text-shadow: none;
-}
-.panel-back {
-  background: transparent;
-  border: 0;
-  color: #232840;
-  letter-spacing: 0.12em;
-}
-.panel-kicker,
-.panel-title,
-.panel-intro,
-.pc-label,
-.pc-meta,
-.pc-detail,
-.panel-body {
-  color: #232840;
-  text-shadow: none;
-}
-.panel-kicker {
-  color: rgba(35, 40, 64, 0.62);
 }
 @media (max-width: 570px) {
   .panel {

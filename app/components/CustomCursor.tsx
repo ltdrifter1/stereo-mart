@@ -28,12 +28,25 @@ export default function CustomCursor({ active }: { active: boolean }) {
       return;
     }
 
+    const apply = (on: boolean) => {
+      const narrow = window.innerWidth <= 570;
+      const next = on && !narrow;
+      setEnabled(next);
+      document.documentElement.classList.toggle('has-custom-cursor', next);
+    };
+
     const fine = window.matchMedia('(pointer: fine)').matches;
-    const touch = window.matchMedia('(pointer: coarse)').matches;
-    const ok = fine && !touch;
-    setEnabled(ok);
-    document.documentElement.classList.toggle('has-custom-cursor', ok);
-    return () => document.documentElement.classList.remove('has-custom-cursor');
+    const hover = window.matchMedia('(hover: hover)').matches;
+    apply(fine || hover || navigator.maxTouchPoints === 0);
+
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse') apply(true);
+    };
+    window.addEventListener('pointermove', onMove, { passive: true });
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      document.documentElement.classList.remove('has-custom-cursor');
+    };
   }, [active]);
 
   useEffect(() => {

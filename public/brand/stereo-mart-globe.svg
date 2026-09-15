@@ -34,8 +34,8 @@
 
 		<!-- equator band: cream field for the wordmark -->
 		<rect x="0" y="216" width="512" height="86" fill="#ece4d2" />
-		<text class="word" x="256" y="288" text-anchor="middle"
-			font-size="86" fill="#232840">STEREO-MART</text>
+		<text class="word" x="256" y="282" text-anchor="middle"
+			font-size="58" textLength="390" lengthAdjust="spacingAndGlyphs" fill="#232840">STEREO-MART</text>
 
 		<!-- RECORDS banner -->
 		<rect x="0" y="306" width="512" height="52" fill="#a63a32" />
