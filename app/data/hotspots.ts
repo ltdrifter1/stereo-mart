@@ -4,6 +4,7 @@
  * Conveyor / hash still use section ids; extra spots are room-only.
  */
 import { athAtvToUv } from '@/lib/pano';
+import { CAT_LIFE, angToPlane } from '@/lib/roomLife';
 import { SECTION_BY_ID, type Section } from './sections';
 
 export type RoomHotspot = {
@@ -216,11 +217,12 @@ export const LIFE_HITS: LifeHit[] = [
   life({
     id: 'cat',
     kind: 'find',
-    ath: -163,
-    atv: 24,
-    w: 14,
-    h: 9,
+    ath: CAT_LIFE.ath,
+    atv: CAT_LIFE.atv,
+    w: angToPlane(CAT_LIFE.wdeg),
+    h: angToPlane(CAT_LIFE.hdeg),
     sfx: 'cushion',
+    src: CAT_LIFE.src,
     label: 'the shop cat (she stretched!)',
   }),
   life({

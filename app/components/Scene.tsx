@@ -37,6 +37,7 @@ import FisheyePass from './FisheyePass';
 import CrtScreen, { CRT_DEFAULT_SRC } from './CrtScreen';
 import AmbientHits from './AmbientHits';
 import VinylSprite from './VinylSprite';
+import RoomLife from './RoomLife';
 import SilhouetteGlow from './SilhouetteGlow';
 
 const TWO_PI = Math.PI * 2;
@@ -498,6 +499,7 @@ export default function Scene({
         />
         <AmbientHits controls={controls} debug={debug} />
         <VinylSprite />
+        <RoomLife lightsOn={lightsOn} />
         {ROOM_HOTSPOTS.map((s) => (
           <Hotspot
             key={s.id}

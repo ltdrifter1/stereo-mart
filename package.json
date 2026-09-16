@@ -13,6 +13,7 @@
     "test:nav": "npx tsx scripts/test-nav-camera.ts",
     "verify:aim": "python3 scripts/verify-aim.py",
     "bake:hires": "python3 v20/scripts/bake-hires-shop.py",
+    "bake:life": "python3 v20/scripts/make-life-patches.py",
     "test:hires": "python3 scripts/validate-hires-plate.py"
   },
   "dependencies": {

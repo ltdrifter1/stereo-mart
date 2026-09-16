@@ -10,6 +10,7 @@
  *   preview → near-silence under booth / CRT playback
  */
 import gsap from 'gsap';
+import { LOOKTO_SWELL } from '@/lib/roomLife';
 
 let bgm: HTMLAudioElement | null = null;
 /** Optional layered warehouse atmosphere (rain, hum, trains, birds, crackle). */
@@ -18,7 +19,7 @@ let ambientReady = false;
 /** Start muted until CLICK TO ENTER (browser gesture), then live like BT. */
 let muted = true;
 let volTween: gsap.core.Tween | null = null;
-let ambientTween: gsap.core.Tween | null = null;
+let ambientTween: gsap.core.Animation | null = null;
 let lifecycleBound = false;
 /** Why the bed is currently ducked (stack: preview wins over panel). */
 let panelDuck = false;
@@ -120,6 +121,38 @@ function setAmbientVolumes(master: number) {
     if (!a) continue;
     a.volume = muted ? 0 : master * layer.gain;
   }
+}
+
+/**
+ * Soft bed swell at the start of a lookto — NAVIGATION.md
+ * "content panel slides in → soft ambient swell".
+ * Composes with panel/preview duck; no-ops when muted or offscreen.
+ */
+export function swellAmbient() {
+  if (muted || typeof window === 'undefined') return;
+  ensureAmbient();
+  if (previewDuck) return;
+  ambientTween?.kill();
+  const base = ambientMasterLevel();
+  const peak = base * LOOKTO_SWELL.peakMul;
+  const proxy = { v: base };
+  const rain = ambientPool.get('rain');
+  if (rain && rain.volume > 0) {
+    proxy.v = rain.volume / Math.max(0.001, AMBIENT_LAYERS[0].gain);
+  }
+  const tl = gsap.timeline();
+  tl.to(proxy, {
+    v: peak,
+    duration: LOOKTO_SWELL.attack,
+    ease: 'power1.out',
+    onUpdate: () => setAmbientVolumes(proxy.v),
+  }).to(proxy, {
+    v: base,
+    duration: LOOKTO_SWELL.release,
+    ease: 'power1.inOut',
+    onUpdate: () => setAmbientVolumes(proxy.v),
+  });
+  ambientTween = tl;
 }
 
 function tweenAmbient(toMaster: number, duration = 1.2) {
