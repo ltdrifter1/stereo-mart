@@ -17,6 +17,7 @@ import {
   uToYaw,
   vToPitch,
 } from '@/lib/pano';
+import { DEG, wrapYaw } from '@/lib/math';
 import { resolveExploreMfov } from '@/lib/navigation/CameraController';
 import { measureViewport } from '@/lib/navigation/ViewportManager';
 
@@ -24,16 +25,6 @@ export type IntroLookRefs = {
   yaw: { current: number };
   pitch: { current: number };
   fisheye: { current: number };
-};
-
-const DEG = Math.PI / 180;
-const TWO_PI = Math.PI * 2;
-
-const wrapYaw = (y: number) => {
-  let v = y % TWO_PI;
-  if (v > Math.PI) v -= TWO_PI;
-  if (v < -Math.PI) v += TWO_PI;
-  return v;
 };
 
 const smoothstep = (t: number) => {

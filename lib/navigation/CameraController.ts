@@ -1,3 +1,4 @@
+import { TWO_PI } from '@/lib/math';
 import {
   MFOV_EXPLORE,
   MFOV_LOOKTO_MIN,
@@ -166,7 +167,6 @@ export function aisleWaypoint(
   const explore = resolveExploreMfov(viewport);
   // Shortest-path mid yaw
   let d = to.yaw - fromYaw;
-  const TWO_PI = Math.PI * 2;
   d = ((((d + Math.PI) % TWO_PI) + TWO_PI) % TWO_PI) - Math.PI;
   return {
     yaw: fromYaw + d * 0.45,

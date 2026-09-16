@@ -4,6 +4,7 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { makeDotTexture } from '@/lib/sprites';
+import { isDocumentHidden } from '@/lib/math';
 import { useSceneEnv } from './sceneContext';
 
 /** Dust floats in a shell around the eye so turning the view reveals depth. */
@@ -36,6 +37,7 @@ export default function DustField({ count = 200 }: { count?: number }) {
   }, [count]);
 
   useFrame((_, delta) => {
+    if (isDocumentHidden()) return;
     const p = points.current;
     if (!p) return;
     const arr = p.geometry.attributes.position.array as Float32Array;

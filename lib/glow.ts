@@ -1,3 +1,5 @@
+import { MOTION } from '@/lib/motion';
+
 /**
  * Hotspot glow — BT hover aura (soft lamp-light), never a HUD ring.
  * Rest pose: objects look painted. Hover / focus: warm wash.
@@ -9,8 +11,8 @@ export const GLOW = {
   bloomTint: '#ffe566',
   /** Bloom quad vs hit plane — slight overspill, not a halo ring. */
   bloomScale: 1.18,
-  /** Hover fade in/out duration (s). */
-  hoverFade: 0.32,
+  /** Hover fade in/out duration (s) — BT hoverIn/Out 0.4 power1.inOut. */
+  hoverFade: MOTION.hoverAura,
   /** Breath speed (rad/s of the sine wave) while hovered / focused. */
   breathSpeed: 1.35,
   idleBreathSpeed: 0.7,

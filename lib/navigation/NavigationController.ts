@@ -1,4 +1,5 @@
 import gsap from 'gsap';
+import { MOTION } from '@/lib/motion';
 import type { Section } from '@/app/data/sections';
 import { SECTION_BY_ID } from '@/app/data/sections';
 import { resolveOpenTarget } from '@/app/data/hotspots';
@@ -31,16 +32,16 @@ export type NavigationCallbacks = {
   reduceMotion: boolean;
 };
 
-/** balmingtiger lookto(..., tween(easeinoutquart, 2), ...) — slightly longer for walk. */
-const LOOKTO_DURATION = 2.15;
-const LOOKTO_AISLE_DURATION = 0.9;
-const LOOKTO_APPROACH_DURATION = 1.35;
+/** balmingtiger lookto(..., tween(easeinoutquart, 2), ...). */
+const LOOKTO_DURATION = MOTION.lookto;
+const LOOKTO_AISLE_DURATION = MOTION.looktoAisle;
+const LOOKTO_APPROACH_DURATION = MOTION.looktoApproach;
 const REFRAME_DURATION = 0.45;
 /**
- * Panel HUD lands mid-lookto so camera + glass feel like one gesture.
- * Glow/focus latch is immediate; panel open is staged.
+ * Glass HUD starts with the lookto so camera + panel read as one gesture
+ * (BT openPanel is called immediately; close × fades in after 1s).
  */
-const PANEL_REVEAL_DELAY = 0.72;
+const PANEL_REVEAL_DELAY = MOTION.panelRevealDelay;
 
 /**
  * High-level navigation — open / close / resetToFront.
@@ -108,7 +109,7 @@ export function createNavigationController(
    */
   const close = (opts?: { force?: boolean; silent?: boolean }) => {
     if (!navState.panelOpen && !navState.focusedId) return;
-    if (!opts?.force && Date.now() - openedAt < 280) return;
+    if (!opts?.force && Date.now() - openedAt < MOTION.panelCloseGuardMs) return;
 
     interruptCameraAnimation(controls);
     clearFocus(navState);

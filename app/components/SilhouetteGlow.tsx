@@ -6,6 +6,7 @@ import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
 import { SPHERE_RADIUS } from '@/lib/pano';
+import { isDocumentHidden } from '@/lib/math';
 import {
   SILHOUETTE_MAP_SRC,
   silhouetteAmount,
@@ -105,6 +106,7 @@ export default function SilhouetteGlow() {
   );
 
   useFrame(() => {
+    if (isDocumentHidden()) return;
     const u = material.uniforms.uAmt.value as number[];
     for (let i = 0; i < 10; i++) {
       u[i] = Math.max(silhouetteAmount.current[i], silhouetteKeyboard.current[i]);

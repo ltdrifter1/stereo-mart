@@ -2,16 +2,18 @@
 
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useFrame, type ThreeEvent } from '@react-three/fiber';
-import { Html, useTexture } from '@react-three/drei';
+import { useTexture } from '@react-three/drei';
 import gsap from 'gsap';
 import * as THREE from 'three';
 
 import { uvToSpherical, SPHERE_RADIUS } from '@/lib/pano';
 import { GLOW } from '@/lib/glow';
+import { MOTION } from '@/lib/motion';
 import { setSilhouetteAmount, type SilhouetteName } from '@/lib/silhouetteGlow';
 import type { RoomHotspot } from '@/app/data/hotspots';
 import { useSceneEnv, type Controls } from './sceneContext';
 import { isTap, tapOrigin, type TapOrigin } from '@/lib/pointerTap';
+import { useCanvasHover } from './useCanvasHover';
 
 export { GLOW } from '@/lib/glow';
 
@@ -54,6 +56,7 @@ function OverlayProp({
  *   generous invisible hit plane + object-shaped silhouette (sphere ID map)
  *   hoverIn  → glow alpha 0→hover, duration 0.4, ease power1.inOut
  *   hoverOut → glow alpha →0 — EXCEPT latched sections while focused
+ *   no object squash/stretch — aura only (painted objects stay still)
  */
 export default function Hotspot({
   spot,
@@ -76,7 +79,10 @@ export default function Hotspot({
   const [x, y, z] = uvToSpherical(spot.u, spot.v, SPHERE_RADIUS - 0.5);
   const press = useRef<TapOrigin | null>(null);
   const maskName = spot.id as SilhouetteName;
-  const group = useRef<THREE.Group>(null);
+  const hover = useCanvasHover(
+    spot.id,
+    spot.hideHint ? undefined : spot.object,
+  );
 
   const canLatch = spot.glowLatches !== false;
   const isFocused = canLatch && focusedId === spot.id;
@@ -89,20 +95,10 @@ export default function Hotspot({
     const on = isFocused || hovered;
     gsap.to(glow.current, {
       a: on ? (isFocused ? GLOW.focusedAlpha : GLOW.hoverAlpha) : 0,
-      duration: env.reduceMotion ? 0 : GLOW.hoverFade,
-      ease: 'power1.inOut',
+      duration: env.reduceMotion ? 0 : MOTION.hoverAura,
+      ease: MOTION.hoverEase,
       overwrite: true,
     });
-    if (group.current && !env.reduceMotion) {
-      gsap.to(group.current.scale, {
-        x: hovered && !isFocused ? 1.05 : 1,
-        y: hovered && !isFocused ? 1.05 : 1,
-        z: 1,
-        duration: 0.22,
-        ease: 'back.out(2.4)',
-        overwrite: true,
-      });
-    }
   }, [isFocused, hovered, env.reduceMotion]);
 
   useFrame((_state, delta) => {
@@ -160,19 +156,17 @@ export default function Hotspot({
   };
 
   return (
-    <group ref={group} position={[x, y, z]}>
+    <group position={[x, y, z]}>
       <mesh
         ref={mesh}
         renderOrder={3}
         onPointerOver={(e) => {
-          e.stopPropagation();
-          if (!env.live.value) return;
-          setHovered(true);
-          document.documentElement.classList.add('cursor-hot');
+          hover.onOver(() => e.stopPropagation(), env.live.value);
+          if (env.live.value) setHovered(true);
         }}
         onPointerOut={() => {
+          hover.onOut();
           setHovered(false);
-          document.documentElement.classList.remove('cursor-hot');
         }}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
@@ -194,12 +188,6 @@ export default function Hotspot({
           w={spot.overlayW ?? spot.w}
           h={spot.overlayH ?? spot.h}
         />
-      )}
-
-      {hovered && !isFocused && !spot.hideHint && (
-        <Html center zIndexRange={[30, 10]} style={{ pointerEvents: 'none' }}>
-          <span className="hotspot-pill">{spot.object.toUpperCase()}</span>
-        </Html>
       )}
     </group>
   );

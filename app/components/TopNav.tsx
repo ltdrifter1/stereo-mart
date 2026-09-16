@@ -164,6 +164,7 @@ export default function TopNav({
                     activateIndex(i);
                   }}
                   onPointerDown={(e) => e.stopPropagation()}
+                  data-cursor="click"
                 >
                   <span className="top-nav-label">{s.nav.toUpperCase()}</span>
                   <span className="top-nav-line" aria-hidden />

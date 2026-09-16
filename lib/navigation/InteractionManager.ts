@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type RefObject } from 'react';
 import gsap from 'gsap';
+import { wrapYaw } from '@/lib/math';
 import type { Controls } from './types';
 import { interruptCameraAnimation } from './AnimationManager';
 import { createControls } from './CameraController';
@@ -23,17 +24,9 @@ import {
 /** Desktop + touch: generous so a slightly shaky click still opens a hotspot. */
 const DRAG_THRESHOLD_MOUSE = 28;
 const DRAG_THRESHOLD_TOUCH = 28;
-const TWO_PI = Math.PI * 2;
 const DEG = Math.PI / 180;
 /** Pinch → MFOV degrees scale (touch zoom parity with wheel). */
 const PINCH_FOV_SCALE = 0.08;
-
-const wrapYaw = (y: number) => {
-  let v = y % TWO_PI;
-  if (v > Math.PI) v -= TWO_PI;
-  if (v < -Math.PI) v += TWO_PI;
-  return v;
-};
 
 /**
  * Pointer / wheel / key / pinch → camera.
