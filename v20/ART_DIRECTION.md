@@ -44,13 +44,15 @@ turn around inside — not a website.
 Lighting: single overcast key from the storefront window; warm practical
 pools from desk lamp and listening station. Long soft shadows, no hard sun.
 
-## Brand mark (from supplied logo)
+## Brand mark (in-world)
 
-Globe badge: cream disc, ink-navy latitude/longitude grid, bold italic
-condensed "STEREO-MART" in navy across the equator, "RECORDS" in cream on a
-muted-red banner beneath. Vector redraw lives in `brand/`. In-world, the mark
-appears painted/aged: window decal (mirrored from inside), rubber stamps on
-sleeves, a dusty neon-off sign, spine stickers — never a crisp digital logo.
+Cassette-reel badge for VCR RECORDS / 360KRAPNO: cream oval, two tape reels
+in an ink-navy cassette window, bold italic condensed "VCR" across the
+middle, "RECORDS" in cream on a muted-red banner beneath. Never a globe or
+latitude grid. In-world the mark is painted/aged: window decal, hanging
+transom sign, rubber stamps on sleeves and crates — never a crisp digital
+logo. Fictional poster/sleeve names only (NIGHT BUS, PAPER MOON, STATIC
+HARBOR, LOW BATTERY, TAPE LOOP, FOG RADIO).
 
 ## Interior inventory (the room)
 
