@@ -624,7 +624,8 @@ const desktop = {
 
 // 16) Idle room life — fan / cat / speaker / clouds / lookto swell
 {
-  assert.ok(angToPlane(27) > 20 && angToPlane(27) < 28, '27° fan plane is room-scale');
+  assert.ok(FAN_LIFE.wdeg >= 48, 'fan disc covers the painted zenith blades');
+  assert.ok(angToPlane(27) > 20 && angToPlane(27) < 28, '27° plane helper is room-scale');
   assert.ok(Math.abs(FAN_LIFE.ath) < 15, 'fan hangs on the storefront ceiling');
   assert.ok(FAN_LIFE.atv < -50, 'fan is a zenith object');
   assert.ok(FAN_LIFE.radPerSec > 0 && FAN_LIFE.radPerSec < 0.6, 'fan is a slow loop');

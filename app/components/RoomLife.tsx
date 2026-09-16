@@ -62,9 +62,10 @@ function FanSpin() {
   return (
     <group>
       <mesh ref={cover.mesh} position={cover.pos} renderOrder={3} raycast={() => null}>
-        <planeGeometry args={[w * 1.06, h * 1.06]} />
+        <planeGeometry args={[w * 1.18, h * 1.18]} />
         <meshBasicMaterial
           map={coverMap}
+          color="#fff3dc"
           transparent
           depthWrite={false}
           depthTest={false}
@@ -76,6 +77,7 @@ function FanSpin() {
         <planeGeometry args={[w, h]} />
         <meshBasicMaterial
           map={bladeMap}
+          color="#fff3dc"
           transparent
           depthWrite={false}
           depthTest={false}
@@ -168,7 +170,7 @@ function DriftCloud({
     const [x, y, z] = uvToSpherical(u, v, SPHERE_RADIUS - 1.25);
     m.position.set(x, y, z);
     m.lookAt(origin);
-    material.opacity = 0.82 * cloudWindowFade(ath);
+    material.opacity = 0.9 * cloudWindowFade(ath);
   });
 
   return (

@@ -73,7 +73,7 @@ def extract_fan(master: Image.Image) -> dict:
     samples = []
     for px, py in ((3500, 250), (4600, 500), (4700, 280)):
         samples.append(rgb[py, px])
-    plaster = np.mean(samples, axis=0)
+    plaster = np.array([148.0, 128.0, 98.0])
 
     size = 768
     cover_size = 256
@@ -85,7 +85,7 @@ def extract_fan(master: Image.Image) -> dict:
     cover_rgb[..., 1] = plaster[1] + grain * 0.9
     cover_rgb[..., 2] = plaster[2] + grain * 0.75
     cover_a = feather_circle(
-        cover_size, cover_size, cover_size / 2, cover_size / 2, cover_size / 2 - 6, 10
+        cover_size, cover_size, cover_size / 2, cover_size / 2, cover_size / 2 - 4, 48
     )
     cover = Image.fromarray(
         np.dstack([np.clip(cover_rgb, 0, 255).astype(np.uint8), cover_a]), "RGBA"
@@ -212,10 +212,10 @@ def paint_cloud(seed: int, w: int = 420, h: int = 220) -> Image.Image:
     grain = rng.normal(0, 0.04, (h, w))
     field = np.clip(field + grain * (field > 0.05), 0, 1)
     rgb = np.zeros((h, w, 3), dtype=np.float32)
-    rgb[..., 0] = 228 + field * 8
-    rgb[..., 1] = 224 + field * 6
-    rgb[..., 2] = 214 + field * 12
-    alpha = np.clip(field * 155, 0, 170)
+    rgb[..., 0] = 210 + field * 28
+    rgb[..., 1] = 218 + field * 22
+    rgb[..., 2] = 224 + field * 18
+    alpha = np.clip(field * 210, 0, 220)
     out = Image.fromarray(
         np.dstack([np.clip(rgb, 0, 255).astype(np.uint8), alpha.astype(np.uint8)]),
         "RGBA",
