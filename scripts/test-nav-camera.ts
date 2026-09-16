@@ -43,6 +43,15 @@ import {
 } from '../app/data/sections';
 import { HOTSPOT_BY_ID, LIFE_HITS, ROOM_HOTSPOTS, resolveOpenTarget } from '../app/data/hotspots';
 import { GLOW } from '../lib/glow';
+import { MOTION } from '../lib/motion';
+import { wrapYaw } from '../lib/math';
+import {
+  getHoverLabel,
+  hoverEnter,
+  hoverLeave,
+  isPointerHot,
+  resetPointerHover,
+} from '../lib/pointerHover';
 import {
   CAT_LIFE,
   CLOUD_LIFE,
@@ -398,7 +407,7 @@ const desktop = {
   console.log('✓ cash-register opens in-room shop panel');
 }
 
-// 10a) From free look, glow latches immediately and panel stages mid-lookto
+// 10a) From free look, glow latches immediately and panel opens with lookto
 {
   // Node has no rAF — AnimationManager needs a stub for the lookto tween.
   const prevRaf = globalThis.requestAnimationFrame;
@@ -428,14 +437,14 @@ const desktop = {
   nav.setLookEnabled(true);
   nav.open('listening-booth', desktop);
   assert.equal(focused, 'listening-booth', 'glow/focus should latch immediately');
-  assert.equal(active, null, 'panel should wait for mid-lookto reveal');
+  assert.equal(active, null, 'panel waits one beat so focus latch paints first');
   assert.equal(navState.panelOpen, false);
 
-  // Force GSAP delayedCall (~0.72s) to fire.
+  // Force GSAP delayedCall (MOTION.panelRevealDelay) to fire.
   gsap.updateRoot(2);
-  assert.equal(active, 'listening-booth', 'panel should open after reveal delay');
+  assert.equal(active, 'listening-booth', 'panel should open with the lookto');
   assert.equal(navState.panelOpen, true);
-  console.log('✓ panel HUD stages mid-lookto from free look');
+  console.log('✓ panel HUD opens with the lookto from free look');
 
   // Tear down lookto tween before restoring Node globals.
   nav.close({ force: true, silent: true });
@@ -641,6 +650,31 @@ const desktop = {
   assert.equal(typeof swellAmbient, 'function');
   swellAmbient(); // muted in node — must no-op
   console.log('✓ idle room life: fan / cat / speaker / clouds / lookto swell');
+}
+
+// 17) Shared motion / math / hover retain
+{
+  assert.equal(MOTION.lookto, 2, 'lookto duration matches BT easeinoutquart 2s');
+  assert.equal(MOTION.hoverAura, 0.4, 'hover aura matches BT 0.4s');
+  assert.equal(GLOW.hoverFade, MOTION.hoverAura, 'glow fade uses shared motion token');
+  assert.ok(MOTION.panelRevealDelay < 0.3, 'panel must open with the lookto, not after it');
+  assert.ok(Math.abs(wrapYaw(Math.PI + 0.2) - (-Math.PI + 0.2)) < 1e-9);
+  assert.ok(Math.abs(wrapYaw(-Math.PI - 0.2) - (Math.PI - 0.2)) < 1e-9);
+  assert.equal(wrapYaw(0), 0);
+  resetPointerHover();
+  assert.equal(isPointerHot(), false);
+  hoverEnter('a', 'Listening Station');
+  hoverEnter('b', 'Record Bins');
+  assert.equal(isPointerHot(), true);
+  assert.equal(getHoverLabel(), 'Record Bins');
+  hoverLeave('a');
+  assert.equal(isPointerHot(), true);
+  assert.equal(getHoverLabel(), 'Record Bins');
+  hoverLeave('b');
+  assert.equal(isPointerHot(), false);
+  assert.equal(getHoverLabel(), null);
+  resetPointerHover();
+  console.log('✓ motion tokens + wrapYaw + hover retain across adjacent hits');
 }
 
 console.log('\nAll nav camera checks passed.');

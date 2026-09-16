@@ -18,12 +18,13 @@ export default function HotspotA11y({
 }) {
   if (!visible) return null;
   return (
-    <nav className="hotspot-a11y" aria-label="Shop objects">
+    <nav className="hotspot-a11y" id="shop-objects" aria-label="Shop objects">
       {ROOM_HOTSPOTS.map((h) => (
         <button
           key={h.id}
           type="button"
           onClick={() => onOpen(h.id)}
+          data-cursor="click"
           onFocus={() => setSilhouetteKeyboard(h.id as SilhouetteName, 0.42)}
           onBlur={() => setSilhouetteKeyboard(h.id as SilhouetteName, 0)}
         >
@@ -34,6 +35,7 @@ export default function HotspotA11y({
         <button
           type="button"
           onClick={onToggleLights}
+          data-cursor="click"
           onFocus={() => setSilhouetteKeyboard('lamp', 0.42)}
           onBlur={() => setSilhouetteKeyboard('lamp', 0)}
         >

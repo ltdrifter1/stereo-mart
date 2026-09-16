@@ -2,13 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+import { isDocumentHidden } from '@/lib/math';
+import { MOTION } from '@/lib/motion';
+import { isPointerHot, subscribePointerHover } from '@/lib/pointerHover';
+
 /**
  * Branded floating cursor — balmingtiger `.cursors` pattern.
  * Desktop / fine pointer only; touch + coarse pointers keep native cursors.
- * Click glyph: pointerdown, canvas `cursor-hot`, or `[data-cursor="click"]` hover.
  *
- * Enter contract: reveals with a short scale-in once the room is entered;
- * presses scale down for tactile feedback.
+ * Follow is slightly lerped (smoother than 1:1 on high-Hz displays).
+ * Tilt comes from screen X (BT) plus a little velocity, kept restrained.
  */
 export default function CustomCursor({ active }: { active: boolean }) {
   const root = useRef<HTMLDivElement>(null);
@@ -16,7 +19,14 @@ export default function CustomCursor({ active }: { active: boolean }) {
   const [revealed, setRevealed] = useState(false);
   const [pressing, setPressing] = useState(false);
   const [hot, setHot] = useState(false);
-  const pos = useRef({ x: -100, y: -100, rot: 0, vx: 0 });
+  const pos = useRef({
+    x: -100,
+    y: -100,
+    tx: -100,
+    ty: -100,
+    rot: 0,
+    vx: 0,
+  });
   const last = useRef({ x: 0, y: 0, t: 0 });
   const raf = useRef(0);
 
@@ -67,15 +77,14 @@ export default function CustomCursor({ active }: { active: boolean }) {
       const dx = e.clientX - last.current.x;
       pos.current.vx = dx / dt;
       last.current = { x: e.clientX, y: e.clientY, t: now };
-      pos.current.x = e.clientX;
-      pos.current.y = e.clientY;
+      pos.current.tx = e.clientX;
+      pos.current.ty = e.clientY;
 
       const t = e.target;
       const clickable =
         t instanceof Element &&
         Boolean(t.closest('[data-cursor="click"], a[href], button, [role="button"]'));
-      const canvasHot = document.documentElement.classList.contains('cursor-hot');
-      setHot(clickable || canvasHot);
+      setHot(clickable || isPointerHot());
     };
 
     const onDown = () => setPressing(true);
@@ -83,12 +92,17 @@ export default function CustomCursor({ active }: { active: boolean }) {
 
     const tick = () => {
       const el = root.current;
-      if (el) {
-        const target = Math.max(-0.35, Math.min(0.35, pos.current.vx * 8));
-        pos.current.rot += (target - pos.current.rot) * 0.16;
-        pos.current.vx *= 0.86;
-        // Fingertip hotspot (~18, 8) on the 64×64 glove.
-        el.style.transform = `translate3d(${pos.current.x}px, ${pos.current.y}px, 0) translate(-18px, -8px) rotate(${pos.current.rot * 12}deg)`;
+      if (el && !isDocumentHidden()) {
+        const p = pos.current;
+        p.x += (p.tx - p.x) * MOTION.cursorLerp;
+        p.y += (p.ty - p.y) * MOTION.cursorLerp;
+        const nx = typeof window !== 'undefined' ? p.tx / Math.max(1, window.innerWidth) : 0.5;
+        const screenTilt = (nx * 2 - 1) * MOTION.cursorTiltMax;
+        const velTilt = Math.max(-8, Math.min(8, p.vx * 90));
+        const target = screenTilt * 0.7 + velTilt * 0.3;
+        p.rot += (target - p.rot) * MOTION.cursorRotLerp;
+        p.vx *= 0.86;
+        el.style.transform = `translate3d(${p.x}px, ${p.y}px, 0) translate(-18px, -8px) rotate(${p.rot}deg)`;
       }
       raf.current = requestAnimationFrame(tick);
     };
@@ -110,13 +124,8 @@ export default function CustomCursor({ active }: { active: boolean }) {
 
   useEffect(() => {
     if (!enabled) return;
-    const rootEl = document.documentElement;
-    const syncHot = () => {
-      if (rootEl.classList.contains('cursor-hot')) setHot(true);
-    };
-    const obs = new MutationObserver(syncHot);
-    obs.observe(rootEl, { attributes: true, attributeFilter: ['class'] });
-    return () => obs.disconnect();
+    const syncHot = () => setHot(isPointerHot());
+    return subscribePointerHover(syncHot);
   }, [enabled]);
 
   if (!enabled) return null;

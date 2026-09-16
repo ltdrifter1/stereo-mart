@@ -13,6 +13,7 @@ import { LIFE_HITS, type LifeHit } from '@/app/data/hotspots';
 import { CAT_LIFE } from '@/lib/roomLife';
 import { useSceneEnv, type Controls } from './sceneContext';
 import { isTap, tapOrigin, type TapOrigin } from '@/lib/pointerTap';
+import { useCanvasHover } from './useCanvasHover';
 
 const origin = new THREE.Vector3(0, 0, 0);
 
@@ -122,6 +123,7 @@ function GhostHaunt({
   const [enabled, setEnabled] = useState(false);
   const map = useTexture(hit.src!);
   const press = useRef<TapOrigin | null>(null);
+  const hover = useCanvasHover(hit.id);
   const [x, y, z] = uvToSpherical(hit.u, hit.v, SPHERE_RADIUS - 0.85);
 
   useLayoutEffect(() => {
@@ -178,11 +180,9 @@ function GhostHaunt({
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
         onPointerOver={(e) => {
-          e.stopPropagation();
-          if (!env.live.value || !enabled) return;
-          document.documentElement.classList.add('cursor-hot');
+          hover.onOver(() => e.stopPropagation(), env.live.value && enabled);
         }}
-        onPointerOut={() => document.documentElement.classList.remove('cursor-hot')}
+        onPointerOut={() => hover.onOut()}
       >
         <planeGeometry args={[hit.w, hit.h]} />
         <meshBasicMaterial
@@ -213,6 +213,7 @@ function LifeMesh({
   const env = useSceneEnv();
   const [pulse, setPulse] = useState(0);
   const press = useRef<TapOrigin | null>(null);
+  const hover = useCanvasHover(hit.id);
   const [x, y, z] = uvToSpherical(hit.u, hit.v, SPHERE_RADIUS - 0.85);
 
   useLayoutEffect(() => {
@@ -243,11 +244,12 @@ function LifeMesh({
         onPointerDown={hit.kind === 'steam' ? undefined : onPointerDown}
         onPointerUp={hit.kind === 'steam' ? undefined : onPointerUp}
         onPointerOver={(e) => {
-          e.stopPropagation();
-          if (!env.live.value || hit.kind === 'steam') return;
-          document.documentElement.classList.add('cursor-hot');
+          hover.onOver(
+            () => e.stopPropagation(),
+            env.live.value && hit.kind !== 'steam',
+          );
         }}
-        onPointerOut={() => document.documentElement.classList.remove('cursor-hot')}
+        onPointerOut={() => hover.onOut()}
         userData={{ ambientId: hit.id }}
       >
         <planeGeometry args={[hit.w, hit.h]} />

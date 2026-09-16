@@ -25,6 +25,7 @@ import {
   uToYaw,
   vToPitch,
 } from '@/lib/pano';
+import { DEG, wrapYaw, isDocumentHidden } from '@/lib/math';
 import { playEnterIntro } from '@/lib/intro';
 import type { GyroHandle } from '@/lib/gyro';
 import { ROOM_HOTSPOTS } from '@/app/data/hotspots';
@@ -40,16 +41,7 @@ import VinylSprite from './VinylSprite';
 import RoomLife from './RoomLife';
 import SilhouetteGlow from './SilhouetteGlow';
 
-const TWO_PI = Math.PI * 2;
-const DEG = Math.PI / 180;
 const FOLLOW_RANGE = FOLLOW_RANGE_DEG * DEG;
-
-const wrapYaw = (y: number) => {
-  let v = y % TWO_PI;
-  if (v > Math.PI) v -= TWO_PI;
-  if (v < -Math.PI) v += TWO_PI;
-  return v;
-};
 
 type Props = {
   controls: Controls;
@@ -142,6 +134,7 @@ function Rig({
   }, [camera, controls, settleYaw, dropPitch, fisheyeRef]);
 
   useFrame((state, delta) => {
+    if (isDocumentHidden()) return;
     const t = state.clock.elapsedTime;
     env.time = t;
     const cam = camera as THREE.PerspectiveCamera;

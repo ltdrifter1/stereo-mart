@@ -83,6 +83,49 @@ main {
   color: var(--silver-cream);
 }
 
+/* Keyboard skip — visible only when focused. */
+.skip-link {
+  position: absolute;
+  left: max(12px, var(--sat-left));
+  top: max(12px, var(--sat-top));
+  z-index: 100;
+  padding: 10px 14px;
+  background: var(--cel-cream);
+  color: var(--ink);
+  border: 2.5px solid var(--ink);
+  border-radius: 8px;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transform: translateY(-160%);
+  transition: transform var(--motion-fast) var(--motion-ease);
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+
+/* Screen-space hotspot caption (follows pointer, not CSS3D). */
+.hover-hint {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 81;
+  pointer-events: none;
+  will-change: transform;
+  transform: translate3d(-200px, -200px, 0);
+}
+@media (pointer: coarse), (max-width: 570px) {
+  .hover-hint {
+    display: none !important;
+  }
+}
+
 /* ---------- shared canvas stage ---------- */
 .stage {
   position: fixed;
@@ -156,6 +199,9 @@ html.has-custom-cursor * {
     transform var(--motion-fast) var(--motion-ease);
   transform: scale(1);
   transform-origin: 18px 8px;
+}
+.custom-cursors.is-click img.custom-cursor-click {
+  transform: scale(1.06);
 }
 .custom-cursors.is-press img {
   transform: scale(0.86);
@@ -2784,9 +2830,9 @@ html.has-custom-cursor * {
   .drag-hint-glyph {
     animation: none;
   }
-  .custom-cursors {
+  .skip-link,
+  .hover-hint {
     transition: none;
-    opacity: 1;
   }
   .custom-cursors img {
     transition: none;

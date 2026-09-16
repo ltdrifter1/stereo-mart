@@ -1,13 +1,9 @@
+import { wrapYaw } from '@/lib/math';
 import type { Controls, LookTarget, Vec3 } from './types';
-
-const TWO_PI = Math.PI * 2;
 
 /** Shortest-path yaw delta into (−π, π]. */
 export function yawDelta(from: number, to: number) {
-  let d = (to - from) % TWO_PI;
-  if (d > Math.PI) d -= TWO_PI;
-  if (d < -Math.PI) d += TWO_PI;
-  return d;
+  return wrapYaw(to - from);
 }
 
 /** ≈ krpano / GSAP easeinoutquart */

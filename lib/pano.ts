@@ -16,6 +16,8 @@
  *   face the storefront, fisheye 1→0.3 and fov 160→120 over ~2s,
  *   then ease to portrait-aware explore for free-look.
  */
+import { MOTION } from '@/lib/motion';
+
 /** Equirect master — native 8192×4096; production viewer picks 2k/4k/8k. */
 export const PANO_WIDTH = 8192;
 export const PANO_HEIGHT = 4096;
@@ -56,9 +58,9 @@ export const FISHEYE_INTRO = 1.0;
  * while looking at the storefront (hlookat 0). INTRO_DELAY matches the 0.4s
  * overlay fade so the swirl starts as CLICK TO ENTER clears.
  */
-export const GATE_FADE_DUR = 0.4;
-export const INTRO_DELAY = 0.4;
-export const INTRO_DUR = 2.0;
+export const GATE_FADE_DUR = MOTION.gateFade;
+export const INTRO_DELAY = MOTION.introDelay;
+export const INTRO_DUR = MOTION.introDur;
 /** Post-settle ease from cinematic FOV → portrait-aware explore. */
 export const INTRO_EXPLORE_EASE_DUR = 0.85;
 /** Short path when prefers-reduced-motion (still a readable tilt). */

@@ -7,6 +7,7 @@ import { makeBeamTexture } from '@/lib/sprites';
 import { SPHERE_RADIUS, uvToSpherical } from '@/lib/pano';
 import { LAMP_UV } from '@/app/data/hotspots';
 import { useSceneEnv } from './sceneContext';
+import { isDocumentHidden } from '@/lib/math';
 
 const origin = new THREE.Vector3(0, 0, 0);
 
@@ -49,6 +50,7 @@ export function AdditiveQuad({
   }, [x, y, z]);
 
   useFrame(() => {
+    if (isDocumentHidden()) return;
     const m = mat.current;
     if (!m) return;
     const t = env.time + phase;

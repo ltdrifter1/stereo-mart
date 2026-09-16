@@ -12,6 +12,7 @@ import MuteControl from './MuteControl';
 import GyroButton, { createGyro } from './GyroButton';
 import DragHint from './DragHint';
 import CustomCursor from './CustomCursor';
+import HoverHint from './HoverHint';
 import ClickSpark from './ClickSpark';
 import StickerAlbum from './StickerAlbum';
 import ShopTicker from './ShopTicker';
@@ -73,6 +74,7 @@ export default function Experience() {
   const [maxDpr, setMaxDpr] = useState(2);
   const [debug, setDebug] = useState(false);
   const [lightsOn, setLightsOn] = useState(true);
+  const [frameloop, setFrameloop] = useState<'always' | 'demand'>('always');
 
   const controls = useInteractionManager(
     stageRef,
@@ -107,6 +109,15 @@ export default function Experience() {
 
   useEffect(() => {
     setDebug(new URLSearchParams(window.location.search).has('debug'));
+  }, []);
+
+  useEffect(() => {
+    const sync = () => {
+      setFrameloop(document.hidden ? 'demand' : 'always');
+    };
+    sync();
+    document.addEventListener('visibilitychange', sync);
+    return () => document.removeEventListener('visibilitychange', sync);
   }, []);
 
   // Booth “now playing” — Music hotspot pulses while a preview is live.
@@ -264,8 +275,12 @@ export default function Experience() {
 
   return (
     <div className={`stage${canLook ? ' can-look' : ''}`} ref={stageRef}>
+      <a className="skip-link" href="#shop-objects">
+        Skip to shop objects
+      </a>
       <div className="stage-canvas" ref={canvasWrapRef}>
         <Canvas
+          frameloop={frameloop}
           dpr={[1, maxDpr]}
           gl={{
             antialias: true,
@@ -323,6 +338,7 @@ export default function Experience() {
 
       <FilmFX reduceMotion={reduceMotion} />
       <CustomCursor active />
+      <HoverHint active={canLook} />
       <ClickSpark active={canLook} />
       <MuteControl visible={entered} faded={videoFocused} />
       <GyroButton visible={canLook} gyroRef={gyroRef} />

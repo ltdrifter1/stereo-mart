@@ -5,6 +5,7 @@ import gsap from 'gsap';
 
 import { SECTION_BY_ID, type SectionItem } from '@/app/data/sections';
 import { attachScrollActiveItems } from '@/lib/scrollActiveItems';
+import { MOTION } from '@/lib/motion';
 import {
   onPreviewProgress,
   playPreview,
@@ -341,8 +342,8 @@ export default function SectionPanel({
     const a = level1.current;
     const b = level2.current;
     const sheet = nestSheet.current;
-    const dur = reduceMotion ? 0 : 0.35;
-    const dur2 = reduceMotion ? 0 : 0.4;
+    const dur = reduceMotion ? 0 : MOTION.nest;
+    const dur2 = reduceMotion ? 0 : MOTION.nest;
 
     if (isMobile) {
       // Keep level-1 fully visible under the sheet.
@@ -357,7 +358,7 @@ export default function SectionPanel({
               opacity: 1,
               y: 0,
               duration: dur2,
-              ease: 'power2.out',
+              ease: MOTION.nestEase,
               overwrite: true,
             },
           );
@@ -372,16 +373,16 @@ export default function SectionPanel({
 
     if (!a) return;
     if (detail) {
-      gsap.to(a, { opacity: 0, duration: dur, ease: 'power1.inOut', overwrite: true });
+      gsap.to(a, { opacity: 0, duration: dur, ease: MOTION.nestEase, overwrite: true });
       if (b) {
         gsap.fromTo(
           b,
           { opacity: 0 },
-          { opacity: 1, duration: dur2, ease: 'power1.inOut', overwrite: true },
+          { opacity: 1, duration: dur2, ease: MOTION.nestEase, overwrite: true },
         );
       }
     } else {
-      gsap.to(a, { opacity: 1, duration: dur, ease: 'power1.inOut', overwrite: true });
+      gsap.to(a, { opacity: 1, duration: dur, ease: MOTION.nestEase, overwrite: true });
       if (b) gsap.set(b, { opacity: 0 });
     }
   }, [detail, reduceMotion, isMobile]);

@@ -7,9 +7,11 @@ import * as THREE from 'three';
 
 import { SPHERE_RADIUS, uvToSpherical } from '@/lib/pano';
 import { setSilhouetteAmount } from '@/lib/silhouetteGlow';
+import { MOTION } from '@/lib/motion';
 import { LAMP_UV } from '@/app/data/hotspots';
 import { useSceneEnv, type Controls } from './sceneContext';
 import { isTap, tapOrigin, type TapOrigin } from '@/lib/pointerTap';
+import { useCanvasHover } from './useCanvasHover';
 
 const origin = new THREE.Vector3(0, 0, 0);
 
@@ -31,6 +33,7 @@ export default function LampHotspot({
   const [hovered, setHovered] = useState(false);
   const env = useSceneEnv();
   const press = useRef<TapOrigin | null>(null);
+  const hover = useCanvasHover('lamp', 'Lamp');
   const [x, y, z] = useMemo(
     () => uvToSpherical(LAMP_U, LAMP_V, SPHERE_RADIUS - 1.6),
     [],
@@ -43,8 +46,8 @@ export default function LampHotspot({
   useLayoutEffect(() => {
     gsap.to(glow.current, {
       a: hovered ? 0.4 : 0,
-      duration: env.reduceMotion ? 0 : 0.4,
-      ease: 'power1.inOut',
+      duration: env.reduceMotion ? 0 : MOTION.hoverAura,
+      ease: MOTION.hoverEase,
       overwrite: true,
     });
   }, [hovered, env.reduceMotion]);
@@ -71,14 +74,12 @@ export default function LampHotspot({
       <mesh
         ref={mesh}
         onPointerOver={(e) => {
-          e.stopPropagation();
-          if (!env.live.value) return;
-          setHovered(true);
-          document.documentElement.classList.add('cursor-hot');
+          hover.onOver(() => e.stopPropagation(), env.live.value);
+          if (env.live.value) setHovered(true);
         }}
         onPointerOut={() => {
+          hover.onOut();
           setHovered(false);
-          document.documentElement.classList.remove('cursor-hot');
         }}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
