@@ -23,8 +23,14 @@ import {
   INTRO_DROP_V,
   INTRO_PAN_DEG,
   MFOV_EXPLORE,
+  PANO_HEIGHT,
+  PANO_WIDTH,
   START_LOOK_V,
+  TEXTURE_SRC,
+  TEXTURE_SRC_2K,
+  TEXTURE_SRC_8K,
   mfovToHorizontalFov,
+  pickPanoSrc,
   uToYaw,
   uvToSpherical,
   vToPitch,
@@ -38,6 +44,7 @@ import {
 import { HOTSPOT_BY_ID, ROOM_HOTSPOTS, resolveOpenTarget } from '../app/data/hotspots';
 import { GLOW } from '../lib/glow';
 import { warpPointerNdc } from '../lib/fisheyeMap';
+import { SILHOUETTE_ID } from '../lib/silhouetteGlow';
 
 const phone = {
   width: 390,
@@ -578,6 +585,30 @@ const desktop = {
   assert.equal(INTRO_PAN_DEG, 0, 'clickIntro has no yaw swirl');
   assert.equal(INTRO_DROP_V, START_LOOK_V, 'pre-enter pitch matches storefront, not zenith');
   console.log('✓ v20 hotspot → panel map');
+}
+
+// 15) Native 8192 plate + object-shaped silhouette ids
+{
+  assert.equal(PANO_WIDTH, 8192);
+  assert.equal(PANO_HEIGHT, 4096);
+  assert.equal(TEXTURE_SRC, '/textures/store_pano_v20.webp');
+  assert.equal(TEXTURE_SRC_8K, '/textures/store_pano_v20_8k.webp');
+  assert.equal(TEXTURE_SRC_2K, '/textures/store_pano_v20_2k.webp');
+  const mobile = pickPanoSrc({ maxTextureSize: 8192, coarsePointer: true, width: 390 });
+  assert.equal(mobile.fast, TEXTURE_SRC_2K);
+  assert.equal(mobile.upgrade, null);
+  const desk = pickPanoSrc({ maxTextureSize: 8192, coarsePointer: false, width: 1440 });
+  assert.equal(desk.fast, TEXTURE_SRC);
+  assert.equal(desk.upgrade, TEXTURE_SRC_8K);
+  const mid = pickPanoSrc({ maxTextureSize: 4096, coarsePointer: false, width: 1440 });
+  assert.equal(mid.fast, TEXTURE_SRC);
+  assert.equal(mid.upgrade, null);
+  for (const h of ROOM_HOTSPOTS) {
+    assert.ok(h.id in SILHOUETTE_ID, `${h.id} needs an object silhouette id`);
+  }
+  assert.ok('lamp' in SILHOUETTE_ID, 'desk lamp needs a silhouette id');
+  assert.equal(Object.keys(SILHOUETTE_ID).length, 9);
+  console.log('✓ 8192 plate pick + silhouette ids cover every primary object');
 }
 
 console.log('\nAll nav camera checks passed.');
