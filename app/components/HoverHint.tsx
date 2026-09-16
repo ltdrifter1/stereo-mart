@@ -12,10 +12,11 @@ import {
 /**
  * Screen-space hotspot caption — one DOM node, follows the pointer.
  * Replaces per-hotspot drei Html labels (CSS3D + layout thrash on pan).
+ * Stays mounted while look is unlocked so the first hover isn’t off-canvas.
  */
 export default function HoverHint({ active }: { active: boolean }) {
   const root = useRef<HTMLDivElement>(null);
-  const pos = useRef({ x: -999, y: -999, tx: -999, ty: -999 });
+  const pos = useRef({ x: 0, y: 0, tx: 0, ty: 0, primed: false });
   const raf = useRef(0);
   const [label, setLabel] = useState<string | null>(null);
   const [enabled, setEnabled] = useState(false);
@@ -23,11 +24,11 @@ export default function HoverHint({ active }: { active: boolean }) {
   useEffect(() => {
     if (!active) {
       setEnabled(false);
+      setLabel(null);
       return;
     }
-    const fine = window.matchMedia('(pointer: fine)').matches;
-    const wide = window.innerWidth > 570;
-    setEnabled(fine && wide);
+    const coarse = window.matchMedia('(pointer: coarse)').matches;
+    setEnabled(!coarse);
   }, [active]);
 
   useEffect(() => {
@@ -46,11 +47,16 @@ export default function HoverHint({ active }: { active: boolean }) {
     const onMove = (e: PointerEvent) => {
       pos.current.tx = e.clientX;
       pos.current.ty = e.clientY;
+      if (!pos.current.primed) {
+        pos.current.x = e.clientX;
+        pos.current.y = e.clientY;
+        pos.current.primed = true;
+      }
     };
 
     const tick = () => {
       const el = root.current;
-      if (el && !isDocumentHidden()) {
+      if (el && !isDocumentHidden() && pos.current.primed) {
         const k = MOTION.cursorLerp;
         pos.current.x += (pos.current.tx - pos.current.x) * k;
         pos.current.y += (pos.current.ty - pos.current.y) * k;
@@ -67,11 +73,24 @@ export default function HoverHint({ active }: { active: boolean }) {
     };
   }, [enabled]);
 
-  if (!enabled || !label) return null;
+  useEffect(() => {
+    if (!label) return;
+    const p = pos.current;
+    if (p.primed) {
+      p.x = p.tx;
+      p.y = p.ty;
+    }
+  }, [label]);
+
+  if (!enabled) return null;
 
   return (
-    <div ref={root} className="hover-hint" aria-hidden>
-      <span className="hotspot-pill">{label.toUpperCase()}</span>
+    <div
+      ref={root}
+      className={`hover-hint${label ? ' is-on' : ''}`}
+      aria-hidden
+    >
+      <span className="hotspot-pill">{label ? label.toUpperCase() : '\u00a0'}</span>
     </div>
   );
 }

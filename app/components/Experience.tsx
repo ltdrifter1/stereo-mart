@@ -275,7 +275,15 @@ export default function Experience() {
 
   return (
     <div className={`stage${canLook ? ' can-look' : ''}`} ref={stageRef}>
-      <a className="skip-link" href="#shop-objects">
+      <a
+        className="skip-link"
+        href="#shop-objects"
+        onClick={(e) => {
+          e.preventDefault();
+          const first = document.querySelector<HTMLButtonElement>('#shop-objects button');
+          first?.focus();
+        }}
+      >
         Skip to shop objects
       </a>
       <div className="stage-canvas" ref={canvasWrapRef}>

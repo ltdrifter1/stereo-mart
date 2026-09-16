@@ -117,8 +117,13 @@ main {
   left: 0;
   z-index: 81;
   pointer-events: none;
-  will-change: transform;
+  will-change: transform, opacity;
   transform: translate3d(-200px, -200px, 0);
+  opacity: 0;
+  transition: opacity 0.18s var(--motion-ease-out);
+}
+.hover-hint.is-on {
+  opacity: 1;
 }
 @media (pointer: coarse), (max-width: 570px) {
   .hover-hint {
