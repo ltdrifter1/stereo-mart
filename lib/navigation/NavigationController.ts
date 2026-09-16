@@ -6,7 +6,7 @@ import {
   FOLLOW_REENABLE_DELAY,
   FOLLOW_REENABLE_DUR,
 } from '@/lib/pano';
-import { playSfx, setPanelDuck, stopPreview } from '@/lib/audio';
+import { playSfx, setPanelDuck, stopPreview, swellAmbient } from '@/lib/audio';
 import {
   animateCamera,
   animateCameraPath,
@@ -208,6 +208,7 @@ export function createNavigationController(
     navState.focusedId = hotspotId;
     cbs.onFocusedChange(hotspotId);
     playSfx(section.sfx || 'focus');
+    if (!cbs.reduceMotion) swellAmbient();
 
     // Keep follow-mouse lean off while focused so glow stays framed.
     gsap.killTweensOf(controls, 'followFactor');

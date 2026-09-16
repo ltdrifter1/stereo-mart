@@ -41,8 +41,19 @@ import {
   SECTION_BY_ID,
   SECTION_ID_BY_HASH,
 } from '../app/data/sections';
-import { HOTSPOT_BY_ID, ROOM_HOTSPOTS, resolveOpenTarget } from '../app/data/hotspots';
+import { HOTSPOT_BY_ID, LIFE_HITS, ROOM_HOTSPOTS, resolveOpenTarget } from '../app/data/hotspots';
 import { GLOW } from '../lib/glow';
+import {
+  CAT_LIFE,
+  CLOUD_LIFE,
+  FAN_LIFE,
+  LOOKTO_SWELL,
+  SPEAKER_LIFE,
+  angToPlane,
+  cloudWindowFade,
+  wrapCloudAth,
+} from '../lib/roomLife';
+import { swellAmbient } from '../lib/audio';
 import { warpPointerNdc } from '../lib/fisheyeMap';
 import { SILHOUETTE_ID } from '../lib/silhouetteGlow';
 
@@ -609,6 +620,26 @@ const desktop = {
   assert.ok('lamp' in SILHOUETTE_ID, 'desk lamp needs a silhouette id');
   assert.equal(Object.keys(SILHOUETTE_ID).length, 9);
   console.log('✓ 8192 plate pick + silhouette ids cover every primary object');
+}
+
+// 16) Idle room life — fan / cat / speaker / clouds / lookto swell
+{
+  assert.ok(angToPlane(27) > 20 && angToPlane(27) < 28, '27° fan plane is room-scale');
+  assert.ok(Math.abs(FAN_LIFE.ath) < 15, 'fan hangs on the storefront ceiling');
+  assert.ok(FAN_LIFE.atv < -50, 'fan is a zenith object');
+  assert.ok(FAN_LIFE.radPerSec > 0 && FAN_LIFE.radPerSec < 0.6, 'fan is a slow loop');
+  assert.ok(Math.abs(SPEAKER_LIFE.ath - -114) < 0.5, 'woofer sits on the rabbit speaker');
+  assert.ok(SPEAKER_LIFE.listenAmp > SPEAKER_LIFE.idleAmp, 'booth playback punches the cone');
+  const cat = LIFE_HITS.find((h) => h.id === 'cat');
+  assert.ok(cat?.src === CAT_LIFE.src, 'sleeping cat uses the plate patch');
+  assert.ok((cat?.w ?? 0) > 20, 'cat plane matches the painted loaf');
+  assert.equal(CLOUD_LIFE.length, 3);
+  assert.equal(wrapCloudAth(50), wrapCloudAth(50 - (38 - -38)));
+  assert.ok(cloudWindowFade(0) > cloudWindowFade(36), 'clouds fade at the mullions');
+  assert.ok(LOOKTO_SWELL.peakMul > 1.2 && LOOKTO_SWELL.peakMul < 2, 'lookto swell is a nudge');
+  assert.equal(typeof swellAmbient, 'function');
+  swellAmbient(); // muted in node — must no-op
+  console.log('✓ idle room life: fan / cat / speaker / clouds / lookto swell');
 }
 
 console.log('\nAll nav camera checks passed.');

@@ -10,6 +10,7 @@ import { SPHERE_RADIUS, uvToSpherical } from '@/lib/pano';
 import { playSfx } from '@/lib/audio';
 import { emitFind } from '@/lib/discoveries';
 import { LIFE_HITS, type LifeHit } from '@/app/data/hotspots';
+import { CAT_LIFE } from '@/lib/roomLife';
 import { useSceneEnv, type Controls } from './sceneContext';
 import { isTap, tapOrigin, type TapOrigin } from '@/lib/pointerTap';
 
@@ -26,6 +27,7 @@ function LifeSprite({
 }) {
   const mesh = useRef<THREE.Mesh>(null);
   const mat = useRef<THREE.MeshBasicMaterial>(null);
+  const stretch = useRef(0);
   const env = useSceneEnv();
   const map = useTexture(hit.src!);
   const [x, y, z] = uvToSpherical(hit.u, hit.v, SPHERE_RADIUS - 0.85);
@@ -35,7 +37,7 @@ function LifeSprite({
     mesh.current?.lookAt(origin);
   }, [map, x, y, z]);
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     const m = mesh.current;
     const material = mat.current;
     if (!m || !material) return;
@@ -45,27 +47,44 @@ function LifeSprite({
       material.opacity = 0.45 + Math.sin(t * 1.1) * 0.18;
       m.position.y = y + Math.sin(t * 0.9) * 0.18;
     }
+    if (hit.id === 'cat' && !env.reduceMotion) {
+      const period = CAT_LIFE.breatheUp + CAT_LIFE.breatheDown;
+      const cycle = env.time % period;
+      const k =
+        cycle < CAT_LIFE.breatheUp
+          ? cycle / CAT_LIFE.breatheUp
+          : 1 - (cycle - CAT_LIFE.breatheUp) / CAT_LIFE.breatheDown;
+      const ease = 0.5 - 0.5 * Math.cos(k * Math.PI);
+      stretch.current = Math.max(0, stretch.current - delta * 2.4);
+      const s = 1 + (CAT_LIFE.scale - 1) * ease + stretch.current * 0.12;
+      m.scale.setScalar(s);
+    }
   });
 
   useEffect(() => {
     if (hit.kind !== 'find' || !pulse) return;
     const m = mesh.current;
     if (!m) return;
+    if (hit.id === 'cat') {
+      stretch.current = 1;
+    }
     const baseZ = m.rotation.z;
     const tl = gsap.timeline();
     tl.to(m.rotation, { z: baseZ + 0.08, duration: 0.1, ease: 'power1.inOut' })
       .to(m.rotation, { z: baseZ - 0.06, duration: 0.12, ease: 'power1.inOut' })
-      .to(m.rotation, { z: baseZ, duration: 0.14, ease: 'power1.out' })
-      .fromTo(
+      .to(m.rotation, { z: baseZ, duration: 0.14, ease: 'power1.out' });
+    if (hit.id !== 'cat') {
+      tl.fromTo(
         m.scale,
         { x: 1, y: 1, z: 1 },
         { x: 1.12, y: 1.12, z: 1.12, duration: 0.16, yoyo: true, repeat: 1, ease: 'power1.inOut' },
         0,
       );
+    }
     return () => {
       tl.kill();
     };
-  }, [pulse, hit.kind]);
+  }, [pulse, hit.kind, hit.id]);
 
   const visible = hit.kind !== 'find' || Boolean(hit.src);
 

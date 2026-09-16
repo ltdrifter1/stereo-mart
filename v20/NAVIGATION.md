@@ -30,11 +30,14 @@ overlay prop (the painted door has none).
 ## Ambient life (wired now)
 
 cat breathes (plate patch, pixel-aligned) · coffee steams above the #1
-CUSTOMER mug · desk lamp flickers once in a while (additive light pool).
+CUSTOMER mug · desk lamp flickers once in a while (additive light pool) ·
+ceiling fan turns over a plaster cover (Stereo-Mart prop, not a second
+paint) · speaker cone pulses (harder while the booth plays) · clouds drift
+across the storefront glass · vinyl platter spins at the listening station ·
+lookto eases a soft ambient swell.
 
-Planned for the repaint pass (need separated plate layers, not overlays):
-fan rotation · platter spin · speaker cone vibration · clouds · wire sway ·
-pigeon shuffle · poster corner lift · cassette rewind.
+Still on the wishlist (need separated plate layers or a repaint):
+wire sway · pigeon shuffle · poster corner lift · cassette rewind.
 
 ## Hidden discoveries (wired now, tracked in `krpano/js/discoveries.js`)
 
